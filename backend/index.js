@@ -10,6 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api", apiRouter);
+// This set up is only when you want 
+// app.use("/", express.static(path.join(__dirName, "/backend/build" )));
+// app.all("*", (req, resp)=>{
+//     resp.sendFile(path.join(__dirName , "/backend/build/index.html"));
+// });
 
 const PORT = 8000
 
