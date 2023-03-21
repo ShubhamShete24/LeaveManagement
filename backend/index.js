@@ -6,7 +6,7 @@ import connectDB from './config/db.js';
 
 var app = express();
 //const __dirName = path.resolve();
-connectDB("mongodb+srv://admin10:lms-admin10@cluster0.wfnyrqq.mongodb.net/?retryWrites=true&w=majority")
+connectDB("")
 app.use(cors());
 app.use(express.json());
 
