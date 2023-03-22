@@ -1,0 +1,319 @@
+{
+	"info": {
+		"_postman_id": "487a435b-c5b9-41ca-910d-57fb457821da",
+		"name": "LMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20431881"
+	},
+	"item": [
+		{
+			"name": "Assign user role",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJfaWQiOiI2NDFhYTI2MjA0NDgyMTg0NTMzZTUzYTIiLCJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG4uZG9lQGdtYWlsLmNvbSIsImhhc2giOiI2ZTA0Nzg5MTM2YTczZTRmMDcwNzNlMGI1NzU4MjNkYWRmODE1MmQ2NTE3YWVlNzIwOGIyN2U5YTYyOTVjZmM1MWMyODQ4OGFlMmJlNTI0NDc2ODlhYWIyNmE5Yzg0NzA1NTkyY2I1NzcyZDYxYzM4ZmVkM2Q4ZDU3MjZlN2JmOSIsInNhbHQiOiIxMWYzOWUwMmViOWMzOWFkMzNiYWJkYjkzZjA1NzA4YSIsImNyZWF0ZWRfYXQiOiIyMDIzLTAzLTIyVDA2OjM4OjI2LjU0MloiLCJ1cGRhdGVkX2F0IjoiMjAyMy0wMy0yMlQwNjo0Njo1Ny4xMTlaIiwiX192IjowLCJyb2xlIjoiNjQxYWExODgzYmM2ZTgwMjVkOWEzNGZiIn0sImlhdCI6MTY3OTQ2OTE4OSwiZXhwIjoxNjc5NDcyNzg5fQ.q7d2mSlCZjB0ifBmZDMTMUi8RCatZIsiIk-M8GFls78",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roleId\": \"641aa1883bc6e8025d9a34fb\",\r\n    \"userId\" : \"641aa26204482184533e53a2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/user/assign-role",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"assign-role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\" : \"Tom Faithful\",\r\n    \"email\" : \"tom.faithful@gmail.com\",\r\n    \"password\": \"Tom@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/user/create-user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"create-user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authentication",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"john.doe@gmail.com\",\r\n    \"password\" : \"John@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/user/authenticate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all roles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJfaWQiOiI2NDFhZGI0MmI0M2Y1MzAyZmU3YzJmNTIiLCJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG4uZG9lQGdtYWlsLmNvbSIsImhhc2giOiI3YmU1NTlmMjhjZTE3MGM3NmJkNWRkZTgxOGY3YjAzNjIxZWY5OWRlZjg4MjM0MDFlN2YxNjFhYTkwMjA5MzhmYTRlMmI4YjczMmJmN2I2MTMzNTYwZjc4MzQ1Y2YyOTcxZTM2MmM2YjM3NjY3MWVlMTBiYWFjN2NiZTNiODlkOCIsInNhbHQiOiJhZTZiMTg5MzY2NTlmMzFhNTMyNmY5ZDYyNDE4MjJmNCIsImNyZWF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjQxOjA2Ljk0NVoiLCJ1cGRhdGVkX2F0IjoiMjAyMy0wMy0yMlQxMDo0MjoxMi41NjVaIiwiX192IjowLCJyb2xlIjpbeyJfaWQiOiI2NDFhZGFmODU1ZTdmZWE3YWNhYmUxMzEiLCJyb2xlTmFtZSI6IkFETUlOIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDMtMjJUMTA6Mzk6NTIuNjA3WiIsInVwZGF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjM5OjUyLjYwN1oiLCJfX3YiOjB9XX0sImlhdCI6MTY3OTQ4NTg5NywiZXhwIjoxNjc5NTAzODk3fQ.9gcG5pTkrmHvEkISnTz2ifZSTJZWX8X6epTvaR7up5Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/role/get-roles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"role",
+						"get-roles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Role",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJfaWQiOiI2NDFhZGI0MmI0M2Y1MzAyZmU3YzJmNTIiLCJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG4uZG9lQGdtYWlsLmNvbSIsImhhc2giOiI3YmU1NTlmMjhjZTE3MGM3NmJkNWRkZTgxOGY3YjAzNjIxZWY5OWRlZjg4MjM0MDFlN2YxNjFhYTkwMjA5MzhmYTRlMmI4YjczMmJmN2I2MTMzNTYwZjc4MzQ1Y2YyOTcxZTM2MmM2YjM3NjY3MWVlMTBiYWFjN2NiZTNiODlkOCIsInNhbHQiOiJhZTZiMTg5MzY2NTlmMzFhNTMyNmY5ZDYyNDE4MjJmNCIsImNyZWF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjQxOjA2Ljk0NVoiLCJ1cGRhdGVkX2F0IjoiMjAyMy0wMy0yMlQxMDo0MjoxMi41NjVaIiwiX192IjowLCJyb2xlIjpbeyJfaWQiOiI2NDFhZGFmODU1ZTdmZWE3YWNhYmUxMzEiLCJyb2xlTmFtZSI6IkFETUlOIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDMtMjJUMTA6Mzk6NTIuNjA3WiIsInVwZGF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjM5OjUyLjYwN1oiLCJfX3YiOjB9XX0sImlhdCI6MTY3OTQ4NTg5NywiZXhwIjoxNjc5NTAzODk3fQ.9gcG5pTkrmHvEkISnTz2ifZSTJZWX8X6epTvaR7up5Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":\"641aebe8208f7242d252019b\",\r\n    \"roleName\": \"SENIOR_MANAGER\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/role/update-role",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"role",
+						"update-role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create role",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJfaWQiOiI2NDFhZGI0MmI0M2Y1MzAyZmU3YzJmNTIiLCJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG4uZG9lQGdtYWlsLmNvbSIsImhhc2giOiI3YmU1NTlmMjhjZTE3MGM3NmJkNWRkZTgxOGY3YjAzNjIxZWY5OWRlZjg4MjM0MDFlN2YxNjFhYTkwMjA5MzhmYTRlMmI4YjczMmJmN2I2MTMzNTYwZjc4MzQ1Y2YyOTcxZTM2MmM2YjM3NjY3MWVlMTBiYWFjN2NiZTNiODlkOCIsInNhbHQiOiJhZTZiMTg5MzY2NTlmMzFhNTMyNmY5ZDYyNDE4MjJmNCIsImNyZWF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjQxOjA2Ljk0NVoiLCJ1cGRhdGVkX2F0IjoiMjAyMy0wMy0yMlQxMDo0MjoxMi41NjVaIiwiX192IjowLCJyb2xlIjpbeyJfaWQiOiI2NDFhZGFmODU1ZTdmZWE3YWNhYmUxMzEiLCJyb2xlTmFtZSI6IkFETUlOIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDMtMjJUMTA6Mzk6NTIuNjA3WiIsInVwZGF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjM5OjUyLjYwN1oiLCJfX3YiOjB9XX0sImlhdCI6MTY3OTQ4NTg5NywiZXhwIjoxNjc5NTAzODk3fQ.9gcG5pTkrmHvEkISnTz2ifZSTJZWX8X6epTvaR7up5Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roleName\" : \"XYZ\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/role/create-role",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"role",
+						"create-role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Role",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJfaWQiOiI2NDFhZGI0MmI0M2Y1MzAyZmU3YzJmNTIiLCJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG4uZG9lQGdtYWlsLmNvbSIsImhhc2giOiI3YmU1NTlmMjhjZTE3MGM3NmJkNWRkZTgxOGY3YjAzNjIxZWY5OWRlZjg4MjM0MDFlN2YxNjFhYTkwMjA5MzhmYTRlMmI4YjczMmJmN2I2MTMzNTYwZjc4MzQ1Y2YyOTcxZTM2MmM2YjM3NjY3MWVlMTBiYWFjN2NiZTNiODlkOCIsInNhbHQiOiJhZTZiMTg5MzY2NTlmMzFhNTMyNmY5ZDYyNDE4MjJmNCIsImNyZWF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjQxOjA2Ljk0NVoiLCJ1cGRhdGVkX2F0IjoiMjAyMy0wMy0yMlQxMDo0MjoxMi41NjVaIiwiX192IjowLCJyb2xlIjpbeyJfaWQiOiI2NDFhZGFmODU1ZTdmZWE3YWNhYmUxMzEiLCJyb2xlTmFtZSI6IkFETUlOIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDMtMjJUMTA6Mzk6NTIuNjA3WiIsInVwZGF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjM5OjUyLjYwN1oiLCJfX3YiOjB9XX0sImlhdCI6MTY3OTQ4NTg5NywiZXhwIjoxNjc5NTAzODk3fQ.9gcG5pTkrmHvEkISnTz2ifZSTJZWX8X6epTvaR7up5Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\" : \"641aec3a208f7242d25201ab\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/role/delete-role",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"role",
+						"delete-role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Manager",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJfaWQiOiI2NDFhZGI0MmI0M2Y1MzAyZmU3YzJmNTIiLCJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG4uZG9lQGdtYWlsLmNvbSIsImhhc2giOiI3YmU1NTlmMjhjZTE3MGM3NmJkNWRkZTgxOGY3YjAzNjIxZWY5OWRlZjg4MjM0MDFlN2YxNjFhYTkwMjA5MzhmYTRlMmI4YjczMmJmN2I2MTMzNTYwZjc4MzQ1Y2YyOTcxZTM2MmM2YjM3NjY3MWVlMTBiYWFjN2NiZTNiODlkOCIsInNhbHQiOiJhZTZiMTg5MzY2NTlmMzFhNTMyNmY5ZDYyNDE4MjJmNCIsImNyZWF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjQxOjA2Ljk0NVoiLCJ1cGRhdGVkX2F0IjoiMjAyMy0wMy0yMlQxMDo0MjoxMi41NjVaIiwiX192IjowLCJyb2xlIjpbeyJfaWQiOiI2NDFhZGFmODU1ZTdmZWE3YWNhYmUxMzEiLCJyb2xlTmFtZSI6IkFETUlOIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDMtMjJUMTA6Mzk6NTIuNjA3WiIsInVwZGF0ZWRfYXQiOiIyMDIzLTAzLTIyVDEwOjM5OjUyLjYwN1oiLCJfX3YiOjB9XX0sImlhdCI6MTY3OTQ4NzMwOSwiZXhwIjoxNjc5NTA1MzA5fQ.4F5l2aTGYRCi-qBvMW6ckWGb7eNi2rSGGSwuEcmLcJ0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\" : \"641adbaeb43f5302fe7c2f57\",\r\n    \"managerId\" : \"641adb42b43f5302fe7c2f52\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/user/assign-manager",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"assign-manager"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get users",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

@@ -15,10 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        # To specify the working directory
         working-directory: './frontend'
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x]
+        # for adding other version of node one can refer below setting
+        # node-version: [14.x, 16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -28,6 +31,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        # this setting is require when our project is not in the root of the repository
         cache-dependency-path: './frontend/package-lock.json'
     - run: npm ci
     - run: npm run build --if-present
