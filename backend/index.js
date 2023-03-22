@@ -3,10 +3,11 @@ import cors from 'cors'
 import path from 'path';
 import apiRouter from './routers/apiRouter.js';
 import connectDB from './config/db.js';
-
+import dotenv from 'dotenv'
+dotenv.config()
 var app = express();
 //const __dirName = path.resolve();
-connectDB("")
+connectDB(process.env.DB_URL, process.env.DB_NAME)
 app.use(cors());
 app.use(express.json());
 

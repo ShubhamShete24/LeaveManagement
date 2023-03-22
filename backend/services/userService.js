@@ -2,8 +2,13 @@ import User from './../models/user.js';
 import crypto from 'crypto';
 import jsonwebtoken from 'jsonwebtoken'
 import mongoose from 'mongoose'
-import roles from '../constants/roles.js';
+
+import dotenv from 'dotenv';
+dotenv.config();
+
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
 const createUser = async (req, res) => {
+    let user = req.body;
     const responseData = {
         status: 0,
         data: null,
@@ -11,7 +16,6 @@ const createUser = async (req, res) => {
     }
     try {
 
-        let user = req.body;
         if (!user.password || !user.email || !user.name) {
             responseData.status = 400,
                 responseData.message = "Required attributes not suppied."
@@ -22,7 +26,6 @@ const createUser = async (req, res) => {
         delete user.password;
         user = { ...user, salt: uniqueSalt };
         user = { ...user, hash: hash };
-        user = { ...user, role: roles.EMPLOYEE };
 
         const userCreated = await User.create(user);
         if (userCreated) {
@@ -51,12 +54,26 @@ const authenticate = async (req, res) => {
     const {
         email, password
     } = req.body;
-    let user = await User.findOne({ "email": email });
+    let user = await User.aggregate(
+        [{
+            $match: {
+                email: email
+            }
+        },
+        {
+            $lookup: {
+                from: "roles",
+                localField: "role",
+                foreignField: "_id",
+                as: "role"
+            }
+        }]
+    )
     if (user) {
-        if (verifyHash(user.hash, user.salt, password)) {
+        if (verifyHash(user[0].hash, user[0].salt, password)) {
             responseData.message = "User found";
             responseData.status = 200;
-            const token = jsonwebtoken.sign({ userInfo: user }, "secretkey", { expiresIn: '1hr' })
+            const token = jsonwebtoken.sign({ userInfo: user[0] }, JWT_SECRET_KEY, { expiresIn: process.env.JWT_SESSION_TIMEOUT })
             responseData.data.user = user
             responseData.data.authToken = token
         } else {
@@ -76,30 +93,7 @@ const generateHash = (plainText, salt) => {
 const verifyHash = (hash, salt, plainText) => {
     return crypto.pbkdf2Sync(plainText, salt, 1000, 64, 'sha512').toString('hex') == hash;
 }
-const verifyToken = (req, res, next) => {
-    const responseData = {
-        status: 0,
-        message: "",
-        data: null
-    }
-    const bearerToken = req.headers['authorization']
-    if (typeof bearerToken == 'undefined') {
-        responseData.status = 401;
-        responseData.message = "Auth token is required to access resources";
-        res.send(responseData);
-    }
-    const authToken = bearerToken.split(" ")[1]
-    jsonwebtoken.verify(authToken, "secretkey", (err, data) => {
-        if (err) {
-            responseData.status = 401;
-            responseData.message = "Invalid auth token";
-            res.send(responseData);
-        } else {
-            data = { ...data, jwtVerified: true }
-            next()
-        }
-    })
-}
+
 const updateUserInfo = async (req, res) => {
     let userInfo = req.body.userInfo;
     delete userInfo.role;
@@ -126,44 +120,90 @@ const updateUserInfo = async (req, res) => {
     responseData.data = updatedUser;
     res.send(responseData);
 }
+
+// follow single responsibility 
 const assignRole = async (req, res) => {
     const responseData = {
         status: 0,
         message: "",
         data: null
     }
-    const { userId, role } = req.body;
-    const bearer = req.headers['authorization'];
-    if (typeof bearer == 'undefined') {
-        responseData.status = 401;
-        responseData.message = "Auth token is required to access resources";
-        res.send(responseData);
-    }
-    const bearerToken = bearer.split(" ")[1];
-    jsonwebtoken.verify(bearerToken, "secretkey", async (err, data) => {
-        if (err) {
-            responseData.message = err.message;
-            responseData.status = 500;
-            res.send(responseData);
+    try {
+        const { userId, roleId } = req.body;
+        const updatedUser = await User.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(userId) }, { role: new mongoose.Types.ObjectId(roleId) }, { new: true })
+        if (updatedUser == null) {
+            responseData.status = 404;
+            responseData.message = 'User not found';
         } else {
-            // admin role
-            if (data.userInfo.role === roles.ADMIN) {
-                const updatedUser = await User.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(userId) }, { role: role }, {new : true})
-                console.log(updatedUser);
-                responseData.data = {
-                    roleUpdatedTo : updatedUser?.role
-                }
-                responseData.status = 200;
-                responseData.message = 'Role updated';
-                res.send(responseData);
+            responseData.data = {
+                roleUpdatedTo: updatedUser?.role
             }
-            else {
-                responseData.status = 401;
-                responseData.message = "You do not have the right to update role!"
-                res.send(responseData);
-            }
+            responseData.status = 200;
+            responseData.message = 'Role updated';
         }
-    })
-
+    } catch (e) {
+        responseData.status = 406;
+        responseData.message = 'The request could not be completed :' + e.message;
+    }
+    res.send(responseData);
 }
-export { createUser, authenticate, verifyToken, updateUserInfo, assignRole };
+
+const assignManager = async (req, res) => {
+    const responseData = {
+        status: 0,
+        message: "",
+        data: null
+    }
+    const { userId, managerId } = req.body;
+    try {
+        console.log( userId, managerId )
+        const updatedUser = await User.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(userId) }, { "reportingManager": new mongoose.Types.ObjectId(managerId) }, { new: true });
+        if (updatedUser == null) {
+            responseData.status = 404;
+            responseData.message = 'User not found';
+        } else {
+            responseData.data = {
+                managerIdAssigned: updatedUser?.reportingManager
+            }
+            responseData.status = 200;
+            responseData.message = 'Manager assigned';
+        }
+    } catch (e) {
+        responseData.status = 500;
+        responseData.message = 'Manager assignment failed! ' + e.message;
+    }
+    res.send(responseData);
+}
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.aggregate([
+            {
+                $lookup:
+                {
+                    from: 'users',
+                    localField: 'reportingManager',
+                    foreignField: '_id',
+                    pipeline: [{
+                        $project:{
+                            _id:1,
+                            name:1
+                        }
+                    }],
+                    as: 'reportingManager'
+                }
+            }
+        ])
+        const responseData = {
+            status: 0,
+            message: "",
+            data: null
+        }
+        responseData.data = users;
+        responseData.message= "Users found!";
+        responseData.status = 200;
+        res.send(responseData)
+    } catch (e) {
+
+    }
+}
+export { createUser, authenticate, updateUserInfo, assignRole, assignManager, getUsers };

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-const connectDB  = async (DB_URL) =>{
+const connectDB  = async (DB_URL, DB_NAME) =>{
     try{
         const DB_OPTION = {
-            dbName: "lms_dev"
+            dbName: DB_NAME
         }
         await mongoose.connect(DB_URL, DB_OPTION);
         console.log("Connected to database successfully.");

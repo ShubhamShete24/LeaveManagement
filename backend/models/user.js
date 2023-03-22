@@ -21,10 +21,11 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     role: {
-        type: Number,
-        required: false,
+        type: mongoose.Types.ObjectId, 
+        ref: 'roles',
+        required: false
     },
-    manager : {
+    reportingManager : {
         type: mongoose.Types.ObjectId, 
         ref: 'users',
         required: false
