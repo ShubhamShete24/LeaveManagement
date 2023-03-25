@@ -1,3 +1,18 @@
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
+* {
+    box-sizing: border-box;
+}
+html, body {
+    font-size: 16px;
+}
+body {
+    background-color: #cef0dd;
+    font-family: "Roboto Condensed", sans-serif;
+    line-height: 1.875em;
+}
+ul {
+    list-style: none;
+  }
 h1 {
     color: #5acc8b;
     font-size: 1.75em;
@@ -120,8 +135,11 @@ a:hover {
 .ham-bars::after {
     top: 6px;
 }
+
 .nav-is-default .nav-side {
     width: 270px;
+    line-height: 1.875em;
+    
 }
 @media (max-width: 767px) {
     .nav-is-default .nav-side {
@@ -149,7 +167,7 @@ a:hover {
 }
 @media (min-width: 768px) {
     .nav-is-toggled .nav-side {
-        width: 60px;
+        width: 90px;
    }
     .nav-is-toggled .nav-side .nav-side-button {
         padding: 0 10px;

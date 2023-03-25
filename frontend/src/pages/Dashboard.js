@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './dashboard.css';
 
 function Dashboard() {
+  useEffect(() => {
+    const navSideBtn = document.getElementById('navSideToggle');
+    navSideBtn.addEventListener('click', () => {
+      document.body.classList.toggle('nav-is-toggled');
+      document.body.classList.toggle('nav-is-default');
+    });
+
+    return () => {
+      navSideBtn.removeEventListener('click');
+    };
+  }, []);
   return (
     <div>
       Dashboard
-      <div className="nav-is-default">
+      <body className="nav-is-default">
         <header className="nav-top">
           <button type="button" className="nav-toggle" id="navSideToggle">
-            <span className="sr-only">Menu</span>
-            <span className="ham-bars">.</span>
+            <span className="ham-bars" />
           </button>
         </header>
         <aside className="nav-side">
@@ -44,12 +54,6 @@ function Dashboard() {
                 <span className="link-text">Inbox</span>
               </a>
             </li>
-            <li className="nav-side-button">
-              <a className="button" href="#">
-                <span className="icon material-icons">add</span>
-                <span className="link-text">Add new goal</span>
-              </a>
-            </li>
           </ul>
         </aside>
         <section className="main-content">
@@ -62,36 +66,8 @@ function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="content-block">
-            <div className="container-fluid">
-              <div className="row">
-                <div className="col-md-12">.</div>
-              </div>
-            </div>
-          </div>
-          <div className="container-fluid">
-            <div className="module-row row">
-              <div className="module col-sm-6">
-                <div className="content-block">.</div>
-              </div>
-              <div className="module col-sm-6">
-                <div className="content-block">.</div>
-              </div>
-            </div>
-            <div className="module-row row">
-              <div className="module col-md-4">
-                <div className="content-block">.</div>
-              </div>
-              <div className="module col-md-4">
-                <div className="content-block">.</div>
-              </div>
-              <div className="module col-md-4">
-                <div className="content-block">.</div>
-              </div>
-            </div>
-          </div>
         </section>
-      </div>
+      </body>
     </div>
   );
 }
