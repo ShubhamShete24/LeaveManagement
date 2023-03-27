@@ -1,73 +1,43 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import Offcanvas from 'react-bootstrap/Offcanvas';
 import './dashboard.css';
 
 function Dashboard() {
-  useEffect(() => {
-    const navSideBtn = document.getElementById('navSideToggle');
-    navSideBtn.addEventListener('click', () => {
-      document.body.classList.toggle('nav-is-toggled');
-      document.body.classList.toggle('nav-is-default');
-    });
-
-    return () => {
-      navSideBtn.removeEventListener('click');
-    };
-  }, []);
   return (
     <div>
-      Dashboard
-      <body className="nav-is-default">
-        <header className="nav-top">
-          <button type="button" className="nav-toggle" id="navSideToggle">
-            <span className="ham-bars" />
-          </button>
-        </header>
-        <aside className="nav-side">
-          <ul className="nav-side-links">
-            <li className="nav-side-item">
-              <a className="nav-link active" href="#">
-                <span className="icon material-icons">dashboard</span>
-                <span className="link-text">Dashboard</span>
-              </a>
-            </li>
-            <li className="nav-side-item">
-              <a className="nav-link" href="#">
-                <span className="icon material-icons">settings</span>
-                <span className="link-text">Accounts</span>
-              </a>
-            </li>
-            <li className="nav-side-item">
-              <a className="nav-link" href="#">
-                <span className="icon material-icons">flag</span>
-                <span className="link-text">Goals</span>
-              </a>
-            </li>
-            <li className="nav-side-item">
-              <a className="nav-link" href="#">
-                <span className="icon material-icons">show_chart</span>
-                <span className="link-text">Funds</span>
-              </a>
-            </li>
-            <li className="nav-side-item">
-              <a className="nav-link" href="#">
-                <span className="icon material-icons">inbox</span>
-                <span className="link-text">Inbox</span>
-              </a>
-            </li>
-          </ul>
-        </aside>
-        <section className="main-content">
-          <div className="hero">
-            <div className="container-fluid">
-              <div className="row">
-                <div className="col-md-12">
-                  <h1>Welcome back!</h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </body>
+      <Navbar expand="lg" variant="light" bg="light" className="mb-3">
+        <Container fluid>
+          <Navbar.Brand href="#">Navbar</Navbar.Brand>
+          <Navbar.Toggle aria-controls="offcanvasNavbar-expand" />
+          <Navbar.Offcanvas id="offcanvasNavbar-expand" aria-labelledby="offcanvasNavbarLabel-expand" placement="end">
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title id="offcanvasNavbarLabel-expand">Offcanvas</Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+              <Nav className="justify-content-end flex-grow-1 pe-3">
+                <Nav.Link href="#action1">Home</Nav.Link>
+                <Nav.Link href="#action2">Link</Nav.Link>
+                <NavDropdown title="Dropdown" id="offcanvasNavbarDropdown-expand">
+                  <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
+                  <NavDropdown.Item href="#action4">Another action</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="#action5">Something else here</NavDropdown.Item>
+                </NavDropdown>
+              </Nav>
+              <Form className="d-flex">
+                <Form.Control type="search" placeholder="Search" className="me-2" aria-label="Search" />
+                <Button variant="outline-success">Search</Button>
+              </Form>
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
+        </Container>
+      </Navbar>
     </div>
   );
 }
