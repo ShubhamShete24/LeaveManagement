@@ -11,13 +11,17 @@ import './dashboard.css';
 function Dashboard() {
   return (
     <div>
-      <Navbar expand="lg" variant="light" bg="light" className="mb-3">
+      <Navbar expand={false} variant="light" bg="light" className="mb-3">
         <Container fluid>
-          <Navbar.Brand href="#">Navbar</Navbar.Brand>
           <Navbar.Toggle aria-controls="offcanvasNavbar-expand" />
-          <Navbar.Offcanvas id="offcanvasNavbar-expand" aria-labelledby="offcanvasNavbarLabel-expand" placement="end">
+          <Navbar.Offcanvas
+            id="offcanvasNavbar-expand"
+            aria-labelledby="offcanvasNavbarLabel-expand"
+            placement="start"
+            flip={false}
+          >
             <Offcanvas.Header closeButton>
-              <Offcanvas.Title id="offcanvasNavbarLabel-expand">Offcanvas</Offcanvas.Title>
+              <Offcanvas.Title id="offcanvasNavbarLabel-expand">Dashboard</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="justify-content-end flex-grow-1 pe-3">
@@ -36,6 +40,7 @@ function Dashboard() {
               </Form>
             </Offcanvas.Body>
           </Navbar.Offcanvas>
+          <Navbar.Brand href="#">Navbar</Navbar.Brand>
         </Container>
       </Navbar>
     </div>
