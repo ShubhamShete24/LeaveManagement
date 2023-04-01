@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Home from './components/Home';
 import Contact from './components/Contact';
 import User from './components/User';
+import Leaves from './components/Leaves';
 
 function App() {
   const [toggle, setToggle] = useState(false);
@@ -34,11 +35,16 @@ function App() {
           <Sidebar />
         </div>
         <div className="col overflow-auto">
-          <Dashboard Toggle={Toggle} />
+          <Dashboard
+            Toggle={() => {
+              Toggle();
+            }}
+          />
           <Routes>
             <Route path="/home" element={<Home />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/user" element={<User />} />
+            <Route path="/leaves" element={<Leaves />} />
           </Routes>
         </div>
       </div>
