@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './sidebar.css';
-// import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar() {
+  const navigate = useNavigate();
+  const [path, setPath] = useState();
+  useEffect(() => {
+    if (path !== '') {
+      navigate(path);
+    }
+  }, [navigate, path]);
   return (
     <div className="sidebar d-flex justify-content-between flex-column bg-dark text-white p-3 vh-100">
       <div>
@@ -12,21 +19,21 @@ function Sidebar() {
         </a>
         <hr className="text-white mt-2" />
         <ul className="nav nav-pills flex-column mt-3">
-          <li className="nav-item p-2">
+          <li className="nav-item p-2" onClick={() => setPath('/')}>
             <span className="p-1">
-              <i className="bi bi-speedometer-2 me-3 fs-4" />
+              <i className="bi bi-speedometer me-3 fs-4" />
               <span className="fs-4">Dashboard</span>
             </span>
           </li>
-          <li>
+          <li className="nav-item p-2" onClick={() => setPath('/user')}>
             <span className="p-1">
-              <i className="bi bi-people-2 me-3 fs-4" />
+              <i className="bi bi-people me-3 fs-4" />
               <span className="fs-4">Users</span>
             </span>
           </li>
-          <li>
+          <li className="nav-item p-2" onClick={() => setPath('/leaves')}>
             <span className="p-1">
-              <i className="bi bi-people-2 me-3 fs-4" />
+              <i className="bi bi-calendar-check me-3 fs-4" />
               <span className="fs-4">Leave</span>
             </span>
           </li>
