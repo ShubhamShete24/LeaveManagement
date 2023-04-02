@@ -9,7 +9,7 @@ function Dashboard({ Toggle }) {
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
           <a className="navbar-brand d-none d-md-block" href="#" onClick={Toggle}>
-            Dashboard
+            <img src="img/Steels.png" alt="logo" width="50px" height="48px" />
           </a>
           <a className="navbar-brand  d-block d-md-none" href="#" onClick={Toggle}>
             <i className="bi bi-justify" />
