@@ -12,7 +12,7 @@
 section {
   position: relative;
   min-height: 100vh;
-  background:#DCDCDC;
+  background:#FCF8F1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,7 +68,7 @@ section {
   text-align: center;
   width: 100%;
   margin-bottom: 10px;
-  color: #555;
+  color: #FCF8F1;
 }
 .container .user .formBx form input {
   position: relative;

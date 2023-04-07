@@ -1,8 +1,9 @@
 import React from 'react';
-import Dashboard from './pages/Dashboard/Dashboard';
+import SignUp from './pages/Dashboard/SignUp';
+// import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
-  return <Dashboard />;
+  return <SignUp />;
 }
 
 export default App;

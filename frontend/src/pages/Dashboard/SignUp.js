@@ -1,7 +1,12 @@
 import React from 'react';
 import '../../signup.css';
+import mainLogo from '../../assets/images/5.jpg';
 
 function SignUp() {
+  const toggleForm = () => {
+    const container = document.querySelector('.container');
+    container.classList.toggle('active');
+  };
   return (
     <div>
       <section>
@@ -9,7 +14,7 @@ function SignUp() {
           {/* sign in  */}
           <div className="user signinBx">
             <div className="imgBx">
-              <img src="images/5.jpeg" alt="logo" />
+              <img src={mainLogo} alt="logo" />
             </div>
             <div className="formBx">
               <form method="POST" action="">
@@ -23,7 +28,7 @@ function SignUp() {
 
                 <p className="signup" style={{ color: 'black' }}>
                   Don't have an account ?
-                  <a href="#" onClick="toggleForm();">
+                  <a href="#" onClick={toggleForm}>
                     Sign Up
                   </a>
                 </p>
@@ -34,7 +39,7 @@ function SignUp() {
           {/* sign up */}
           <div className="user signupBx">
             <div className="formBx">
-              <form method="POST" action="user.php">
+              <form method="POST">
                 <h2>Create an Account</h2>
                 <input type="hidden" name="formType" value="signup" />
                 <input type="text" name="username" placeholder="Username" />
@@ -45,7 +50,7 @@ function SignUp() {
                 <input type="submit" name="" value="Sign Up" />
                 <p className="signup" style={{ color: 'black' }}>
                   Already have an account ?
-                  <a href="#" onClick="toggleForm();">
+                  <a href="#" onClick={toggleForm}>
                     {' '}
                     Sign In{' '}
                   </a>
@@ -53,7 +58,7 @@ function SignUp() {
               </form>
             </div>
             <div className="imgBx">
-              <img src="images/5.jpeg" alt="logo" />
+              <img src={mainLogo} alt="logo" />
             </div>
           </div>
         </div>
