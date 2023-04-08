@@ -3,6 +3,7 @@ import express, { response } from 'express';
 import dotenv from 'dotenv';
 import fetch from "node-fetch";
 import apiRouter from "./routers/apiRouter.js";
+import leaveTypesMap from "./constants/leaveTypes.js";
 
 const ADMIN_EMAIL = "john.doe@gmail.com"
 const ADMIN_NAME = "John Doe"
@@ -25,29 +26,29 @@ let options = {
 }
 
 options.body = JSON.stringify({
-    leaveType : 'Annual',
+    leaveType : leaveTypesMap.Annual,
     leavesAllowed : 18
 })
-const annualLeave = await fetch("http://localhost:8000/api/leaves/create-leave-type", options).then(response => response.json());
+const annualLeave = await fetch("http://localhost:8000/api/leave/create-leave-type", options).then(response => response.json());
 if(annualLeave.status == 201){
     console.log("[*] Leave type created - Annual leave");
 }
 
 options.body = JSON.stringify({
-    leaveType : 'Casual',
+    leaveType : leaveTypesMap.Casual,
     leavesAllowed : 8
 })
-const casualLeave= await fetch("http://localhost:8000/api/leaves/create-leave-type", options).then(response => response.json());
+const casualLeave= await fetch("http://localhost:8000/api/leave/create-leave-type", options).then(response => response.json());
 if(casualLeave.status == 201){
     console.log("[*] Leave type created - Casual leave");
 }
 
 
 options.body = JSON.stringify({
-    leaveType : 'Paternity',
+    leaveType : leaveTypesMap.Paternity,
     leavesAllowed : 5
 })
-const paternityLeave = await fetch("http://localhost:8000/api/leaves/create-leave-type", options).then(response => response.json());
+const paternityLeave = await fetch("http://localhost:8000/api/leave/create-leave-type", options).then(response => response.json());
 if(paternityLeave.status == 201){
     console.log("[*] Leave type created - Paternity leave");
 }
@@ -89,10 +90,10 @@ data = {
 }
 options.body = JSON.stringify(data);
 const roleAssigned =  await fetch("http://localhost:8000/api/user/assign-role", options).then(response =>response.json());
-console.log()
 if(roleAssigned.status == 200){
     console.log("[*] Admin user set");
 }
+console.log("[*] Leave balances added");
 
 
 

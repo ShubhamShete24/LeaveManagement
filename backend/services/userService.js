@@ -4,6 +4,9 @@ import jsonwebtoken from 'jsonwebtoken'
 import mongoose from 'mongoose'
 
 import dotenv from 'dotenv';
+import LeaveBalance from '../models/LeaveBalance.js';
+import LeaveType from '../models/leaveType.js';
+import leaveTypesMap from '../constants/leaveTypes.js';
 dotenv.config();
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
@@ -14,8 +17,9 @@ const createUser = async (req, res) => {
         data: null,
         message: ""
     }
+    var userCreated =null;
+    let leavesBalanceCreatedIds = [];
     try {
-
         if (!user.password || !user.email || !user.name) {
             responseData.status = 400,
                 responseData.message = "Required attributes not suppied."
@@ -27,17 +31,66 @@ const createUser = async (req, res) => {
         user = { ...user, salt: uniqueSalt };
         user = { ...user, hash: hash };
 
-        const userCreated = await User.create(user);
+        userCreated = await User.create(user);
         if (userCreated) {
-            responseData.status = 201,
-                responseData.message = "User has been created."
-            responseData.data = userCreated;
-        } else {
-            res.send(responseData);
+            const leaveTypes = await LeaveType.find({});
+            let count=0;
+            for(let index = 0 ; index < leaveTypes.length; index++) 
+            {       
+                let record = leaveTypes[index];
+                let leaveBalance = record.leavesAllowed;
+                if(leaveTypesMap.Annual == record.leaveType )
+                {
+                    leaveBalance /= 12;
+                }
+                try
+                {
+                    const leaveBalanceCreated = await LeaveBalance.create({
+                        leaveType : new mongoose.Types.ObjectId(record._id),
+                        leaveBalance : leaveBalance,
+                        user: userCreated._id,
+                        leaveBalanceUpdatedForMonth : new Date().getMonth()        
+                    });
+                    if(leaveBalanceCreated!=null){
+                        leavesBalanceCreatedIds.push(leaveBalanceCreated._id);
+                        count++;
+                    }   
+                }
+                catch(e)
+                {
+                    responseData.message += e.message;
+                    count= 0;
+                    break;
+                }
+            };
+            if(leaveTypes.length == count){
+                responseData.status = 201,
+                responseData.message += "User has been created."
+                responseData.data = userCreated;
+            }else{
+                responseData.status = 500,
+                responseData.message += " Although user creation was successful, but there was an issue while creating one of the leaveBalance. Deleting user and leave balance created if any.";
+                responseData.data = null;
+            }
+        } 
+        else 
+        {
+            responseData.status = 500,
+            responseData.message += "User could not be created"
+            responseData.data = null;
         }
-    } catch (err) {
+    } 
+    catch (err) 
+    {
         responseData.status = 500;
         responseData.message = err.message;
+    }
+    if(responseData.status!=201){
+        // rollback
+        await User.findOneAndDelete({_id : userCreated._id});
+        leavesBalanceCreatedIds.forEach(async(record) => {
+            await LeaveBalance.findOneAndDelete({_id : record._id});
+        });
     }
     res.send(responseData);
 }

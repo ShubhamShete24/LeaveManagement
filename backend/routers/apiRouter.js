@@ -9,6 +9,6 @@ const apiRouter = express.Router();
 apiRouter.get('/', sendDummyJson);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/role', roleRouter);
-apiRouter.use('/leaves', leavesRouter);
+apiRouter.use('/leave', leavesRouter);
 
 export default apiRouter;
