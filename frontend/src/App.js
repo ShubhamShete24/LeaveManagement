@@ -1,9 +1,17 @@
 import React from 'react';
-import SignUp from './pages/Dashboard/SignUp';
-// import Dashboard from './pages/Dashboard/Dashboard';
+import SignUpp from './pages/Dashboard/SignUp';
+import Login from './pages/Auth/Index';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
-  return <SignUp />;
+  // return <SignUp />;
+  return (
+    <>
+      {/* <SignUpp /> */}
+      <Login />
+      {/* <Dashboard /> */}
+    </>
+  );
 }
 
 export default App;

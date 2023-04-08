@@ -43,7 +43,6 @@ function SignUp() {
                 <h2>Create an Account</h2>
                 <input type="hidden" name="formType" value="signup" />
                 <input type="text" name="username" placeholder="Username" />
-
                 <input type="email" name="email" placeholder="Email Id" />
                 <input type="password" name="password" placeholder="Create Password" />
                 <input type="password" name="" placeholder="Confirm Password" />
