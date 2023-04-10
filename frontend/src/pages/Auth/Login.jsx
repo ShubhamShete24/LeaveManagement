@@ -1,12 +1,15 @@
 import React from 'react';
 import './Login.scss';
 import IconButton from '@mui/material/IconButton';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import mainLogo from '../../assets/images/5.jpg';
 
 export default function Login({ setIsSignUp, isSignUp }) {
@@ -26,16 +29,20 @@ export default function Login({ setIsSignUp, isSignUp }) {
           <img src={mainLogo} alt="SteelSoft" />
         </div>
         <div className="loginForm">
-          {/* email */}
-          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-email">Email</InputLabel>
-            <OutlinedInput id="outlined-adornment-email" type="email" label="Email" />
-          </FormControl>
           {/* password */}
-          <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-password"
+          <TextField
+            error
+            id="standard-error-helper-text"
+            label="Email"
+            // defaultValue="Hello World"
+            helperText="Incorrect entry."
+            variant="standard"
+            sx={{ m: 1, width: '25ch' }}
+          />
+          <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
+            <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+            <Input
+              id="standard-adornment-password"
               type={showPassword ? 'text' : 'password'}
               endAdornment={
                 <InputAdornment position="end">
@@ -43,18 +50,24 @@ export default function Login({ setIsSignUp, isSignUp }) {
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}
-                    edge="end"
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               }
-              label="Password"
             />
           </FormControl>
-          <button type="button" onClick={() => handelClick()}>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" color="success" size="medium">
+              LogIn
+            </Button>
+            <Button variant="outlined" color="primary">
+              Forgot Password
+            </Button>
+          </Stack>
+          {/* <button type="button" onClick={() => handelClick()}>
             signup
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
