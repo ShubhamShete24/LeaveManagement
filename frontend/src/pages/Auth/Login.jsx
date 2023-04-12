@@ -58,10 +58,16 @@ export default function Login({ setIsSignUp, isSignUp }) {
             />
           </FormControl>
           <Stack direction="row" spacing={2}>
-            <Button variant="contained" color="success" size="medium">
-              LogIn
+            <Button
+              variant="contained"
+              color="success"
+              size="medium"
+              sx={{ width: '92%' }}
+              onClick={() => handelClick()}
+            >
+              Sign In
             </Button>
-            <Button variant="outlined" color="primary">
+            <Button variant="outlined" color="primary" sx={{ width: '92%' }}>
               Forgot Password
             </Button>
           </Stack>
