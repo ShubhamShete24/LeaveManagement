@@ -9,7 +9,9 @@
     "server": "nodemon backend/index.js",
     "client": "cd frontend && npm run start",
     "dev": "concurrently \"npm run server\" \"npm run client\" ",
-    "seed": "node backend/createDatabase.js"
+    "seed": "node backend/createDatabase.js",
+    "lint": "eslint --ext .js ./backend",
+    "lint-fix": "eslint --fix --ext .js ./backend"
   },
   "repository": {
     "type": "git",
@@ -30,5 +32,12 @@
     "mongoose": "^7.0.2",
     "node-fetch": "^3.3.1",
     "nodemon": "^2.0.21"
+  },
+  "devDependencies": {
+    "eslint": "^8.38.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1"
   }
 }
