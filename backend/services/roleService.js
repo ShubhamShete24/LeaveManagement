@@ -43,7 +43,7 @@ const updateRole = async (req, res)=>{
         const updatedRole = await Role.findOneAndUpdate({_id: new mongoose.Types.ObjectId(role.id)}, role, {new : true});    
         if(updatedRole!=null)
         {
-            responseData.status = 201;
+            responseData.status = 200;
             responseData.message = "Role updated successfully!"
             responseData.data = updatedRole;
         }
@@ -73,7 +73,7 @@ const deleteRole = async (req, res)=>{
         const updatedRole = await Role.findOneAndDelete({_id: new mongoose.Types.ObjectId(role.id)});    
         if(updatedRole!=null)
         {
-            responseData.status = 201;
+            responseData.status = 200;
             responseData.message = "Role deleted successfully!"
             responseData.data = updatedRole;
         }
@@ -103,7 +103,7 @@ const getRoles = async(req, res)=>{
         const roles = await Role.find();    
         if(roles.length!=0)
         {
-            responseData.status = 201;
+            responseData.status = 200;
             responseData.message = "Roles found!"
             responseData.data = roles;
         }
