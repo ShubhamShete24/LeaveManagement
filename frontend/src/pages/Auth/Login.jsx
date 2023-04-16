@@ -1,5 +1,4 @@
 import React from 'react';
-import './Login.scss';
 import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
@@ -10,7 +9,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import mainLogo from '../../assets/images/5.jpg';
+import mainLogo from '../../assets/images/SteelSoft_Logo.jpg';
+import './Login.scss';
 
 export default function Login({ setIsSignUp, isSignUp }) {
   const handelClick = () => {

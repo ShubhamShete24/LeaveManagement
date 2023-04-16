@@ -1,6 +1,5 @@
 import React from 'react';
-import mainLogo from '../../assets/images/5.jpg';
-import logo from '../../assets/images/Steels.png';
+import mainLogo from '../../assets/images/SteelSoft_Logo.jpg';
 import './Login.scss';
 
 export default function Login({ setIsSignUp, isSignUp }) {

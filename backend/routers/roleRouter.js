@@ -5,8 +5,7 @@ import { createRole, deleteRole, getRoles, updateRole } from '../services/roleSe
 const roleRouter = express.Router();
 roleRouter.post('/create-role', verifyAdmin, createRole);
 roleRouter.put('/update-role', verifyAdmin, updateRole);
-roleRouter.delete('/delete-role',verifyAdmin,  deleteRole);
+roleRouter.delete('/delete-role', verifyAdmin, deleteRole);
 roleRouter.get('/get-roles', verifyAdmin, getRoles);
-
 
 export default roleRouter;

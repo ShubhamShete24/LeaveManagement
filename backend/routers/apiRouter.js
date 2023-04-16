@@ -1,4 +1,4 @@
-import express from 'express'
+import express from 'express';
 import sendDummyJson from '../services/mockService.js';
 import leavesRouter from './leavesRouter.js';
 import roleRouter from './roleRouter.js';
