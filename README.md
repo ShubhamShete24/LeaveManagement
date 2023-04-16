@@ -1,5 +1,16 @@
 # Getting Started with Create React App
 
+### Make sure to set this setting in setting.json to enable `lint-fix` on save of files
+
+```
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "eslint.validate": ["javascript"]
+```
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
