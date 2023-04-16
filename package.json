@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/ShubhamShete24/LeaveManagement#readme",
   "dependencies": {
+    "baseui": "^12.2.0",
+    "bootstrap-icons": "^1.10.3",
     "concurrently": "^7.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -31,9 +33,14 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.2",
     "node-fetch": "^3.3.1",
-    "nodemon": "^2.0.21"
+    "nodemon": "^2.0.21",
+    "react-icons": "^4.8.0",
+    "styletron-engine-atomic": "^1.5.0",
+    "styletron-react": "^6.1.0"
   },
   "devDependencies": {
+    "lint": "^0.8.19",
+    "nodemon": "^2.0.21",
     "eslint": "^8.38.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",

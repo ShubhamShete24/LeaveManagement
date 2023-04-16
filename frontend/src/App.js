@@ -1,15 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './components/Home/Home';
-import Contact from './components/Contact/Contact';
+import React from 'react';
+import Login from './pages/Auth/Index';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
+  // return <SignUp />;
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <Login />
+      {/* <Dashboard /> */}
+    </>
   );
 }
 
