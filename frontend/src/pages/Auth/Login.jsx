@@ -7,8 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+import { Button } from 'react-bootstrap';
 import mainLogo from '../../assets/images/SteelSoft_Logo.jpg';
 import './Login.scss';
 
@@ -37,9 +36,9 @@ export default function Login({ setIsSignUp, isSignUp }) {
             // defaultValue="Hello World"
             helperText="Incorrect entry."
             variant="standard"
-            sx={{ m: 1, width: '25ch' }}
+            sx={{ m: 1, width: '35ch' }}
           />
-          <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
+          <FormControl sx={{ m: 1, width: '35ch' }} variant="standard">
             <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
             <Input
               id="standard-adornment-password"
@@ -57,23 +56,18 @@ export default function Login({ setIsSignUp, isSignUp }) {
               }
             />
           </FormControl>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              color="success"
-              size="medium"
-              sx={{ width: '92%' }}
-              onClick={() => handelClick()}
-            >
-              Sign In
+          <div className="loginButton">
+            <Button variant="outline-primary"> Sign In </Button>
+            <a className="text-muted" href="#!">
+              Forgot password?
+            </a>
+          </div>
+          <div className="signupButton">
+            <p className="mb-0 me-2">Don't have an account?</p>
+            <Button variant="outline-danger" onClick={() => handelClick()}>
+              Sign Up
             </Button>
-            <Button variant="outlined" color="primary" sx={{ width: '92%' }}>
-              Forgot Password
-            </Button>
-          </Stack>
-          {/* <button type="button" onClick={() => handelClick()}>
-            signup
-          </button> */}
+          </div>
         </div>
       </div>
     </div>
