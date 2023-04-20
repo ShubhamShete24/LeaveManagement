@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../components/Home';
 import LeavePage from '../components/Leaves';
-// import SignUp from '../pages/Dashboard/SignUp';
+import Dashboard from '../pages/Dashboard/Dashboard';
 
 function Paths() {
   return (
@@ -10,7 +10,7 @@ function Paths() {
       <Routes>
         <Route path="/home" element={<Home />} />
         <Route path="/leave" element={<LeavePage />} />
-        {/* <Route path="/" element={<SignUp />} /> */}
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </div>
   );

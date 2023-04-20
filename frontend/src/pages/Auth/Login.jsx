@@ -7,11 +7,18 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import mainLogo from '../../assets/images/SteelSoft_Logo.jpg';
 import './Login.scss';
 
 export default function Login({ setIsSignUp, isSignUp }) {
+  const navigate = useNavigate();
+  const handleSignIn = () => {
+    // handle sign in
+    // navigate to dashboard page using history.push method
+    navigate('/dashboard');
+  };
   const handelClick = () => {
     setIsSignUp(!isSignUp);
   };
@@ -33,7 +40,6 @@ export default function Login({ setIsSignUp, isSignUp }) {
             error
             id="standard-error-helper-text"
             label="Email"
-            // defaultValue="Hello World"
             helperText="Incorrect entry."
             variant="standard"
             sx={{ m: 1, width: '35ch' }}
@@ -57,8 +63,10 @@ export default function Login({ setIsSignUp, isSignUp }) {
             />
           </FormControl>
           <div className="loginButton">
-            <Button variant="outline-primary"> Sign In </Button>
-            <a className="text-muted" href="#!">
+            <Button variant="outline-primary" type="button" onClick={handleSignIn}>
+              Sign In
+            </Button>
+            <a className="text-muted" href="">
               Forgot password?
             </a>
           </div>

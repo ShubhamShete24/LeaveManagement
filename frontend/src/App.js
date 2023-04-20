@@ -3,13 +3,8 @@ import Login from './pages/Auth/Index';
 import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
-  // return <SignUp />;
-  return (
-    <>
-      <Login />
-      {/* <Dashboard /> */}
-    </>
-  );
+  // return <Login />;
+  return <Dashboard />;
 }
 
 export default App;
