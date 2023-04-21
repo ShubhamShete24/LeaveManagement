@@ -40,7 +40,7 @@ function AllDetails() {
           </Card>
         </Grid>
 
-        <Grid container spacing={2}>
+        <Grid container spacing={2} className="mt-3">
           {/* Bank Details */}
           <Grid item xs={12} sm={6}>
             <Card>

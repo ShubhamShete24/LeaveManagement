@@ -19,7 +19,7 @@ function UserForm() {
                 <Grid item xs={12} sm={6}>
                   <TextField name="mobileNumber" label="Mobile Number" fullWidth variant="outlined" required />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <TextField name="email" label="Email" fullWidth variant="outlined" type="email" required />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -34,10 +34,10 @@ function UserForm() {
                 <Grid item xs={12} sm={6}>
                   <TextField name="reportingManager" label="Reporting Manager" fullWidth variant="outlined" required />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <TextField name="roleID" label="Role ID" fullWidth variant="outlined" required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Grid> */}
+                {/* <Grid item xs={12} sm={6}>
                   <TextField
                     name="personalDetailsID"
                     label="Personal Details ID"
@@ -45,8 +45,8 @@ function UserForm() {
                     variant="outlined"
                     required
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Grid> */}
+                {/* <Grid item xs={12} sm={6}>
                   <TextField
                     name="employmentDetailsID"
                     label="Employment Details ID"
@@ -54,8 +54,8 @@ function UserForm() {
                     variant="outlined"
                     required
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid> */}
+                <Grid item xs={12} sm={6}>
                   <TextField name="status" label="Status" fullWidth variant="outlined" required />
                 </Grid>
                 <Grid item xs={12}>
