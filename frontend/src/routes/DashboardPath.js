@@ -11,9 +11,8 @@ function DashboardPath() {
   return (
     <div>
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/leave" element={<LeavePage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/user" element={<UserForm />} />
         <Route path="/personal-info" element={<PersonalDetails />} />
         <Route path="/details" element={<AllDetails />} />

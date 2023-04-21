@@ -17,7 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useNavigate } from 'react-router-dom';
-import DashboardPath from '../../routes/Paths';
+import DashboardPath from '../../routes/DashboardPath';
 import sidebarConfig from './sidebarConfig';
 
 const drawerWidth = 240;

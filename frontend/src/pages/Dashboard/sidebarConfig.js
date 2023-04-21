@@ -9,27 +9,27 @@ const sidebarConfig = [
   {
     title: 'Home',
     icon: <HomeIcon />,
-    path: '/home'
+    path: '/dashboard/'
   },
   {
     title: 'Leave',
     icon: <EventIcon />,
-    path: '/leave'
+    path: '/dashboard/leave'
   },
   {
     title: 'User',
     icon: <AccountCircleIcon />,
-    path: '/user'
+    path: '/dashboard/user'
   },
   {
     title: 'Personal Info',
     icon: <PermContactCalendarIcon />,
-    path: '/personal-info'
+    path: '/dashboard/personal-info'
   },
   {
     title: 'All Data',
     icon: <DatasetIcon />,
-    path: '/details'
+    path: '/dashboard/details'
   }
 ];
 
