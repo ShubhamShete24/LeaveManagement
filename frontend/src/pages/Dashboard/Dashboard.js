@@ -17,7 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useNavigate } from 'react-router-dom';
-import Path from '../../routes/Paths';
+import DashboardPath from '../../routes/Paths';
 import sidebarConfig from './sidebarConfig';
 
 const drawerWidth = 240;
@@ -175,7 +175,7 @@ function Dashboard() {
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          <Path />
+          <DashboardPath />
         </Box>
       </Box>
     </div>

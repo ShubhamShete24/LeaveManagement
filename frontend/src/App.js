@@ -1,10 +1,9 @@
 import React from 'react';
-import Login from './pages/Auth/Index';
-import Dashboard from './pages/Dashboard/Dashboard';
+import Paths from './routes/Paths';
 
 function App() {
   // return <Login />;
-  return <Dashboard />;
+  return <Paths />;
 }
 
 export default App;
