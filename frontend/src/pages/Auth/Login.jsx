@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
@@ -9,17 +10,38 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import mainLogo from '../../assets/images/SteelSoft_Logo.jpg';
 import './Login.scss';
+import { LoginUserDetails } from '../../redux/actions/loginUserDetailsActions';
+import { USER_INFO_KEY } from '../../utils/constants';
 
 export default function Login({ setIsSignUp, isSignUp }) {
   const navigate = useNavigate();
-  const handleSignIn = () => {
-    // handle sign in
-    // navigate to dashboard page using history.push method
-    navigate('/dashboard');
+  const response = useSelector((state) => state.LoginUserDetailsReducer.response);
+  useEffect(() => {
+    if (response.user != null || localStorage.getItem(USER_INFO_KEY)) {
+      navigate('/dashboard');
+    }
+  }, [navigate, response]);
+
+  const [authForm, setAuthForm] = useState({
+    email: '',
+    password: ''
+  });
+  const handleInputChange = (changeEvent) => {
+    const { name, value } = changeEvent.target;
+    setAuthForm({ ...authForm, [name]: value });
   };
-  const handelClick = () => {
+  const dispatch = useDispatch();
+  const handleSignIn = () => {
+    dispatch(LoginUserDetails(authForm));
+    setAuthForm({
+      email: '',
+      password: ''
+    });
+  };
+  const handleClick = () => {
     setIsSignUp(!isSignUp);
   };
   const [showPassword, setShowPassword] = React.useState(false);
@@ -35,20 +57,23 @@ export default function Login({ setIsSignUp, isSignUp }) {
           <img src={mainLogo} alt="SteelSoft" />
         </div>
         <div className="loginForm">
-          {/* password */}
+          <ul>{response.message}</ul>
           <TextField
-            error
             id="standard-error-helper-text"
+            name="email"
             label="Email"
             helperText="Incorrect entry."
             variant="standard"
+            onChange={handleInputChange}
             sx={{ m: 1, width: '35ch' }}
           />
           <FormControl sx={{ m: 1, width: '35ch' }} variant="standard">
             <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
             <Input
               id="standard-adornment-password"
+              name="password"
               type={showPassword ? 'text' : 'password'}
+              onChange={handleInputChange}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -72,7 +97,7 @@ export default function Login({ setIsSignUp, isSignUp }) {
           </div>
           <div className="signupButton">
             <p className="mb-0 me-2">Don't have an account?</p>
-            <Button variant="outline-danger" onClick={() => handelClick()}>
+            <Button variant="outline-danger" onClick={() => handleClick()}>
               Sign Up
             </Button>
           </div>
@@ -81,3 +106,7 @@ export default function Login({ setIsSignUp, isSignUp }) {
     </div>
   );
 }
+Login.propTypes = {
+  setIsSignUp: PropTypes.bool,
+  isSignUp: PropTypes.bool
+};

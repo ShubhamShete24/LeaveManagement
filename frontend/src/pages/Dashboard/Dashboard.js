@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -16,9 +16,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { useNavigate } from 'react-router-dom';
-import DashboardPath from '../../routes/DashboardPath';
+import { Routes, useNavigate, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Button } from '@mui/material';
 import sidebarConfig from './sidebarConfig';
+import { USER_INFO_KEY } from '../../utils/constants';
+import { logoutUser } from '../../utils/rest-services';
+import Leaves from '../../components/Leaves';
+import Home from '../../components/Home';
+import UserForm from '../../components/UserForm';
+import PersonalDetails from '../../components/PersonalDetails';
+import AllDetails from '../../components/AllDetails';
 
 const drawerWidth = 240;
 
@@ -93,8 +101,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 }));
 
 function Dashboard() {
-  const theme = useTheme();
   const navigate = useNavigate();
+  useEffect(() => {
+    const userInfo = localStorage.getItem(USER_INFO_KEY);
+    if (userInfo === null) {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [activePgName, setActivePgName] = useState();
 
@@ -107,32 +122,49 @@ function Dashboard() {
   };
 
   const handleClick = (e) => {
-    console.log(e);
     navigate(e.path);
     setActivePgName(e.title);
   };
+
+  const userInfo =
+    useSelector((state) => state.LoginUserDetailsReducer.userInfo) || JSON.parse(localStorage.getItem(USER_INFO_KEY));
 
   return (
     <div>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="fixed" open={open}>
-          <Toolbar>
-            <IconButton
-              color="#f3950d"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={{
-                marginRight: 5,
-                ...(open && { display: 'none' })
-              }}
-            >
-              <MenuIcon sx={{ color: '#f3950d' }} />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div" sx={{ color: '#191414' }}>
-              {activePgName}
-            </Typography>
+          <Toolbar className="">
+            <div className="d-flex justify-content-space-beetween w-100">
+              <div className="d-flex w-100">
+                <IconButton
+                  color="#f3950d"
+                  aria-label="open drawer"
+                  onClick={handleDrawerOpen}
+                  edge="start"
+                  sx={{
+                    marginRight: 5,
+                    ...(open && { display: 'none' })
+                  }}
+                >
+                  <MenuIcon sx={{ color: '#f3950d' }} />
+                </IconButton>
+                <Typography
+                  className="me-auto mt-auto mb-auto"
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{ color: '#191414' }}
+                >
+                  {activePgName}
+                </Typography>
+              </div>
+              <div>
+                <Button variant="contained" onClick={logoutUser}>
+                  Logout
+                </Button>
+              </div>
+            </div>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -175,7 +207,20 @@ function Dashboard() {
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          <DashboardPath />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/leave"
+              element={
+                <Leaves
+                  data={{ userId: userInfo?.user[0]._id, reportingManagerId: userInfo?.user[0].reportingManager }}
+                />
+              }
+            />
+            <Route path="/user" element={<UserForm />} />
+            <Route path="/personal-info" element={<PersonalDetails />} />
+            <Route path="/details" element={<AllDetails />} />
+          </Routes>
         </Box>
       </Box>
     </div>
