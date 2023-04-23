@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { LOCAL_STORAGE_KEYS } from './constants';
 
-const logoutUser = async () => {
+export const logoutUser = () => {
   localStorage.clear();
   window.location.reload();
 };
@@ -12,17 +12,16 @@ const handleErrorResponse = async (err) => {
     if (err.response.status === 401) {
       logoutUser();
     }
-  } else {
-    return err;
   }
+  return err;
 };
 
 const handleSuccessResponse = (res) => res;
 
-const headersTokenObj = {
-  'Content-Type': 'application/x-www-form-urlencoded',
-  'Access-Control-Allow-Origin': '*'
-};
+// const headersTokenObj = {
+//   'Content-Type': 'application/x-www-form-urlencoded',
+//   'Access-Control-Allow-Origin': '*'
+// };
 
 const headersObj = {
   'Content-Type': 'application/json'
