@@ -1,7 +1,7 @@
 import * as types from '../constants';
 
 const initialState = {
-  userInfo: '',
+  response: '',
   fetchLoginUserData: false
 };
 
@@ -16,18 +16,17 @@ export default function LoginUserDetailsReducer(state = initialState, action) {
 
     case types.LOGIN_USERS_DETAILS_SUCCESS:
       // set info to local stroge
-      console.log(action.payload);
       return {
         ...state,
         fetchLoginUserData: true,
-        userInfo: action.payload
+        response: action.payload
       };
 
     case types.LOGIN_USERS_DETAILS_FAILURE:
       return {
         ...state,
         fetchUserData: true,
-        userInfo: null
+        response: action.payload
       };
 
     default:
