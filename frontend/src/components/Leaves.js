@@ -12,6 +12,7 @@ import {
   Button
 } from '@mui/material';
 import dayjs from 'dayjs';
+import Autocomplete from '@mui/material/Autocomplete';
 import PropTypes from 'prop-types';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,6 +21,7 @@ import { GetLeaveTypes, ApplyForLeaves } from '../redux/actions/leaveActions';
 import { GetAllHolidays } from '../redux/actions/holidayActions';
 
 function Leaves(props) {
+  // styling of the form
   const theme = createTheme({
     components: {
       MuiInputBase: {
@@ -39,6 +41,13 @@ function Leaves(props) {
       }
     }
   });
+
+  const leaveManager = [
+    { title: 'The Shawshank Redemption', year: 1994 },
+    { title: 'The Godfather', year: 1972 },
+    { title: 'The Godfather: Part II', year: 1974 },
+    { title: 'The Dark Knight', year: 2008 }
+  ];
 
   const [leaveApplication, setLeaveApplication] = useState({
     userId: props?.data?.userId,
@@ -164,9 +173,21 @@ function Leaves(props) {
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6}>
+                    <Autocomplete
+                      multiple
+                      id="tags-outlined"
+                      options={leaveManager}
+                      getOptionLabel={(option) => option?.title}
+                      defaultValue={[leaveManager[2]]}
+                      filterSelectedOptions
+                      renderInput={(params) => <TextField {...params} label="CC" placeholder="Favorites" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
                     <FormControl fullWidth variant="outlined" required>
                       <InputLabel id="reporting-manager-label">Reporting Manager</InputLabel>
                       <Select
+                        disabled
                         labelId="reporting-manager-label"
                         id="reporting-manager-select"
                         name="leaveTypeId"
