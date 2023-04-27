@@ -43,7 +43,7 @@ function PersonalDetails() {
                   </TextField>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Blood Group" required />
+                  <TextField fullWidth label="Father's Name" required />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -87,18 +87,20 @@ function PersonalDetails() {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Father Name" required />
+                  <TextField fullWidth label="Blood Group" required />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Aadhaar Number"
-                    required
-                    InputProps={{
-                      inputMode: 'numeric',
-                      pattern: '[0-9]{12}'
+                    label="Physically Challenged"
+                    select
+                    SelectProps={{
+                      native: true
                     }}
-                  />
+                  >
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </TextField>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -114,15 +116,13 @@ function PersonalDetails() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Physically Challenged"
-                    select
-                    SelectProps={{
-                      native: true
+                    label="Aadhaar Number"
+                    required
+                    InputProps={{
+                      inputMode: 'numeric',
+                      pattern: '[0-9]{12}'
                     }}
-                  >
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                  </TextField>
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <Button variant="contained" color="primary" fullWidth>
