@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, TextField, Grid, InputAdornment, Button, MenuItem } from '@mui/material';
+import { Card, CardContent, TextField, Grid, InputAdornment, Button, MenuItem, Typography } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function PersonalDetails() {
@@ -28,6 +28,9 @@ function PersonalDetails() {
       <div className="p-1">
         <ThemeProvider theme={theme}>
           <Card>
+            <Typography sx={{ fontSize: 30 }} margin={3} color="text.secondary">
+              Personal Details
+            </Typography>
             <CardContent>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
@@ -124,8 +127,46 @@ function PersonalDetails() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <Button variant="contained" color="primary" fullWidth>
+                {/* Bank Details  */}
+                {/* <h5>Bank Deatils</h5> */}
+                <Grid item xs={12} sm={6}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="bankName" label="Bank Name" fullWidth variant="outlined" required />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="accountNumber" label="Account Number" fullWidth variant="outlined" required />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="ifscCode" label="IFSC Code" fullWidth variant="outlined" required />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="branch" label="Branch" fullWidth variant="outlined" required />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="accountType" label="Account Type" fullWidth variant="outlined" required />
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                {/* Education Details */}
+                {/* <h5>Educational Details</h5> */}
+                <Grid item xs={12} sm={6}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="degree" label="Degree" fullWidth variant="outlined" required />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="duration" label="Duration" fullWidth variant="outlined" required />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <TextField name="institute" label="Institute" fullWidth variant="outlined" required />
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={12} sm={12} className="d-flex justify-content-end">
+                  <Button variant="contained" color="primary">
                     Save
                   </Button>
                 </Grid>

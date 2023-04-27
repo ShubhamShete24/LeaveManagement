@@ -103,8 +103,8 @@ function UserForm() {
                       <MenuItem value="inactive">Inactive</MenuItem>
                     </TextField>
                   </Grid>
-                  <Grid item xs={12}>
-                    <Button variant="contained" color="primary" fullWidth>
+                  <Grid item xs={12} sm={12} className="d-flex justify-content-end">
+                    <Button variant="contained" color="primary">
                       Save
                     </Button>
                   </Grid>
