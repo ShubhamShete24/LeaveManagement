@@ -17,7 +17,7 @@ const sidebarConfig = [
     path: '/dashboard/leave'
   },
   {
-    title: 'User',
+    title: 'User Form',
     icon: <AccountCircleIcon />,
     path: '/dashboard/user'
   },
@@ -27,7 +27,7 @@ const sidebarConfig = [
     path: '/dashboard/personal-info'
   },
   {
-    title: 'All Data',
+    title: 'Employee Details',
     icon: <DatasetIcon />,
     path: '/dashboard/details'
   }

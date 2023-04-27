@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
@@ -50,6 +50,7 @@ export default function Login({ setIsSignUp, isSignUp }) {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
   return (
     <div className="containerr">
       <div className="box">
@@ -59,18 +60,18 @@ export default function Login({ setIsSignUp, isSignUp }) {
         <div className="loginForm">
           <ul>{response.message}</ul>
           <TextField
-            id="standard-error-helper-text"
+            fullWidth
             name="email"
-            label="Email"
-            helperText="Incorrect entry."
-            variant="standard"
             onChange={handleInputChange}
             sx={{ m: 1, width: '35ch' }}
+            label="Email"
+            required
           />
-          <FormControl sx={{ m: 1, width: '35ch' }} variant="standard">
-            <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
-            <Input
-              id="standard-adornment-password"
+
+          <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
               name="password"
               type={showPassword ? 'text' : 'password'}
               onChange={handleInputChange}
@@ -85,6 +86,7 @@ export default function Login({ setIsSignUp, isSignUp }) {
                   </IconButton>
                 </InputAdornment>
               }
+              label="Password"
             />
           </FormControl>
           <div className="loginButton">

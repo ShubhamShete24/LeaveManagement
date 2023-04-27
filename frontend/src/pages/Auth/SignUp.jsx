@@ -13,11 +13,11 @@ export default function Login({ setIsSignUp, isSignUp }) {
     <div className="containerr">
       <div className="box">
         <div className="loginForm">
-          <TextField required id="standard-required" label="Name" variant="standard" />
-          <TextField required id="standard-required" label="UserName" variant="standard" />
-          <TextField required id="standard-required" label="Email" variant="standard" />
-          <TextField required id="standard-required" label="Password" variant="standard" />
-          <TextField required id="standard-required" label="Repeat password" variant="standard" />
+          <TextField required label="Name" />
+          <TextField required label="UserName" />
+          <TextField required label="Email" />
+          <TextField required label="Password" />
+          <TextField required label="Repeat password" />
           <div className="loginButton">
             <Button variant="outline-primary" onClick={() => handleClick()}>
               Sign Up
