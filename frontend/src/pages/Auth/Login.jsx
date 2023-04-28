@@ -97,12 +97,12 @@ export default function Login({ setIsSignUp, isSignUp }) {
               Forgot password?
             </a>
           </div>
-          <div className="signupButton">
+          {/* <div className="signupButton">
             <p className="mb-0 me-2">Don't have an account?</p>
             <Button variant="outline-danger" onClick={() => handleClick()}>
               Sign Up
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

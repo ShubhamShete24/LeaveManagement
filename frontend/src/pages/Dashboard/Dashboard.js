@@ -23,7 +23,7 @@ import sidebarConfig from './sidebarConfig';
 import { USER_INFO_KEY } from '../../utils/constants';
 import { logoutUser } from '../../utils/rest-services';
 import Leaves from '../../components/Leaves';
-import Home from '../../components/Home';
+import Home from './Home';
 import UserForm from '../../components/UserForm';
 import PersonalDetails from '../../components/PersonalDetails';
 import AllDetails from '../../components/AllDetails';
