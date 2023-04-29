@@ -4,6 +4,7 @@ import EventIcon from '@mui/icons-material/Event';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 import DatasetIcon from '@mui/icons-material/Dataset';
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 
 const sidebarConfig = [
   {
@@ -30,6 +31,11 @@ const sidebarConfig = [
     title: 'Employee Details',
     icon: <DatasetIcon />,
     path: '/dashboard/details'
+  },
+  {
+    title: 'Holidays',
+    icon: <HolidayVillageIcon />,
+    path: '/dashboard/holiday'
   }
 ];
 

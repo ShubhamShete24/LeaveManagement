@@ -27,6 +27,7 @@ import Home from './Home';
 import UserForm from '../../components/UserForm';
 import PersonalDetails from '../../components/PersonalDetails';
 import AllDetails from '../../components/AllDetails';
+import HolidayPage from '../Leave/HolidayPage';
 
 const drawerWidth = 240;
 
@@ -220,6 +221,7 @@ function Dashboard() {
             <Route path="/user" element={<UserForm />} />
             <Route path="/personal-info" element={<PersonalDetails />} />
             <Route path="/details" element={<AllDetails />} />
+            <Route path="/holiday" element={<HolidayPage />} />
           </Routes>
         </Box>
       </Box>
