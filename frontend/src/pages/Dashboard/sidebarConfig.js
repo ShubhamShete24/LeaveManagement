@@ -18,7 +18,7 @@ const sidebarConfig = [
     path: '/dashboard/leave'
   },
   {
-    title: 'User Form',
+    title: 'Create User',
     icon: <AccountCircleIcon />,
     path: '/dashboard/user'
   },

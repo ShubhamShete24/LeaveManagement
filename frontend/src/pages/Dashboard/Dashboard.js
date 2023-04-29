@@ -16,18 +16,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { Routes, useNavigate, Route } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import sidebarConfig from './sidebarConfig';
 import { USER_INFO_KEY } from '../../utils/constants';
 import { logoutUser } from '../../utils/rest-services';
-import Leaves from '../../components/Leaves';
-import Home from './Home';
-import UserForm from '../../components/UserForm';
-import PersonalDetails from '../../components/PersonalDetails';
-import AllDetails from '../../components/AllDetails';
-import HolidayPage from '../Leave/HolidayPage';
+import DashboardPaths from '../../routes/DashboardPaths';
 
 const drawerWidth = 240;
 
@@ -127,9 +121,6 @@ function Dashboard() {
     setActivePgName(e.title);
   };
 
-  const userInfo =
-    useSelector((state) => state.LoginUserDetailsReducer.userInfo) || JSON.parse(localStorage.getItem(USER_INFO_KEY));
-
   return (
     <div>
       <Box sx={{ display: 'flex' }}>
@@ -208,21 +199,7 @@ function Dashboard() {
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/leave"
-              element={
-                <Leaves
-                  data={{ userId: userInfo?.user[0]._id, reportingManagerId: userInfo?.user[0].reportingManager }}
-                />
-              }
-            />
-            <Route path="/user" element={<UserForm />} />
-            <Route path="/personal-info" element={<PersonalDetails />} />
-            <Route path="/details" element={<AllDetails />} />
-            <Route path="/holiday" element={<HolidayPage />} />
-          </Routes>
+          <DashboardPaths />
         </Box>
       </Box>
     </div>
