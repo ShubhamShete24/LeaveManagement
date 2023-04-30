@@ -119,6 +119,13 @@ export function UpdateLeaveApplicationReducer(state = leaveApplicationInitialSta
         message: action.payload.message
       };
     }
+    case types.RESET_LEAVE_APPLICATION_RESPONSE: {
+      return {
+        ...state,
+        leaveApplication: null,
+        message: ''
+      };
+    }
     default: {
       return state;
     }

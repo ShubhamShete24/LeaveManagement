@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const leaveApplicationSchema = mongoose.Schema(
+const leaveBalanceSchema = mongoose.Schema(
   {
     leaveTypeId: {
       type: mongoose.Types.ObjectId,
@@ -15,6 +15,10 @@ const leaveApplicationSchema = mongoose.Schema(
     leaveBalance: {
       type: Number,
       required: true
+    },
+    leaveBalanceUpdatedForMonth: {
+      type: Number,
+      required: true
     }
   },
   {
@@ -24,5 +28,5 @@ const leaveApplicationSchema = mongoose.Schema(
     }
   }
 );
-const LeaveApplication = mongoose.model('leaveApplication', leaveApplicationSchema);
-export default LeaveApplication;
+const LeaveBalance = mongoose.model('leavebalance', leaveBalanceSchema);
+export default LeaveBalance;

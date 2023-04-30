@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
 import User from '../models/user.js';
+import LeaveType from '../models/leaveType.js';
+import LeaveBalance from '../models/leaveBalance.js';
+import leaveTypesMap from '../constants/leaveTypesMap.js';
 
 dotenv.config();
 
@@ -11,6 +14,8 @@ const { JWT_SECRET_KEY } = process.env;
 const generateHash = (plainText, salt) => crypto.pbkdf2Sync(plainText, salt, 1000, 64, 'sha512').toString('hex');
 const verifyHash = (hash, salt, plainText) =>
   crypto.pbkdf2Sync(plainText, salt, 1000, 64, 'sha512').toString('hex') === hash;
+
+// user creation
 const createUser = async (req, res) => {
   let user = req.body;
   const responseData = {
@@ -18,6 +23,8 @@ const createUser = async (req, res) => {
     data: null,
     message: ''
   };
+  let userCreated = null;
+  const leavesBalanceCreatedIds = [];
   try {
     if (!user.password || !user.email || !user.name) {
       responseData.status = 400;
@@ -30,20 +37,64 @@ const createUser = async (req, res) => {
     user = { ...user, salt: uniqueSalt };
     user = { ...user, hash };
 
-    const userCreated = await User.create(user);
+    userCreated = await User.create(user);
     if (userCreated) {
-      responseData.status = 201;
-      responseData.message = 'User has been created.';
-      responseData.data = userCreated;
+      const leaveTypes = await LeaveType.find({});
+      let count = 0;
+      for (let index = 0; index < leaveTypes.length; index += 1) {
+        const record = leaveTypes[index];
+        let leaveBalance = record.leavesAllowed;
+        if (leaveTypesMap.Annual === record.leaveType) {
+          leaveBalance /= 12;
+        }
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const leaveBalanceCreated = await LeaveBalance.create({
+            leaveTypeId: new mongoose.Types.ObjectId(record._id),
+            leaveBalance,
+            userId: userCreated._id,
+            leaveBalanceUpdatedForMonth: new Date().getMonth()
+          });
+          if (leaveBalanceCreated != null) {
+            leavesBalanceCreatedIds.push(leaveBalanceCreated._id);
+            count += 1;
+          }
+        } catch (e) {
+          responseData.message += e.message;
+          count = 0;
+          break;
+        }
+      }
+      if (leaveTypes.length === count) {
+        responseData.status = 201;
+        responseData.message += 'User has been created.';
+        responseData.data = userCreated;
+      } else {
+        responseData.status = 500;
+        responseData.message +=
+          ' Although user creation was successful, but there was an issue while creating one of the leaveBalance. Deleting user and leave balance created if any.';
+        responseData.data = null;
+      }
     } else {
-      res.send(responseData);
+      responseData.status = 500;
+      responseData.message += 'User could not be created';
+      responseData.data = null;
     }
   } catch (err) {
     responseData.status = 500;
     responseData.message = err.message;
   }
+  if (responseData.status !== 201) {
+    // rollback
+    await User.findOneAndDelete({ _id: userCreated._id });
+    leavesBalanceCreatedIds.forEach(async (record) => {
+      await LeaveBalance.findOneAndDelete({ _id: record._id });
+    });
+  }
   res.send(responseData);
 };
+
+// authenticate user
 const authenticate = async (req, res) => {
   const responseData = {
     status: 0,

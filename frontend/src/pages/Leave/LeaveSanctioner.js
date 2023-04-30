@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
@@ -20,7 +21,11 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { USER_INFO_KEY, statusValues } from '../../utils/constants';
-import { GetAppliedLeaves, UpdateLeaveApplication } from '../../redux/actions/leaveActions';
+import {
+  GetAppliedLeaves,
+  ResetLeaveApplicationUpdateResponse,
+  UpdateLeaveApplication
+} from '../../redux/actions/leaveActions';
 
 function LeaveSanctioner() {
   const style = {
@@ -42,14 +47,21 @@ function LeaveSanctioner() {
   const dispatch = useDispatch();
   const leaveApplicationUpdatedResponse = useSelector((state) => state.UpdateLeaveApplicationReducer);
   const [leaveApplicationStatusHasChanged, setLeaveApplicationStatusHasChanged] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
+    // this should not be hardcoded
+    if (sessionData?.user[0]?.role[0]?.roleName !== 'MANAGER') {
+      navigate('/');
+    }
     dispatch(GetAppliedLeaves(sessionData?.user[0]._id));
     if (leaveApplicationStatusHasChanged) {
       dispatch(
         UpdateLeaveApplication({
           _id: leaveApplication._id,
-          status: leaveApplicationStatus
+          status: leaveApplicationStatus,
+          leaveCount: leaveApplication.leaveCount,
+          userId: leaveApplication?.userId,
+          leaveTypeId: leaveApplication?.leaveTypeId
         })
       );
       setLeaveApplicationStatusHasChanged(false);
@@ -60,6 +72,7 @@ function LeaveSanctioner() {
       setOpen(false);
       setMessageAfterLeaveApplicationStatusUpdate(leaveApplicationUpdatedResponse?.message);
       setSnackBarOpen(true);
+      dispatch(ResetLeaveApplicationUpdateResponse());
     }
   }, [leaveApplicationUpdatedResponse]);
   const handleModalClosed = () => {
@@ -102,6 +115,7 @@ function LeaveSanctioner() {
                 <TableCell align="right">To date</TableCell>
                 <TableCell align="right">To session</TableCell>
                 <TableCell align="right">Leave Type</TableCell>
+                <TableCell align="right">Num. of days</TableCell>
                 <TableCell align="right">status</TableCell>
                 <TableCell align="right">Review and sanction</TableCell>
               </TableRow>
@@ -124,10 +138,13 @@ function LeaveSanctioner() {
                   <TableCell style={{ minWidth: 100 }} align="right">
                     {data.toSession}
                   </TableCell>
-                  <TableCell style={{ minWidth: 200 }} align="right">
+                  <TableCell style={{ minWidth: 100 }} align="right">
                     {data.leaveType[0].leaveType}
                   </TableCell>
-                  <TableCell style={{ minWidth: 200 }} align="right">
+                  <TableCell style={{ minWidth: 90 }} align="right">
+                    {data.leaveCount}
+                  </TableCell>
+                  <TableCell style={{ minWidth: 100 }} align="right">
                     {statusValues.find((_) => _.value === data.status).name}
                   </TableCell>
                   <TableCell style={{ minWidth: 200 }} align="right">

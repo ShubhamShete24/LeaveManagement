@@ -76,3 +76,9 @@ export const UpdateLeaveApplication = (data) => async (dispatch) => {
     }
   });
 };
+
+export const ResetLeaveApplicationUpdateResponse = () => async (dispatch) => {
+  await dispatch({
+    type: types.RESET_LEAVE_APPLICATION_RESPONSE
+  });
+};

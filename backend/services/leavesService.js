@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import LeaveType from '../models/leaveType.js';
 import LeaveApplication from '../models/leaveApplication.js';
+import LeaveBalance from '../models/leaveBalance.js';
+import statusValues from '../constants/statusValues.js';
 
 // CRUD operations on leave types
 
@@ -227,6 +229,7 @@ const updateLeaveApplication = async (req, res) => {
     // console.log(leaveApplication);
     const id = leaveApplication._id;
     delete leaveApplication._id;
+    const leaveCount = leaveApplication?.leaveCount;
     const updatedLeaveApplication = await LeaveApplication.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(id) },
       leaveApplication,
@@ -236,8 +239,20 @@ const updateLeaveApplication = async (req, res) => {
       responseData.data.leaveApplication = updatedLeaveApplication;
       responseData.status = 200;
       responseData.data.message = `Leave application has been updated`;
+      if (leaveApplication?.status !== statusValues.Rejected && leaveApplication?.status !== statusValues.Pending) {
+        const leaveBalanceToBeUpdated = await LeaveBalance.findOneAndUpdate(
+          {
+            userId: new mongoose.Types.ObjectId(leaveApplication?.userId),
+            leaveTypeId: new mongoose.Types.ObjectId(leaveApplication?.leaveTypeId)
+          },
+          { $inc: { leaveBalance: -1 * leaveCount } },
+          { new: true }
+        );
+        if (leaveBalanceToBeUpdated !== null) {
+          responseData.data.leaveBalance = leaveBalanceToBeUpdated;
+        }
+      }
     }
-    // console.log('what is the issue');
   } catch (e) {
     responseData.status = 500;
     // console.log(e.message);
