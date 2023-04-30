@@ -6,6 +6,7 @@ import UserForm from '../pages/CreateUser/UserForm';
 import PersonalDetails from '../pages/CreateUser/PersonalDetails';
 import AllDetails from '../pages/CreateUser/AllDetails';
 import HolidayPage from '../pages/Leave/HolidayPage';
+import LeaveSanctioner from '../pages/Leave/LeaveSanctioner';
 
 function DashboardPaths() {
   return (
@@ -17,6 +18,7 @@ function DashboardPaths() {
         <Route path="/personal-info" element={<PersonalDetails />} />
         <Route path="/details" element={<AllDetails />} />
         <Route path="/holiday" element={<HolidayPage />} />
+        <Route path="/leave-sanctioner" element={<LeaveSanctioner />} />
       </Routes>
     </div>
   );

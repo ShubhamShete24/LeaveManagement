@@ -61,3 +61,66 @@ export function ApplyForLeavesReducer(state = leavesAppliedInitialState, action)
     }
   }
 }
+
+const appliedLeavesInitialState = {
+  appliedLeaves: '',
+  message: ''
+};
+// eslint-disable-next-line default-param-last
+export function GetAppliedLeavesReducer(state = appliedLeavesInitialState, action) {
+  // console.log('this is in reducer');
+  switch (action.type) {
+    case types.GET_APPLIED_LEAVES_FAILURE: {
+      return {
+        ...state,
+        message: action.payload.message
+      };
+    }
+    case types.GET_APPLIED_LEAVES_REQUEST: {
+      return {
+        ...state
+      };
+    }
+    case types.GET_APPLIED_LEAVES_SUCCESS: {
+      return {
+        ...state,
+        appliedLeaves: action.payload.appliedLeaves,
+        message: action.payload.message
+      };
+    }
+    default: {
+      return state;
+    }
+  }
+}
+
+const leaveApplicationInitialState = {
+  leaveApplication: '',
+  message: ''
+};
+// eslint-disable-next-line default-param-last
+export function UpdateLeaveApplicationReducer(state = leaveApplicationInitialState, action) {
+  switch (action.type) {
+    case types.UPDATE_LEAVE_APPLICATION_FAILURE: {
+      return {
+        ...state,
+        message: action.payload.message
+      };
+    }
+    case types.UPDATE_LEAVE_APPLICATION_REQUEST: {
+      return {
+        ...state
+      };
+    }
+    case types.UPDATE_LEAVE_APPLICATION_SUCCESS: {
+      return {
+        ...state,
+        leaveApplication: action.payload.leaveApplication,
+        message: action.payload.message
+      };
+    }
+    default: {
+      return state;
+    }
+  }
+}

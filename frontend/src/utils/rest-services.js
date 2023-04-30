@@ -29,7 +29,7 @@ const headersObj = {
 
 const returnTokenWithBearer = (token) => `Bearer ${token}`;
 
-// get method
+// get methods
 
 export const getData = (url) => {
   headersObj.Authorization = returnTokenWithBearer(localStorage.getItem(LOCAL_STORAGE_KEYS.TOKEN_KEY));
@@ -37,6 +37,17 @@ export const getData = (url) => {
   return axios
     .get(url, {
       headers: headersObj
+    })
+    .then((res) => handleSuccessResponse(res))
+    .catch((err) => handleErrorResponse(err, { type: 'GET', url }));
+};
+
+export const getDataBasedOnQueryParams = (url, params) => {
+  headersObj.Authorization = returnTokenWithBearer(localStorage.getItem(LOCAL_STORAGE_KEYS.TOKEN_KEY));
+  return axios
+    .get(url, {
+      headers: headersObj,
+      params
     })
     .then((res) => handleSuccessResponse(res))
     .catch((err) => handleErrorResponse(err, { type: 'GET', url }));

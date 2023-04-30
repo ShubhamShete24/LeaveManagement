@@ -13,14 +13,14 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import Autocomplete from '@mui/material/Autocomplete';
-import PropTypes from 'prop-types';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetLeaveTypes, ApplyForLeaves } from '../redux/actions/leaveActions';
 import { GetAllHolidays } from '../redux/actions/holidayActions';
+import { USER_INFO_KEY } from '../utils/constants';
 
-function Leaves(props) {
+function Leaves() {
   // styling of the form
   const theme = createTheme({
     components: {
@@ -41,7 +41,8 @@ function Leaves(props) {
       }
     }
   });
-
+  const sessionData =
+    useSelector((state) => state.LoginUserDetailsReducer.response) || JSON.parse(localStorage.getItem(USER_INFO_KEY));
   const leaveManager = [
     { title: 'The Shawshank Redemption', year: 1994 },
     { title: 'The Godfather', year: 1972 },
@@ -50,14 +51,16 @@ function Leaves(props) {
   ];
 
   const [leaveApplication, setLeaveApplication] = useState({
-    userId: props?.data?.userId,
+    userId: sessionData?.user[0]?._id,
     fromDate: dayjs(),
     toDate: dayjs(),
     leaveTypeId: '',
     fromSession: '',
     toSession: '',
     leaveCount: 0,
-    reportingManagerId: props?.data?.reportingManagerId
+    reason: '',
+    status: 3, // pending. Need to use enum or use anything that should prevent hardcoding
+    reportingManagerId: sessionData?.user[0]?.reportingManager
   });
   const dispatch = useDispatch();
   const leaveTypes = useSelector((state) => state.GetLeaveTypesReducer.leaveTypes);
@@ -130,7 +133,6 @@ function Leaves(props) {
     e.preventDefault();
     const leaveCount = calculateLeaveDays(leaveApplication.fromDate, leaveApplication.toDate);
     updateLeaveCount(leaveCount);
-    console.log(props?.data?.reportingManagerId);
     setShouldSubmitForm(true);
   };
   return (
@@ -138,7 +140,7 @@ function Leaves(props) {
       <div className="p-1">
         <ThemeProvider theme={theme}>
           <Card>
-            {props?.data?.reportingManagerId === undefined ? (
+            {sessionData?.user[0]?.reportingManager === undefined ? (
               <Typography style={{ color: 'red' }} sx={{ fontSize: 13 }} margin={3} color="text.secondary">
                 You cannot apply for leaves untill you have manager assigned!
               </Typography>
@@ -277,14 +279,22 @@ function Leaves(props) {
                   <input type="hidden" name="" value="" />
                   {/* Reason */}
                   <Grid item xs={12} sm={6}>
-                    <TextField name="reason" label="Reason" fullWidth variant="outlined" type="text" required />
+                    <TextField
+                      name="reason"
+                      label="Reason"
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      required
+                      onChange={handleChange}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} className="d-flex justify-content-end">
                     <Button
                       variant="contained"
                       color="primary"
                       type="submit"
-                      disabled={props?.data?.reportingManagerId === undefined}
+                      disabled={sessionData?.user[0]?.reportingManager === undefined}
                     >
                       Submit
                     </Button>
@@ -300,10 +310,3 @@ function Leaves(props) {
 }
 
 export default Leaves;
-
-Leaves.propTypes = {
-  data: PropTypes.shape({
-    userId: PropTypes.string,
-    reportingManagerId: PropTypes.string
-  })
-};

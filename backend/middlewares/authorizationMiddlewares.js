@@ -12,7 +12,7 @@ const verifyToken = (req, res, next) => {
   const responseData = {
     status: 0,
     message: '',
-    data: null,
+    data: null
   };
   const bearerToken = req.headers.authorization;
   if (typeof bearerToken === 'undefined') {
@@ -37,7 +37,7 @@ const verifyAdmin = async (req, res, next) => {
   const responseData = {
     status: 0,
     message: '',
-    data: null,
+    data: null
   };
   const role = await Role.find({ roleName: roles.ADMIN });
   if (role.length === 0) {

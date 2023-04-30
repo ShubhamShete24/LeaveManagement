@@ -5,7 +5,9 @@ import {
   deleteLeaveType,
   getLeaveTypes,
   updateLeaveType,
-  applyForLeaves
+  applyForLeaves,
+  getAppliedLeaves,
+  updateLeaveApplication
 } from '../services/leavesService.js';
 
 const leavesRouter = express.Router();
@@ -15,4 +17,6 @@ leavesRouter.put('/update-leave-type', verifyAdmin, updateLeaveType);
 leavesRouter.delete('/delete-leave-type', verifyAdmin, deleteLeaveType);
 leavesRouter.get('/get-leave-types', verifyToken, getLeaveTypes);
 leavesRouter.post('/apply-for-leaves', verifyToken, applyForLeaves);
+leavesRouter.get('/get-applied-leaves', verifyToken, getAppliedLeaves);
+leavesRouter.put('/update-leave-application', verifyToken, updateLeaveApplication);
 export default leavesRouter;
