@@ -1,20 +1,27 @@
 import mongoose from 'mongoose';
 
-const bankSchema = mongoose.Schema({
+const bankDetailsSchema = mongoose.Schema({
   bankName: {
     type: String,
     required: true
   },
   accountNo: {
-    type: String
+    type: String,
+    required: true
   },
   branch: {
-    type: String
+    type: String,
+    required: true
+  },
+  IFSC: {
+    type: String,
+    required: true
   },
   accountType: {
-    type: String
+    type: String,
+    required: true
   }
 });
 
-const Bank = mongoose.model('bank', bankSchema);
+const Bank = mongoose.model('bankDetails', bankDetailsSchema);
 export default Bank;

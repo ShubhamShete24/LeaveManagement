@@ -2,49 +2,59 @@ import mongoose from 'mongoose';
 
 const personalDetailsSchema = mongoose.Schema(
   {
-    FullName: {
+    address: {
       type: String,
       required: true
     },
-    address: {
-      type: String
-    },
     nationality: {
-      type: String
+      type: String,
+      required: true
     },
     bloodGroup: {
       type: String
     },
     dob: {
-      type: Date
+      type: Date,
+      required: true
     },
     maritalStatus: {
-      type: String
+      type: String,
+      required: true
     },
     marriageDate: {
       type: Date
     },
     fatherName: {
-      type: String
+      type: String,
+      required: true
     },
     emergencyContactName: {
-      type: String
+      type: String,
+      required: true
     },
     emergencyContactNo: {
-      type: Number
+      type: Number,
+      required: true
     },
     PAN: {
-      type: String
+      type: String,
+      required: true
+    },
+    aadhaarNumber: {
+      type: Number,
+      required: true
     },
     physicallyChallenged: {
-      type: Boolean
+      type: Boolean,
+      required: true
     },
     internationalEmployee: {
-      type: Boolean
+      type: Boolean,
+      required: true
     },
     educationalDetails: {
       type: mongoose.Types.ObjectId,
-      ref: 'educations',
+      ref: 'educationDetails',
       required: false
     },
     bankDetails: {
