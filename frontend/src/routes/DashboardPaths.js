@@ -3,8 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Dashboard/Home';
 import Leaves from '../components/Leaves';
 import UserForm from '../pages/CreateUser/UserForm';
-import PersonalDetails from '../pages/CreateUser/PersonalDetails';
-import AllDetails from '../pages/CreateUser/AllDetails';
+import PersonalDetailsForm from '../pages/CreateUser/PersonalDetailsForm';
+import EmploymentDetailsForm from '../pages/CreateUser/EmploymentDetailsForm';
 import HolidayPage from '../pages/Leave/HolidayPage';
 
 function DashboardPaths() {
@@ -14,8 +14,8 @@ function DashboardPaths() {
         <Route path="/" element={<Home />} />
         <Route path="/leave" element={<Leaves />} />
         <Route path="/user" element={<UserForm />} />
-        <Route path="/personal-info" element={<PersonalDetails />} />
-        <Route path="/details" element={<AllDetails />} />
+        <Route path="/personal-info" element={<PersonalDetailsForm />} />
+        <Route path="/details" element={<EmploymentDetailsForm />} />
         <Route path="/holiday" element={<HolidayPage />} />
       </Routes>
     </div>

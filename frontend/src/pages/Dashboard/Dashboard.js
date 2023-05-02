@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,7 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, Card, CardContent } from '@mui/material';
 import sidebarConfig from './sidebarConfig';
 import { USER_INFO_KEY } from '../../utils/constants';
 import { logoutUser } from '../../utils/rest-services';
@@ -96,6 +96,26 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 }));
 
 function Dashboard() {
+  const cardTheme = createTheme({
+    components: {
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            height: '40px',
+            marginBottom: '8px' // adjust this value to control the height of the input boxes
+          }
+        }
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.2)' // add the box shadow effect
+          }
+        }
+      }
+    }
+  });
+
   const navigate = useNavigate();
   useEffect(() => {
     const userInfo = localStorage.getItem(USER_INFO_KEY);
@@ -197,9 +217,15 @@ function Dashboard() {
             ))}
           </List>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 5 }}>
           <DrawerHeader />
-          <DashboardPaths />
+          <ThemeProvider theme={cardTheme}>
+            <Card>
+              <CardContent>
+                <DashboardPaths />
+              </CardContent>
+            </Card>
+          </ThemeProvider>
         </Box>
       </Box>
     </div>
