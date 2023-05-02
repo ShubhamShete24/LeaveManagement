@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
 import User from '../models/user.js';
+import PersonalDetails from '../models/personalDetails.js';
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const { JWT_SECRET_KEY } = process.env;
 const generateHash = (plainText, salt) => crypto.pbkdf2Sync(plainText, salt, 1000, 64, 'sha512').toString('hex');
 const verifyHash = (hash, salt, plainText) =>
   crypto.pbkdf2Sync(plainText, salt, 1000, 64, 'sha512').toString('hex') === hash;
+
+// createUser
 const createUser = async (req, res) => {
   let user = req.body;
   const responseData = {
@@ -44,6 +47,7 @@ const createUser = async (req, res) => {
   }
   res.send(responseData);
 };
+
 const authenticate = async (req, res) => {
   const responseData = {
     status: 0,
@@ -149,6 +153,7 @@ const assignRole = async (req, res) => {
   res.send(responseData);
 };
 
+// assign Manager
 const assignManager = async (req, res) => {
   const responseData = {
     status: 0,
@@ -178,6 +183,8 @@ const assignManager = async (req, res) => {
   }
   res.send(responseData);
 };
+
+// get Users
 const getUsers = async (req, res) => {
   let responseData = {
     status: 0,
@@ -217,4 +224,30 @@ const getUsers = async (req, res) => {
     res.send(responseData);
   }
 };
-export { createUser, authenticate, updateUserInfo, assignRole, assignManager, getUsers };
+
+// Personal Details
+const createPersonalDetails = async (req, res) => {
+  const personalDetails = req.body;
+  try {
+    const newPersonalDetails = await PersonalDetails.create(personalDetails);
+    if (newPersonalDetails != null) {
+      res.status(201).json({
+        status: 1,
+        message: 'Personal details created successfully!',
+        data: newPersonalDetails
+      });
+    } else {
+      res.status(500).json({
+        status: 0,
+        message: 'There is some problem while creating the personal details.'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 0,
+      message: `Failed to create the personal details. Error message: ${error.message}`
+    });
+  }
+};
+
+export { createUser, authenticate, updateUserInfo, assignRole, assignManager, getUsers, createPersonalDetails };

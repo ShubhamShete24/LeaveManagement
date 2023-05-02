@@ -6,7 +6,8 @@ import {
   updateUserInfo,
   assignRole,
   assignManager,
-  getUsers
+  getUsers,
+  createPersonalDetails
 } from '../services/userService.js';
 
 const userRouter = express.Router();
@@ -17,5 +18,6 @@ userRouter.put('/update-user-info', verifyToken, updateUserInfo);
 userRouter.post('/assign-role', verifyAdmin, assignRole);
 userRouter.post('/assign-manager', verifyAdmin, assignManager);
 userRouter.get('/get-users', verifyAdmin, getUsers);
+userRouter.post('/create-personalDetails', createPersonalDetails);
 
 export default userRouter;
