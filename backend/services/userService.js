@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from '../models/user.js';
 import PersonalDetails from '../models/personalDetails.js';
+import EducationDetails from '../models/educationalDetails.js';
+import BankDetails from '../models/bankDetails.js';
 
 dotenv.config();
 
@@ -229,6 +231,13 @@ const getUsers = async (req, res) => {
 const createPersonalDetails = async (req, res) => {
   const personalDetails = req.body;
   try {
+    // Add educational details field
+    const educationalDetails = await EducationDetails.create(req.body.educationalDetails);
+    personalDetails.educationalDetails = educationalDetails.id;
+    // Add bank details field
+    const bankDetails = await BankDetails.create(req.body.bankDetails);
+    personalDetails.bankDetails = bankDetails.id;
+
     const newPersonalDetails = await PersonalDetails.create(personalDetails);
     if (newPersonalDetails != null) {
       res.status(201).json({
