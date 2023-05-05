@@ -259,11 +259,12 @@ const createPersonalDetails = async (req, res) => {
     // Add educational details field
     const educationalDetails = await EducationDetails.create(req.body.educationalDetails);
     personalDetails.educationalDetails = educationalDetails.id;
-    // Add bank details field
+    // // Add bank details field
     const bankDetails = await BankDetails.create(req.body.bankDetails);
     personalDetails.bankDetails = bankDetails.id;
 
     const newPersonalDetails = await PersonalDetails.create(personalDetails);
+    console.log('personalDeatilsbody', personalDetails);
     if (newPersonalDetails != null) {
       res.status(201).json({
         status: 1,
