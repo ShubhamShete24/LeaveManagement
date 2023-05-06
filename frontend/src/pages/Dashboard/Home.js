@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import rightArrow from '../../assets/images/right-arrow.png';
+import { USER_INFO_KEY } from '../../utils/constants';
+import { getAllUsersData, getRolesData } from '../../redux/actions/userDetailActions';
 
 function Home() {
   const theme = createTheme({
@@ -34,6 +37,17 @@ function Home() {
   });
 
   const classes = useStyles();
+
+  const dispatch = useDispatch();
+  const userInfo = JSON.parse(localStorage.getItem(USER_INFO_KEY));
+
+  useEffect(() => {
+    dispatch(getAllUsersData());
+    if (userInfo.user[0]?.role[0].roleName === 'ADMIN') {
+      dispatch(getRolesData());
+    }
+  }, [dispatch, userInfo]);
+
   return (
     <div className="p-5">
       <div className="p-1">
