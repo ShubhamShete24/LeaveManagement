@@ -31,5 +31,5 @@ const employmentDetailsSchema = mongoose.Schema(
   }
 );
 
-const Role = mongoose.model('employmentDetails', employmentDetailsSchema);
-export default Role;
+const EmploymentDetails = mongoose.model('employmentDetails', employmentDetailsSchema);
+export default EmploymentDetails;

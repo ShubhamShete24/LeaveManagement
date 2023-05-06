@@ -5,6 +5,9 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from '../models/user.js';
 import PersonalDetails from '../models/personalDetails.js';
+import EducationDetails from '../models/educationalDetails.js';
+import BankDetails from '../models/bankDetails.js';
+import EmploymentDetails from '../models/employmentDetails.js';
 
 dotenv.config();
 
@@ -208,6 +211,30 @@ const getUsers = async (req, res) => {
           ],
           as: 'reportingManager'
         }
+      },
+      {
+        $lookup: {
+          from: 'personalDetails',
+          localField: 'personalDetailsId',
+          foreignField: '_id',
+          as: 'personalDetails'
+        }
+      },
+      {
+        $lookup: {
+          from: 'employmentDetails',
+          localField: 'employmentDetails',
+          foreignField: '_id',
+          as: 'employeeDetails'
+        }
+      },
+      {
+        $lookup: {
+          from: 'roles',
+          localField: 'role',
+          foreignField: '_id',
+          as: 'roles'
+        }
       }
     ]);
 
@@ -227,14 +254,27 @@ const getUsers = async (req, res) => {
 
 // Personal Details
 const createPersonalDetails = async (req, res) => {
-  const personalDetails = req.body;
+  const { personalDetails, educationalDetails, bankDetails, userId } = req.body;
   try {
+    // Add educational details field
+    const newEducationalDetails = await EducationDetails.create(educationalDetails);
+    personalDetails.educationalDetails = newEducationalDetails._id;
+    // // Add bank details field
+    const newBankDetails = await BankDetails.create(bankDetails);
+    personalDetails.bankDetails = newBankDetails._id;
     const newPersonalDetails = await PersonalDetails.create(personalDetails);
     if (newPersonalDetails != null) {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(userId) },
+        {
+          personalDetailsId: newPersonalDetails._id
+        },
+        { new: true }
+      );
       res.status(201).json({
         status: 1,
         message: 'Personal details created successfully!',
-        data: newPersonalDetails
+        data: updatedUser
       });
     } else {
       res.status(500).json({
@@ -250,4 +290,41 @@ const createPersonalDetails = async (req, res) => {
   }
 };
 
-export { createUser, authenticate, updateUserInfo, assignRole, assignManager, getUsers, createPersonalDetails };
+const createEmployeeDetails = async (req, res) => {
+  try {
+    const { joiningDate, department, designation, project, employeeType } = req.body;
+
+    if (!joiningDate || !department || !designation) {
+      res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const newEmploymentDetails = new EmploymentDetails({
+      joiningDate,
+      department,
+      designation,
+      project,
+      employeeType
+    });
+
+    const savedEmploymentDetails = await newEmploymentDetails.save();
+
+    if (!savedEmploymentDetails) {
+      res.status(500).json({ message: 'Failed to create employment details' });
+    }
+    res.status(201).json(savedEmploymentDetails);
+  } catch (error) {
+    // console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export {
+  createUser,
+  authenticate,
+  updateUserInfo,
+  assignRole,
+  assignManager,
+  getUsers,
+  createPersonalDetails,
+  createEmployeeDetails
+};
