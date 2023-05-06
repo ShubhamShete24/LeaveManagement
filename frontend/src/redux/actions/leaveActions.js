@@ -71,7 +71,7 @@ export const UpdateLeaveApplication = (data) => async (dispatch) => {
     } else {
       await dispatch({
         type: types.UPDATE_LEAVE_APPLICATION_FAILURE,
-        payload: axiosResponse.response.data
+        payload: axiosResponse.response
       });
     }
   });

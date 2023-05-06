@@ -15,7 +15,7 @@ export const GetAllHolidays = () => async (dispatch) => {
     } else {
       await dispatch({
         type: types.GET_ALL_HOLIDAY_FAILURE,
-        payload: axiosResponse.response.data
+        payload: axiosResponse.response
       });
     }
   });

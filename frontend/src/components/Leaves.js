@@ -19,7 +19,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetLeaveTypes, ApplyForLeaves } from '../redux/actions/leaveActions';
 import { GetAllHolidays } from '../redux/actions/holidayActions';
 import { USER_INFO_KEY } from '../utils/constants';
-import { GetUsersBasedOnCondition } from '../redux/actions/userDetailActtions';
+import { GetUsersBasedOnCondition } from '../redux/actions/userDetailActions';
 
 function Leaves() {
   // styling of the form
