@@ -27,11 +27,13 @@ const leaveApplicationSchema = mongoose.Schema(
       ref: 'leaveTypes',
       required: true
     },
-    reportingManagerId: {
-      type: mongoose.Types.ObjectId,
-      ref: 'users',
-      required: true
-    },
+    reportingManagerIds: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'users',
+        required: true
+      }
+    ],
     userId: {
       type: mongoose.Types.ObjectId,
       ref: 'users',
@@ -39,6 +41,10 @@ const leaveApplicationSchema = mongoose.Schema(
     },
     reason: {
       type: String,
+      required: true
+    },
+    status: {
+      type: Number,
       required: true
     }
   },

@@ -1,41 +1,57 @@
 import React from 'react';
-import HomeIcon from '@mui/icons-material/Home';
-import EventIcon from '@mui/icons-material/Event';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
-import DatasetIcon from '@mui/icons-material/Dataset';
-import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
+import {
+  Home,
+  Event,
+  AccountCircle,
+  PermContactCalendar,
+  Dataset,
+  HolidayVillage,
+  Approval
+} from '@mui/icons-material';
+import { SvgIcon } from '@mui/material';
 
 const sidebarConfig = [
   {
     title: 'Home',
-    icon: <HomeIcon />,
-    path: '/dashboard/'
+    icon: <Home />,
+    path: '/dashboard/',
+    scope: ['ADMIN', 'EMPLOYEE', 'MANAGER']
   },
   {
     title: 'Leave',
-    icon: <EventIcon />,
-    path: '/dashboard/leave'
+    icon: <Event />,
+    path: '/dashboard/leave',
+    scope: ['ADMIN', 'EMPLOYEE', 'MANAGER']
   },
   {
     title: 'Create User',
-    icon: <AccountCircleIcon />,
-    path: '/dashboard/user'
+    icon: <AccountCircle />,
+    path: '/dashboard/user',
+    scope: ['ADMIN']
   },
   {
     title: 'Personal Info',
-    icon: <PermContactCalendarIcon />,
-    path: '/dashboard/personal-info'
+    icon: <PermContactCalendar />,
+    path: '/dashboard/personal-info',
+    scope: ['ADMIN']
   },
   {
     title: 'Employee Details',
-    icon: <DatasetIcon />,
-    path: '/dashboard/details'
+    icon: <Dataset />,
+    path: '/dashboard/details',
+    scope: ['ADMIN']
   },
   {
     title: 'Holidays',
-    icon: <HolidayVillageIcon />,
-    path: '/dashboard/holiday'
+    icon: <HolidayVillage />,
+    path: '/dashboard/holiday',
+    scope: ['ADMIN', 'MANAGER', 'EMPLOYEE']
+  },
+  {
+    title: 'Leave sanctioner',
+    icon: <Approval />,
+    path: '/dashboard/leave-sanctioner',
+    scope: ['ADMIN', 'MANAGER']
   }
 ];
 

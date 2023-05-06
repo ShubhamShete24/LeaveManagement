@@ -1,12 +1,11 @@
+import { applyForLeaves, getAppliedLeaves, getLeaveTypes, updateLeaveApplication } from '../../services/LeavesService';
 import * as types from '../constants';
-import { getData, postData } from '../../utils/rest-services';
-import { BASE_URL } from '../../utils/constants';
 
 export const GetLeaveTypes = () => async (dispatch) => {
   await dispatch({
     type: types.GET_LEAVE_TYPES_REQUEST
   });
-  getData(`${BASE_URL}leaves/get-leave-types`).then(async (axiosResponse) => {
+  getLeaveTypes().then(async (axiosResponse) => {
     if (axiosResponse.data) {
       await dispatch({
         type: types.GET_LEAVE_TYPES_SUCCESS,
@@ -26,7 +25,7 @@ export const ApplyForLeaves = (data) => async (dispatch) => {
     type: types.APPLY_FOR_LEAVE_REQUEST
   });
 
-  postData(`${BASE_URL}leaves/apply-for-leaves`, data).then(async (axiosResponse) => {
+  applyForLeaves(data).then(async (axiosResponse) => {
     if (axiosResponse.data) {
       await dispatch({
         type: types.APPLY_FOR_LEAVE_SUCCESS,
@@ -38,5 +37,48 @@ export const ApplyForLeaves = (data) => async (dispatch) => {
         payload: axiosResponse.response.data
       });
     }
+  });
+};
+
+export const GetAppliedLeaves = (managerId) => async (dispatch) => {
+  await dispatch({
+    type: types.GET_APPLIED_LEAVES_REQUEST
+  });
+  getAppliedLeaves(managerId).then(async (axiosResponse) => {
+    if (axiosResponse.data) {
+      await dispatch({
+        type: types.GET_APPLIED_LEAVES_SUCCESS,
+        payload: axiosResponse.data
+      });
+    } else {
+      await dispatch({
+        type: types.GET_APPLIED_LEAVES_FAILURE
+      });
+    }
+  });
+};
+
+export const UpdateLeaveApplication = (data) => async (dispatch) => {
+  await dispatch({
+    type: types.UPDATE_LEAVE_APPLICATION_REQUEST
+  });
+  updateLeaveApplication(data).then(async (axiosResponse) => {
+    if (axiosResponse.data) {
+      await dispatch({
+        type: types.UPDATE_LEAVE_APPLICATION_SUCCESS,
+        payload: axiosResponse.data
+      });
+    } else {
+      await dispatch({
+        type: types.UPDATE_LEAVE_APPLICATION_FAILURE,
+        payload: axiosResponse.response
+      });
+    }
+  });
+};
+
+export const ResetLeaveApplicationUpdateResponse = () => async (dispatch) => {
+  await dispatch({
+    type: types.RESET_LEAVE_APPLICATION_RESPONSE
   });
 };

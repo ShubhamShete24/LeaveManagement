@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { TextField, Grid, Button, MenuItem, Typography, CardContent } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { TextField, Grid, Button, MenuItem, Typography, CardContent, Autocomplete } from '@mui/material';
+import { GetUsersBasedOnCondition } from '../../redux/actions/userDetailActions';
 
 function UserForm() {
   const allRoles = useSelector((state) => state.UserDetailReducers?.allRoles);
@@ -10,6 +11,24 @@ function UserForm() {
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
   };
+  const dispatch = useDispatch();
+  const managers = useSelector((state) => state.UserDetailReducers.usersBasedOnCondition);
+  const [selectedManagers, setSelectedManager] = useState([]);
+  const handleOnChangeSelectManager = (val) => {
+    console.log(val);
+    setSelectedManager(val);
+  };
+  useEffect(() => {
+    if (managers === undefined || managers.length === 0) {
+      console.log('inside use effect');
+      dispatch(
+        GetUsersBasedOnCondition({
+          attribute: 'role',
+          value: 'MANAGER'
+        })
+      );
+    }
+  }, [dispatch, managers]);
 
   return (
     <div>
@@ -37,10 +56,15 @@ function UserForm() {
             <TextField name="employeeID" label="Employee ID" fullWidth variant="outlined" required />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="reportingManager" label="Reporting Manager" fullWidth variant="outlined" select required>
-              <MenuItem value="Name">Name</MenuItem>
-              <MenuItem value="Manageer">Manageer</MenuItem>
-            </TextField>
+            <Autocomplete
+              onChange={(event, value) => handleOnChangeSelectManager(value)}
+              multiple={false}
+              id="tags-outlined"
+              options={managers}
+              getOptionLabel={(option) => option?.name}
+              filterSelectedOptions
+              renderInput={(params) => <TextField {...params} label="CC" placeholder="Substitute manager" />}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

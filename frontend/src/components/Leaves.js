@@ -13,14 +13,15 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import Autocomplete from '@mui/material/Autocomplete';
-import PropTypes from 'prop-types';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetLeaveTypes, ApplyForLeaves } from '../redux/actions/leaveActions';
 import { GetAllHolidays } from '../redux/actions/holidayActions';
+import { USER_INFO_KEY } from '../utils/constants';
+import { GetUsersBasedOnCondition } from '../redux/actions/userDetailActions';
 
-function Leaves(props) {
+function Leaves() {
   // styling of the form
   const theme = createTheme({
     components: {
@@ -41,27 +42,25 @@ function Leaves(props) {
       }
     }
   });
-
-  const leaveManager = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 }
-  ];
+  const sessionData =
+    useSelector((state) => state.LoginUserDetailsReducer.response) || JSON.parse(localStorage.getItem(USER_INFO_KEY));
 
   const [leaveApplication, setLeaveApplication] = useState({
-    userId: props?.data?.userId,
+    userId: sessionData?.user[0]?._id,
     fromDate: dayjs(),
     toDate: dayjs(),
     leaveTypeId: '',
     fromSession: '',
     toSession: '',
     leaveCount: 0,
-    reportingManagerId: props?.data?.reportingManagerId
+    reason: '',
+    status: 3, // pending. Need to use enum or use anything that should prevent hardcoding
+    reportingManagerIds: []
   });
   const dispatch = useDispatch();
   const leaveTypes = useSelector((state) => state.GetLeaveTypesReducer.leaveTypes);
   const holidays = useSelector((state) => state.GetHolidaysReducer.holidays);
+  const managers = useSelector((state) => state.UserDetailReducers.usersBasedOnCondition);
   const { leavesApplied, leaveAppliedMessage } = useSelector((state) => ({
     leavesApplied: state.ApplyForLeavesReducer.leavesApplied,
     leaveAppliedMessage: state.ApplyForLeavesReducer.leaveAppliedMessage
@@ -74,7 +73,16 @@ function Leaves(props) {
     if (holidays === undefined || holidays.length === 0) {
       dispatch(GetAllHolidays());
     }
-  }, [dispatch, leaveTypes, holidays, leaveApplication]);
+    if (managers === undefined || managers.length === 0) {
+      console.log('inside use effect');
+      dispatch(
+        GetUsersBasedOnCondition({
+          attribute: 'role',
+          value: 'MANAGER'
+        })
+      );
+    }
+  }, [dispatch, leaveTypes, holidays, leaveApplication, managers]);
   const calculateLeaveDays = (fromDate, toDate) => {
     const toDate1 = dayjs(toDate);
     const fromDate1 = dayjs(fromDate);
@@ -99,7 +107,7 @@ function Leaves(props) {
     diff -= holidayCount;
     return diff;
   };
-
+  const [selectedManagers, setSelectedManager] = useState([]);
   const handleChange = (changeEvent) => {
     const { name, value } = changeEvent.target;
     setLeaveApplication({ ...leaveApplication, [name]: value });
@@ -116,7 +124,7 @@ function Leaves(props) {
   const [shouldSubmitForm, setShouldSubmitForm] = useState(false);
   useEffect(() => {
     if (shouldSubmitForm) {
-      console.log(leaveApplication);
+      // console.log(leaveApplication);
       dispatch(ApplyForLeaves(leaveApplication));
     }
     console.log(leavesApplied);
@@ -126,11 +134,25 @@ function Leaves(props) {
     setShouldSubmitForm(false);
   }, [leaveApplication, shouldSubmitForm, dispatch, leavesApplied, leaveAppliedMessage]);
 
+  const handleOnChangeSelectManager = (val) => {
+    console.log(val);
+    setSelectedManager(val);
+  };
+  const setReportingManagers = () => {
+    const managerIds = selectedManagers.map((manager) => manager._id);
+    if (managerIds.indexOf(sessionData?.user[0]?.reportingManager) === -1) {
+      managerIds.push(sessionData?.user[0]?.reportingManager);
+    }
+    setLeaveApplication({
+      ...leaveApplication,
+      reportingManagerIds: managerIds
+    });
+  };
   const handleLeaveApplication = (e) => {
     e.preventDefault();
     const leaveCount = calculateLeaveDays(leaveApplication.fromDate, leaveApplication.toDate);
     updateLeaveCount(leaveCount);
-    console.log(props?.data?.reportingManagerId);
+    setReportingManagers();
     setShouldSubmitForm(true);
   };
   return (
@@ -138,7 +160,7 @@ function Leaves(props) {
       <div className="p-1">
         <ThemeProvider theme={theme}>
           <Card>
-            {props?.data?.reportingManagerId === undefined ? (
+            {sessionData?.user[0]?.reportingManager === undefined ? (
               <Typography style={{ color: 'red' }} sx={{ fontSize: 13 }} margin={3} color="text.secondary">
                 You cannot apply for leaves untill you have manager assigned!
               </Typography>
@@ -174,37 +196,14 @@ function Leaves(props) {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
+                      onChange={(event, value) => handleOnChangeSelectManager(value)}
                       multiple
                       id="tags-outlined"
-                      options={leaveManager}
-                      getOptionLabel={(option) => option?.title}
-                      defaultValue={[leaveManager[2]]}
+                      options={managers}
+                      getOptionLabel={(option) => option?.name}
                       filterSelectedOptions
-                      renderInput={(params) => <TextField {...params} label="CC" placeholder="Favorites" />}
+                      renderInput={(params) => <TextField {...params} label="CC" placeholder="Substitute manager" />}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth variant="outlined" required>
-                      <InputLabel id="reporting-manager-label">Reporting Manager</InputLabel>
-                      <Select
-                        disabled
-                        labelId="reporting-manager-label"
-                        id="reporting-manager-select"
-                        name="leaveTypeId"
-                        onChange={handleChange}
-                        label="Reporting Manager"
-                      >
-                        {/* {leaveTypes ? (
-                        leaveTypes?.map((element) => (
-                          <MenuItem key={`l${element._id}`} value={element._id}>
-                            {element?.leaveType}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem>no leavetypes available</MenuItem>
-                      )} */}
-                      </Select>
-                    </FormControl>
                   </Grid>
                   {/* From date (using @mui/x-date-pickers library) */}
                   <Grid item xs={12} sm={6}>
@@ -277,14 +276,22 @@ function Leaves(props) {
                   <input type="hidden" name="" value="" />
                   {/* Reason */}
                   <Grid item xs={12} sm={6}>
-                    <TextField name="reason" label="Reason" fullWidth variant="outlined" type="text" required />
+                    <TextField
+                      name="reason"
+                      label="Reason"
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      required
+                      onChange={handleChange}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={12} className="d-flex justify-content-end">
                     <Button
                       variant="contained"
                       color="primary"
                       type="submit"
-                      disabled={props?.data?.reportingManagerId === undefined}
+                      disabled={sessionData?.user[0]?.reportingManager === undefined}
                     >
                       Submit
                     </Button>
@@ -300,10 +307,3 @@ function Leaves(props) {
 }
 
 export default Leaves;
-
-Leaves.propTypes = {
-  data: PropTypes.shape({
-    userId: PropTypes.string,
-    reportingManagerId: PropTypes.string
-  })
-};

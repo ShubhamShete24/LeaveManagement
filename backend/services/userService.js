@@ -8,6 +8,7 @@ import PersonalDetails from '../models/personalDetails.js';
 import EducationDetails from '../models/educationalDetails.js';
 import BankDetails from '../models/bankDetails.js';
 import EmploymentDetails from '../models/employmentDetails.js';
+import LeaveBalance from '../models/leaveBalance.js';
 
 dotenv.config();
 
@@ -24,8 +25,10 @@ const createUser = async (req, res) => {
     data: null,
     message: ''
   };
+  let userCreated = null;
+  const leavesBalanceCreatedIds = [];
   try {
-    if (!user.password || !user.email || !user.name) {
+    if (!user.password || !user.email || !user.name || !user.reportingManager || !user.role) {
       responseData.status = 400;
       responseData.message = 'Required attributes not suppied.';
       res.send(responseData);
@@ -35,8 +38,11 @@ const createUser = async (req, res) => {
     delete user.password;
     user = { ...user, salt: uniqueSalt };
     user = { ...user, hash };
-
-    const userCreated = await User.create(user);
+    const objIdReportingManager = new mongoose.Types.ObjectId(user.reportingManager);
+    const objIdRole = new mongoose.Types.ObjectId(user.role);
+    user = { ...user, reportingManager: objIdReportingManager };
+    user = { ...user, role: objIdRole };
+    userCreated = await User.create(user);
     if (userCreated) {
       const userData = userCreated.toObject();
       delete userData.hash;
@@ -45,11 +51,20 @@ const createUser = async (req, res) => {
       responseData.message = 'User has been created.';
       responseData.data = userData;
     } else {
-      res.send(responseData);
+      responseData.status = 500;
+      responseData.message += 'User could not be created';
+      responseData.data = null;
     }
   } catch (err) {
     responseData.status = 500;
     responseData.message = err.message;
+  }
+  if (responseData.status !== 201 && userCreated !== null) {
+    // rollback
+    await User.findOneAndDelete({ _id: userCreated._id });
+    leavesBalanceCreatedIds.forEach(async (record) => {
+      await LeaveBalance.findOneAndDelete({ _id: record._id });
+    });
   }
   res.send(responseData);
 };
@@ -326,6 +341,65 @@ const createEmploymentDetails = async (req, res) => {
   }
 };
 
+const getUsersBasedOnCondition = async (req, res) => {
+  const responseData = {
+    status: 0,
+    message: '',
+    data: {
+      message: '',
+      users: null
+    }
+  };
+  const { attribute, value } = req.body;
+  try {
+    let users = [];
+    switch (attribute) {
+      case 'role': {
+        users = await User.aggregate([
+          {
+            $lookup: {
+              from: 'roles',
+              localField: 'role',
+              foreignField: '_id',
+              as: 'role'
+            }
+          },
+          {
+            $match: {
+              'role.roleName': value
+            }
+          },
+          {
+            $project: {
+              role: 1,
+              name: 1,
+              email: 1,
+              _id: 1,
+              reportingManager: 1
+            }
+          }
+        ]);
+        break;
+      }
+      default: {
+        responseData.status = 404;
+        responseData.message += 'No such attrbute is taken into consideration for searching users.';
+        break;
+      }
+    }
+    if (users?.length === 0) {
+      responseData.status = 404;
+      responseData.message += 'No records found';
+    } else {
+      responseData.status = 200;
+    }
+    responseData.data.users = users;
+  } catch (e) {
+    responseData.data.message += `There was an exception : ${e.message}`;
+  }
+  res.status(responseData.status).send(responseData.data);
+};
+
 export {
   createUser,
   authenticate,
@@ -334,5 +408,6 @@ export {
   assignManager,
   getUsers,
   createPersonalDetails,
-  createEmploymentDetails
+  createEmploymentDetails,
+  getUsersBasedOnCondition
 };
