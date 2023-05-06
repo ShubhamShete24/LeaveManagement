@@ -4,9 +4,10 @@ import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
 import User from '../models/user.js';
-import LeaveType from '../models/leaveType.js';
-import LeaveBalance from '../models/leaveBalance.js';
-import leaveTypesMap from '../constants/leaveTypesMap.js';
+import PersonalDetails from '../models/personalDetails.js';
+import EducationDetails from '../models/educationalDetails.js';
+import BankDetails from '../models/bankDetails.js';
+import EmploymentDetails from '../models/employmentDetails.js';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const generateHash = (plainText, salt) => crypto.pbkdf2Sync(plainText, salt, 100
 const verifyHash = (hash, salt, plainText) =>
   crypto.pbkdf2Sync(plainText, salt, 1000, 64, 'sha512').toString('hex') === hash;
 
-// user creation
+// createUser
 const createUser = async (req, res) => {
   let user = req.body;
   const responseData = {
@@ -39,42 +40,12 @@ const createUser = async (req, res) => {
 
     userCreated = await User.create(user);
     if (userCreated) {
-      const leaveTypes = await LeaveType.find({});
-      let count = 0;
-      for (let index = 0; index < leaveTypes.length; index += 1) {
-        const record = leaveTypes[index];
-        let leaveBalance = record.leavesAllowed;
-        if (leaveTypesMap.Annual === record.leaveType) {
-          leaveBalance /= 12;
-        }
-        try {
-          // eslint-disable-next-line no-await-in-loop
-          const leaveBalanceCreated = await LeaveBalance.create({
-            leaveTypeId: new mongoose.Types.ObjectId(record._id),
-            leaveBalance,
-            userId: userCreated._id,
-            leaveBalanceUpdatedForMonth: new Date().getMonth()
-          });
-          if (leaveBalanceCreated != null) {
-            leavesBalanceCreatedIds.push(leaveBalanceCreated._id);
-            count += 1;
-          }
-        } catch (e) {
-          responseData.message += e.message;
-          count = 0;
-          break;
-        }
-      }
-      if (leaveTypes.length === count) {
-        responseData.status = 201;
-        responseData.message += 'User has been created.';
-        responseData.data = userCreated;
-      } else {
-        responseData.status = 500;
-        responseData.message +=
-          ' Although user creation was successful, but there was an issue while creating one of the leaveBalance. Deleting user and leave balance created if any.';
-        responseData.data = null;
-      }
+      const userData = userCreated.toObject();
+      delete userData.hash;
+      delete userData.salt;
+      responseData.status = 201;
+      responseData.message = 'User has been created.';
+      responseData.data = userData;
     } else {
       responseData.status = 500;
       responseData.message += 'User could not be created';
@@ -94,7 +65,6 @@ const createUser = async (req, res) => {
   res.send(responseData);
 };
 
-// authenticate user
 const authenticate = async (req, res) => {
   const responseData = {
     status: 0,
@@ -200,6 +170,7 @@ const assignRole = async (req, res) => {
   res.send(responseData);
 };
 
+// assign Manager
 const assignManager = async (req, res) => {
   const responseData = {
     status: 0,
@@ -229,6 +200,8 @@ const assignManager = async (req, res) => {
   }
   res.send(responseData);
 };
+
+// get Users
 const getUsers = async (req, res) => {
   let responseData = {
     status: 0,
@@ -252,6 +225,30 @@ const getUsers = async (req, res) => {
           ],
           as: 'reportingManager'
         }
+      },
+      {
+        $lookup: {
+          from: 'personalDetails',
+          localField: 'personalDetailsId',
+          foreignField: '_id',
+          as: 'personalDetails'
+        }
+      },
+      {
+        $lookup: {
+          from: 'employmentDetails',
+          localField: 'employmentDetails',
+          foreignField: '_id',
+          as: 'employeeDetails'
+        }
+      },
+      {
+        $lookup: {
+          from: 'roles',
+          localField: 'role',
+          foreignField: '_id',
+          as: 'roles'
+        }
       }
     ]);
 
@@ -268,4 +265,85 @@ const getUsers = async (req, res) => {
     res.send(responseData);
   }
 };
-export { createUser, authenticate, updateUserInfo, assignRole, assignManager, getUsers };
+
+// Personal Details
+const createPersonalDetails = async (req, res) => {
+  const { personalDetails, educationalDetails, bankDetails, userId } = req.body;
+  try {
+    // Add educational details field
+    const newEducationalDetails = await EducationDetails.create(educationalDetails);
+    personalDetails.educationalDetails = newEducationalDetails._id;
+    // Add bank details field
+    const newBankDetails = await BankDetails.create(bankDetails);
+    personalDetails.bankDetails = newBankDetails._id;
+    const newPersonalDetails = await PersonalDetails.create(personalDetails);
+    if (newPersonalDetails != null) {
+      await User.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(userId) },
+        {
+          personalDetailsId: newPersonalDetails._id
+        },
+        { new: true }
+      );
+      res.status(201).json({
+        message: 'Personal details created successfully!',
+        data: { _id: userId, personalDetailsId: newPersonalDetails._id }
+      });
+    } else {
+      res.status(400).json({
+        message: 'Failed to create the personal details.'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: `Failed to create the personal details. Error message: ${error.message}`
+    });
+  }
+};
+
+// Employment Details
+const createEmploymentDetails = async (req, res) => {
+  const { joiningDate, department, designation, project, employeeType, userId } = req.body;
+
+  if (!joiningDate || !department || !designation) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    const requestData = new EmploymentDetails({
+      joiningDate,
+      department,
+      designation,
+      project,
+      employeeType
+    });
+    const newEmploymentDetails = await requestData.save();
+    if (newEmploymentDetails != null) {
+      await User.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(userId) },
+        {
+          employmentDetails: newEmploymentDetails._id
+        },
+        { new: true }
+      );
+      return res.status(201).json({
+        data: { _id: userId, employmentDetailsId: newEmploymentDetails._id },
+        message: 'Employment details created successfully!'
+      });
+    }
+    return res.status(400).json({ message: 'Failed to create employment details' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export {
+  createUser,
+  authenticate,
+  updateUserInfo,
+  assignRole,
+  assignManager,
+  getUsers,
+  createPersonalDetails,
+  createEmploymentDetails
+};

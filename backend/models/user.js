@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    mobileNumber: {
+      type: Number,
+      required: true
+    },
     email: {
       type: String,
       required: true,
@@ -21,15 +25,37 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    role: {
-      type: mongoose.Types.ObjectId,
-      ref: 'roles',
-      required: false
+    gender: {
+      type: String,
+      required: true
+    },
+    employeeId: {
+      type: String,
+      required: true
     },
     reportingManager: {
       type: mongoose.Types.ObjectId,
       ref: 'users',
+      required: true
+    },
+    role: {
+      type: mongoose.Types.ObjectId,
+      ref: 'roles',
+      required: true
+    },
+    personalDetailsId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'personalDetails',
       required: false
+    },
+    employmentDetails: {
+      type: mongoose.Types.ObjectId,
+      ref: 'employmentDetails',
+      required: false
+    },
+    status: {
+      type: String,
+      required: true
     }
   },
   {
