@@ -38,9 +38,12 @@ const createUser = async (req, res) => {
 
     const userCreated = await User.create(user);
     if (userCreated) {
+      const userData = userCreated.toObject();
+      delete userData.hash;
+      delete userData.salt;
       responseData.status = 201;
       responseData.message = 'User has been created.';
-      responseData.data = userCreated;
+      responseData.data = userData;
     } else {
       res.send(responseData);
     }
@@ -259,12 +262,12 @@ const createPersonalDetails = async (req, res) => {
     // Add educational details field
     const newEducationalDetails = await EducationDetails.create(educationalDetails);
     personalDetails.educationalDetails = newEducationalDetails._id;
-    // // Add bank details field
+    // Add bank details field
     const newBankDetails = await BankDetails.create(bankDetails);
     personalDetails.bankDetails = newBankDetails._id;
     const newPersonalDetails = await PersonalDetails.create(personalDetails);
     if (newPersonalDetails != null) {
-      const updatedUser = await User.findOneAndUpdate(
+      await User.findOneAndUpdate(
         { _id: new mongoose.Types.ObjectId(userId) },
         {
           personalDetailsId: newPersonalDetails._id
@@ -272,49 +275,54 @@ const createPersonalDetails = async (req, res) => {
         { new: true }
       );
       res.status(201).json({
-        status: 1,
         message: 'Personal details created successfully!',
-        data: updatedUser
+        data: { _id: userId, personalDetailsId: newPersonalDetails._id }
       });
     } else {
-      res.status(500).json({
-        status: 0,
-        message: 'There is some problem while creating the personal details.'
+      res.status(400).json({
+        message: 'Failed to create the personal details.'
       });
     }
   } catch (error) {
     res.status(500).json({
-      status: 0,
       message: `Failed to create the personal details. Error message: ${error.message}`
     });
   }
 };
 
-const createEmployeeDetails = async (req, res) => {
+// Employment Details
+const createEmploymentDetails = async (req, res) => {
+  const { joiningDate, department, designation, project, employeeType, userId } = req.body;
+
+  if (!joiningDate || !department || !designation) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
   try {
-    const { joiningDate, department, designation, project, employeeType } = req.body;
-
-    if (!joiningDate || !department || !designation) {
-      res.status(400).json({ message: 'Missing required fields' });
-    }
-
-    const newEmploymentDetails = new EmploymentDetails({
+    const requestData = new EmploymentDetails({
       joiningDate,
       department,
       designation,
       project,
       employeeType
     });
-
-    const savedEmploymentDetails = await newEmploymentDetails.save();
-
-    if (!savedEmploymentDetails) {
-      res.status(500).json({ message: 'Failed to create employment details' });
+    const newEmploymentDetails = await requestData.save();
+    if (newEmploymentDetails != null) {
+      await User.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(userId) },
+        {
+          employmentDetails: newEmploymentDetails._id
+        },
+        { new: true }
+      );
+      return res.status(201).json({
+        data: { _id: userId, employmentDetailsId: newEmploymentDetails._id },
+        message: 'Employment details created successfully!'
+      });
     }
-    res.status(201).json(savedEmploymentDetails);
+    return res.status(400).json({ message: 'Failed to create employment details' });
   } catch (error) {
-    // console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -326,5 +334,5 @@ export {
   assignManager,
   getUsers,
   createPersonalDetails,
-  createEmployeeDetails
+  createEmploymentDetails
 };
