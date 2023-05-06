@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { TextField, Grid, Button, MenuItem, Typography, CardContent } from '@mui/material';
 
 function UserForm() {
+  const allRoles = useSelector((state) => state.UserDetailReducers?.allRoles);
+  const allUsers = useSelector((state) => state.UserDetailReducers?.allUsers);
   const [status, setStatus] = useState('');
 
   const handleStatusChange = (event) => {
