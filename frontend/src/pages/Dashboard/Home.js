@@ -43,7 +43,7 @@ function Home() {
 
   useEffect(() => {
     dispatch(getAllUsersData());
-    if (userInfo.user[0]?.role[0].roleName === 'ADMIN') {
+    if (userInfo?.user[0]?.role[0].roleName === 'ADMIN') {
       dispatch(getRolesData());
     }
   }, [dispatch, userInfo]);

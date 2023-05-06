@@ -117,12 +117,12 @@ function Dashboard() {
   });
 
   const navigate = useNavigate();
+  const userInfo = JSON.parse(localStorage.getItem(USER_INFO_KEY));
   useEffect(() => {
-    const userInfo = localStorage.getItem(USER_INFO_KEY);
     if (userInfo === null) {
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, userInfo]);
 
   const theme = useTheme();
   const [open, setOpen] = useState(false);
@@ -188,33 +188,37 @@ function Dashboard() {
           </DrawerHeader>
           <Divider />
           <List>
-            {sidebarConfig.map((list, index) => (
-              <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                    '&:hover': {
-                      backgroundColor: '#ffebcc'
-                    }
-                  }}
-                  onClick={() => handleClick(list)}
-                >
-                  <ListItemIcon
+            {sidebarConfig.map((list, index) =>
+              list.scope.indexOf(userInfo?.user[0]?.role[0]?.roleName) !== -1 ? (
+                <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+                  <ListItemButton
                     sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
-                      color: '#f3950d'
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                      '&:hover': {
+                        backgroundColor: '#ffebcc'
+                      }
                     }}
+                    onClick={() => handleClick(list)}
                   >
-                    {list.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={list.title} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </ListItem>
-            ))}
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                        color: '#f3950d'
+                      }}
+                    >
+                      {list.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={list.title} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton>
+                </ListItem>
+              ) : (
+                ''
+              )
+            )}
           </List>
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 5 }}>
