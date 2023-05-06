@@ -8,7 +8,8 @@ import {
   assignManager,
   getUsers,
   createPersonalDetails,
-  createEmploymentDetails
+  createEmploymentDetails,
+  getUsersBasedOnCondition
 } from '../services/userService.js';
 
 const userRouter = express.Router();
@@ -18,6 +19,7 @@ userRouter.put('/update-user-info', verifyToken, updateUserInfo);
 userRouter.post('/assign-role', verifyAdmin, assignRole);
 userRouter.post('/assign-manager', verifyAdmin, assignManager);
 userRouter.get('/get-users', verifyAdmin, getUsers);
+userRouter.post('/get-users-based-on-condition', getUsersBasedOnCondition);
 userRouter.post('/create-user', verifyAdmin, createUser);
 userRouter.post('/create-personalDetails', verifyAdmin, createPersonalDetails);
 userRouter.post('/create-employmentDetails', verifyAdmin, createEmploymentDetails);

@@ -7,6 +7,7 @@ import {
   UpdateLeaveApplicationReducer
 } from './leaveReducer';
 import GetHolidaysReducer from './holidayReducer';
+import UserDetailReducers from './userDetailReducer';
 
 export default combineReducers({
   LoginUserDetailsReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   ApplyForLeavesReducer,
   GetHolidaysReducer,
   GetAppliedLeavesReducer,
-  UpdateLeaveApplicationReducer
+  UpdateLeaveApplicationReducer,
+  UserDetailReducers
 });

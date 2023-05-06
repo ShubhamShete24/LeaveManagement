@@ -19,6 +19,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetLeaveTypes, ApplyForLeaves } from '../redux/actions/leaveActions';
 import { GetAllHolidays } from '../redux/actions/holidayActions';
 import { USER_INFO_KEY } from '../utils/constants';
+import { GetUsersBasedOnCondition } from '../redux/actions/userDetailActtions';
 
 function Leaves() {
   // styling of the form
@@ -43,12 +44,6 @@ function Leaves() {
   });
   const sessionData =
     useSelector((state) => state.LoginUserDetailsReducer.response) || JSON.parse(localStorage.getItem(USER_INFO_KEY));
-  const leaveManager = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 }
-  ];
 
   const [leaveApplication, setLeaveApplication] = useState({
     userId: sessionData?.user[0]?._id,
@@ -60,11 +55,12 @@ function Leaves() {
     leaveCount: 0,
     reason: '',
     status: 3, // pending. Need to use enum or use anything that should prevent hardcoding
-    reportingManagerId: sessionData?.user[0]?.reportingManager
+    reportingManagerIds: []
   });
   const dispatch = useDispatch();
   const leaveTypes = useSelector((state) => state.GetLeaveTypesReducer.leaveTypes);
   const holidays = useSelector((state) => state.GetHolidaysReducer.holidays);
+  const managers = useSelector((state) => state.UserDetailReducers.usersBasedOnCondition);
   const { leavesApplied, leaveAppliedMessage } = useSelector((state) => ({
     leavesApplied: state.ApplyForLeavesReducer.leavesApplied,
     leaveAppliedMessage: state.ApplyForLeavesReducer.leaveAppliedMessage
@@ -77,7 +73,16 @@ function Leaves() {
     if (holidays === undefined || holidays.length === 0) {
       dispatch(GetAllHolidays());
     }
-  }, [dispatch, leaveTypes, holidays, leaveApplication]);
+    if (managers === undefined || managers.length === 0) {
+      console.log('inside use effect');
+      dispatch(
+        GetUsersBasedOnCondition({
+          attribute: 'role',
+          value: 'MANAGER'
+        })
+      );
+    }
+  }, [dispatch, leaveTypes, holidays, leaveApplication, managers]);
   const calculateLeaveDays = (fromDate, toDate) => {
     const toDate1 = dayjs(toDate);
     const fromDate1 = dayjs(fromDate);
@@ -102,7 +107,7 @@ function Leaves() {
     diff -= holidayCount;
     return diff;
   };
-
+  const [selectedManagers, setSelectedManager] = useState([]);
   const handleChange = (changeEvent) => {
     const { name, value } = changeEvent.target;
     setLeaveApplication({ ...leaveApplication, [name]: value });
@@ -119,7 +124,7 @@ function Leaves() {
   const [shouldSubmitForm, setShouldSubmitForm] = useState(false);
   useEffect(() => {
     if (shouldSubmitForm) {
-      console.log(leaveApplication);
+      // console.log(leaveApplication);
       dispatch(ApplyForLeaves(leaveApplication));
     }
     console.log(leavesApplied);
@@ -129,10 +134,25 @@ function Leaves() {
     setShouldSubmitForm(false);
   }, [leaveApplication, shouldSubmitForm, dispatch, leavesApplied, leaveAppliedMessage]);
 
+  const handleOnChangeSelectManager = (val) => {
+    console.log(val);
+    setSelectedManager(val);
+  };
+  const setReportingManagers = () => {
+    const managerIds = selectedManagers.map((manager) => manager._id);
+    if (managerIds.indexOf(sessionData?.user[0]?.reportingManager) === -1) {
+      managerIds.push(sessionData?.user[0]?.reportingManager);
+    }
+    setLeaveApplication({
+      ...leaveApplication,
+      reportingManagerIds: managerIds
+    });
+  };
   const handleLeaveApplication = (e) => {
     e.preventDefault();
     const leaveCount = calculateLeaveDays(leaveApplication.fromDate, leaveApplication.toDate);
     updateLeaveCount(leaveCount);
+    setReportingManagers();
     setShouldSubmitForm(true);
   };
   return (
@@ -176,37 +196,14 @@ function Leaves() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
+                      onChange={(event, value) => handleOnChangeSelectManager(value)}
                       multiple
                       id="tags-outlined"
-                      options={leaveManager}
-                      getOptionLabel={(option) => option?.title}
-                      defaultValue={[leaveManager[2]]}
+                      options={managers}
+                      getOptionLabel={(option) => option?.name}
                       filterSelectedOptions
-                      renderInput={(params) => <TextField {...params} label="CC" placeholder="Favorites" />}
+                      renderInput={(params) => <TextField {...params} label="CC" placeholder="Substitute manager" />}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth variant="outlined" required>
-                      <InputLabel id="reporting-manager-label">Reporting Manager</InputLabel>
-                      <Select
-                        disabled
-                        labelId="reporting-manager-label"
-                        id="reporting-manager-select"
-                        name="leaveTypeId"
-                        onChange={handleChange}
-                        label="Reporting Manager"
-                      >
-                        {/* {leaveTypes ? (
-                        leaveTypes?.map((element) => (
-                          <MenuItem key={`l${element._id}`} value={element._id}>
-                            {element?.leaveType}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem>no leavetypes available</MenuItem>
-                      )} */}
-                      </Select>
-                    </FormControl>
                   </Grid>
                   {/* From date (using @mui/x-date-pickers library) */}
                   <Grid item xs={12} sm={6}>
