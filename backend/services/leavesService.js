@@ -158,7 +158,7 @@ const getAppliedLeaves = async (req, res) => {
     const appliedLeaves = await LeaveApplication.aggregate([
       {
         $match: {
-          reportingManagerId: new mongoose.Types.ObjectId(req.query.managerId)
+          reportingManagerIds: { $in: [new mongoose.Types.ObjectId(req.query.managerId)] }
         }
       },
       {
