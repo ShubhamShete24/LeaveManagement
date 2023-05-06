@@ -254,22 +254,27 @@ const getUsers = async (req, res) => {
 
 // Personal Details
 const createPersonalDetails = async (req, res) => {
-  const personalDetails = req.body;
+  const { personalDetails, educationalDetails, bankDetails, userId } = req.body;
   try {
     // Add educational details field
-    const educationalDetails = await EducationDetails.create(req.body.educationalDetails);
-    personalDetails.educationalDetails = educationalDetails.id;
+    const newEducationalDetails = await EducationDetails.create(educationalDetails);
+    personalDetails.educationalDetails = newEducationalDetails._id;
     // // Add bank details field
-    const bankDetails = await BankDetails.create(req.body.bankDetails);
-    personalDetails.bankDetails = bankDetails.id;
-
+    const newBankDetails = await BankDetails.create(bankDetails);
+    personalDetails.bankDetails = newBankDetails._id;
     const newPersonalDetails = await PersonalDetails.create(personalDetails);
-    console.log('personalDeatilsbody', personalDetails);
     if (newPersonalDetails != null) {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(userId) },
+        {
+          personalDetailsId: newPersonalDetails._id
+        },
+        { new: true }
+      );
       res.status(201).json({
         status: 1,
         message: 'Personal details created successfully!',
-        data: newPersonalDetails
+        data: updatedUser
       });
     } else {
       res.status(500).json({
