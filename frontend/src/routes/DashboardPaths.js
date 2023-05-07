@@ -20,7 +20,7 @@ function DashboardPaths() {
         <Route path="/" element={<Home />} />
         <Route path="/leave" element={<Leaves />} />
         <Route path="/holiday" element={<HolidayPage />} />
-        {sessionData?.user[0]?.role[0]?.roleName !== 'ADMIN' ? (
+        {sessionData?.user[0]?.role[0]?.roleName === 'ADMIN' ? (
           <>
             <Route path="/user" element={<UserForm />} />
             <Route path="/personal-info" element={<PersonalDetailsForm />} />

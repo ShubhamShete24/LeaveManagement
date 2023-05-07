@@ -1,4 +1,10 @@
-import { applyForLeaves, getAppliedLeaves, getLeaveTypes, updateLeaveApplication } from '../../services/LeavesService';
+import {
+  applyForLeaves,
+  getAppliedLeaves,
+  getLeaveBalances,
+  getLeaveTypes,
+  updateLeaveApplication
+} from '../../services/LeavesService';
 import * as types from '../constants';
 
 export const GetLeaveTypes = () => async (dispatch) => {
@@ -71,7 +77,7 @@ export const UpdateLeaveApplication = (data) => async (dispatch) => {
     } else {
       await dispatch({
         type: types.UPDATE_LEAVE_APPLICATION_FAILURE,
-        payload: axiosResponse.response
+        payload: axiosResponse.response.data
       });
     }
   });
@@ -80,5 +86,24 @@ export const UpdateLeaveApplication = (data) => async (dispatch) => {
 export const ResetLeaveApplicationUpdateResponse = () => async (dispatch) => {
   await dispatch({
     type: types.RESET_LEAVE_APPLICATION_RESPONSE
+  });
+};
+
+export const GetLeaveBalances = (userId) => async (dispatch) => {
+  await dispatch({
+    type: types.GET_LEAVE_BALANCES_REQUEST
+  });
+  getLeaveBalances(userId).then(async (axiosResponse) => {
+    if (axiosResponse.data) {
+      await dispatch({
+        type: types.GET_LEAVE_BALANCES_SUCCESS,
+        payload: axiosResponse.data
+      });
+    } else {
+      await dispatch({
+        type: types.GET_LEAVE_BALANCES_FAILURE,
+        payload: axiosResponse.response.data
+      });
+    }
   });
 };

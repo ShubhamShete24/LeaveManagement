@@ -47,12 +47,11 @@ function LeaveSanctioner() {
   const dispatch = useDispatch();
   const leaveApplicationUpdatedResponse = useSelector((state) => state.UpdateLeaveApplicationReducer);
   const [leaveApplicationStatusHasChanged, setLeaveApplicationStatusHasChanged] = useState(false);
-  const navigate = useNavigate();
+  const statusValuesMap = {};
+  statusValues.forEach((elem) => {
+    statusValuesMap[elem.name] = elem.value;
+  });
   useEffect(() => {
-    // this should not be hardcoded
-    if (sessionData?.user[0]?.role[0]?.roleName !== 'MANAGER') {
-      navigate('/');
-    }
     dispatch(GetAppliedLeaves(sessionData?.user[0]._id));
     if (leaveApplicationStatusHasChanged) {
       dispatch(
@@ -148,7 +147,12 @@ function LeaveSanctioner() {
                     {statusValues.find((_) => _.value === data.status).name}
                   </TableCell>
                   <TableCell style={{ minWidth: 200 }} align="right">
-                    <Button onClick={() => handelModalOpen(data._id)}>Action</Button>
+                    <Button
+                      disabled={data.status === statusValuesMap?.approved}
+                      onClick={() => handelModalOpen(data._id)}
+                    >
+                      Action
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
