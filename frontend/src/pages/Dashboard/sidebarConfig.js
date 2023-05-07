@@ -8,7 +8,6 @@ import {
   HolidayVillage,
   Approval
 } from '@mui/icons-material';
-import { SvgIcon } from '@mui/material';
 
 const sidebarConfig = [
   {

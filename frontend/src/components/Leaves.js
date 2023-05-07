@@ -131,8 +131,7 @@ function Leaves() {
         setSnackBarOpen(true);
         setSnackBarMessage('You cannot have from date after to date');
       } else {
-        console.log('hello');
-        // dispatch(ApplyForLeaves(leaveApplication));
+        dispatch(ApplyForLeaves(leaveApplication));
       }
     }
     if (leavesApplied !== undefined && leaveAppliedMessage !== '') {
@@ -199,7 +198,7 @@ function Leaves() {
     updateLeaveApplicationWithLeaveCountAndReportingManagerIds(leaveCount, managerIds);
     setShouldSubmitForm(true);
   };
-  const excludeDefaulReportingManager = (options, { inputValues }) =>
+  const excludeDefaulReportingManager = (options) =>
     options.filter((option) => option._id !== sessionData?.user[0]?.reportingManager);
   return (
     <div className="p-2">

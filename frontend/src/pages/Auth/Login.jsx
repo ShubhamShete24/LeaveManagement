@@ -20,10 +20,11 @@ export default function Login({ setIsSignUp, isSignUp }) {
   const navigate = useNavigate();
   const response = useSelector((state) => state.LoginUserDetailsReducer.response);
   useEffect(() => {
+    console.log(setIsSignUp, isSignUp);
     if (response.user != null || localStorage.getItem(USER_INFO_KEY)) {
       navigate('/dashboard');
     }
-  }, [navigate, response]);
+  }, [navigate, response, setIsSignUp, isSignUp]);
 
   const [authForm, setAuthForm] = useState({
     email: '',
@@ -41,9 +42,9 @@ export default function Login({ setIsSignUp, isSignUp }) {
       password: ''
     });
   };
-  const handleClick = () => {
-    setIsSignUp(!isSignUp);
-  };
+  // const handleClick = () => {
+  //   setIsSignUp(!isSignUp);
+  // };
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);

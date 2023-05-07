@@ -4,8 +4,8 @@ import { TextField, Grid, Button, MenuItem, Typography, CardContent, Autocomplet
 import { GetUsersBasedOnCondition } from '../../redux/actions/userDetailActions';
 
 function UserForm() {
-  const allRoles = useSelector((state) => state.UserDetailReducers?.allRoles);
-  const allUsers = useSelector((state) => state.UserDetailReducers?.allUsers);
+  // const allRoles = useSelector((state) => state.UserDetailReducers?.allRoles);
+  // const allUsers = useSelector((state) => state.UserDetailReducers?.allUsers);
   const [status, setStatus] = useState('');
 
   const handleStatusChange = (event) => {
@@ -15,10 +15,10 @@ function UserForm() {
   const managers = useSelector((state) => state.UserDetailReducers.usersBasedOnCondition);
   const [selectedManagers, setSelectedManager] = useState([]);
   const handleOnChangeSelectManager = (val) => {
-    console.log(val);
     setSelectedManager(val);
   };
   useEffect(() => {
+    console.log(selectedManagers);
     if (managers === undefined || managers.length === 0) {
       console.log('inside use effect');
       dispatch(
@@ -28,7 +28,7 @@ function UserForm() {
         })
       );
     }
-  }, [dispatch, managers]);
+  }, [dispatch, managers, selectedManagers]);
 
   return (
     <div>

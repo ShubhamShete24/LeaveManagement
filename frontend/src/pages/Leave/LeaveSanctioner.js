@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
@@ -65,7 +64,16 @@ function LeaveSanctioner() {
       );
       setLeaveApplicationStatusHasChanged(false);
     }
-  }, [dispatch, leaveApplicationStatusHasChanged]);
+  }, [
+    dispatch,
+    leaveApplication._id,
+    leaveApplication.leaveCount,
+    leaveApplication?.leaveTypeId,
+    leaveApplication?.userId,
+    leaveApplicationStatus,
+    leaveApplicationStatusHasChanged,
+    sessionData?.user
+  ]);
   useEffect(() => {
     if (leaveApplicationUpdatedResponse?.leaveApplication) {
       setOpen(false);
@@ -73,7 +81,7 @@ function LeaveSanctioner() {
       setSnackBarOpen(true);
       dispatch(ResetLeaveApplicationUpdateResponse());
     }
-  }, [leaveApplicationUpdatedResponse]);
+  }, [dispatch, leaveApplicationUpdatedResponse]);
   const handleModalClosed = () => {
     setOpen(false);
   };
