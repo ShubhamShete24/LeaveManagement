@@ -28,8 +28,8 @@ function Home() {
       }
     },
     arrow: {
-      position: 'absolute',
-      right: 0
+      right: 0,
+      margin: ' 18px'
     }
   });
 
