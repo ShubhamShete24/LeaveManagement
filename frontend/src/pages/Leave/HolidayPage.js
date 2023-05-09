@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, CardContent, Typography, Grid, MenuItem, Select } from '@mui/material';
+import React from 'react';
+import { Card, CardContent, Typography, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 function HolidayPage() {
