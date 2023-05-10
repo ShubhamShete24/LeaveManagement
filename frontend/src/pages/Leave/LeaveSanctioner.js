@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
@@ -48,12 +47,11 @@ function LeaveSanctioner() {
   const dispatch = useDispatch();
   const leaveApplicationUpdatedResponse = useSelector((state) => state.UpdateLeaveApplicationReducer);
   const [leaveApplicationStatusHasChanged, setLeaveApplicationStatusHasChanged] = useState(false);
-  const navigate = useNavigate();
+  const statusValuesMap = {};
+  statusValues.forEach((elem) => {
+    statusValuesMap[elem.name] = elem.value;
+  });
   useEffect(() => {
-    // this should not be hardcoded
-    if (sessionData?.user[0]?.role[0]?.roleName !== 'MANAGER') {
-      navigate('/');
-    }
     dispatch(GetAppliedLeaves(sessionData?.user[0]._id));
     if (leaveApplicationStatusHasChanged) {
       dispatch(
@@ -67,7 +65,16 @@ function LeaveSanctioner() {
       );
       setLeaveApplicationStatusHasChanged(false);
     }
-  }, [dispatch, leaveApplicationStatusHasChanged]);
+  }, [
+    dispatch,
+    leaveApplication._id,
+    leaveApplication.leaveCount,
+    leaveApplication?.leaveTypeId,
+    leaveApplication?.userId,
+    leaveApplicationStatus,
+    leaveApplicationStatusHasChanged,
+    sessionData?.user
+  ]);
   useEffect(() => {
     if (leaveApplicationUpdatedResponse?.leaveApplication) {
       setOpen(false);
@@ -75,7 +82,7 @@ function LeaveSanctioner() {
       setSnackBarOpen(true);
       dispatch(ResetLeaveApplicationUpdateResponse());
     }
-  }, [leaveApplicationUpdatedResponse]);
+  }, [dispatch, leaveApplicationUpdatedResponse]);
   const handleModalClosed = () => {
     setOpen(false);
   };
@@ -149,7 +156,12 @@ function LeaveSanctioner() {
                     {statusValues.find((_) => _.value === data.status).name}
                   </TableCell>
                   <TableCell style={{ minWidth: 200 }} align="right">
-                    <Button onClick={() => handelModalOpen(data._id)}>Action</Button>
+                    <Button
+                      disabled={data.status === statusValuesMap?.approved}
+                      onClick={() => handelModalOpen(data._id)}
+                    >
+                      Action
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

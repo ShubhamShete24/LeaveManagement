@@ -131,3 +131,33 @@ export function UpdateLeaveApplicationReducer(state = leaveApplicationInitialSta
     }
   }
 }
+
+const leaveBalancesInitialState = {
+  leaveBalances: '',
+  message: ''
+};
+// eslint-disable-next-line default-param-last
+export function GetLeaveBalancesReducer(state = leaveBalancesInitialState, action) {
+  switch (action.type) {
+    case types.GET_LEAVE_BALANCES_REQUEST: {
+      return {
+        ...state
+      };
+    }
+    case types.GET_LEAVE_BALANCES_FAILURE: {
+      return {
+        ...state
+      };
+    }
+    case types.GET_LEAVE_BALANCES_SUCCESS: {
+      return {
+        ...state,
+        leaveBalances: action.payload.leaveBalances,
+        message: action.payload.message
+      };
+    }
+    default: {
+      return state;
+    }
+  }
+}

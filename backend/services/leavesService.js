@@ -261,6 +261,45 @@ const updateLeaveApplication = async (req, res) => {
   res.status(responseData.status).send(responseData.data);
 };
 
+const getLeaveBalances = async (req, res) => {
+  const responseData = {
+    status: 200,
+    data: {
+      leaveBalances: null,
+      message: ''
+    }
+  };
+  const { userId } = req.query;
+  try {
+    const leaveBalances = await LeaveBalance.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(userId) }
+      },
+      {
+        $lookup: {
+          from: 'leavetypes',
+          foreignField: '_id',
+          localField: 'leaveTypeId',
+          as: 'leaveType'
+        }
+      }
+    ]);
+    if (leaveBalances != null && leaveBalances.length !== 0) {
+      responseData.status = 200;
+      responseData.data.leaveBalances = leaveBalances;
+      responseData.data.message += 'Leave balances are found';
+    } else {
+      responseData.status = 404;
+      responseData.data.leaveBalances = null;
+      responseData.data.message += 'No leave balances were found';
+    }
+  } catch (e) {
+    responseData.status = 500;
+    responseData.data.leaveBalances = null;
+    responseData.data.message += `There was  a server side problem : ${e.message} `;
+  }
+  res.status(responseData.status).send(responseData.data);
+};
 export {
   createLeaveType,
   updateLeaveType,
@@ -268,5 +307,6 @@ export {
   getLeaveTypes,
   applyForLeaves,
   getAppliedLeaves,
-  updateLeaveApplication
+  updateLeaveApplication,
+  getLeaveBalances
 };

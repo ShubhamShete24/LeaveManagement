@@ -7,7 +7,8 @@ import {
   updateLeaveType,
   applyForLeaves,
   getAppliedLeaves,
-  updateLeaveApplication
+  updateLeaveApplication,
+  getLeaveBalances
 } from '../services/leavesService.js';
 
 const leavesRouter = express.Router();
@@ -19,4 +20,5 @@ leavesRouter.get('/get-leave-types', verifyToken, getLeaveTypes);
 leavesRouter.post('/apply-for-leaves', verifyToken, applyForLeaves);
 leavesRouter.get('/get-applied-leaves', verifyToken, getAppliedLeaves);
 leavesRouter.put('/update-leave-application', verifyToken, updateLeaveApplication);
+leavesRouter.get('/get-leave-balances', getLeaveBalances);
 export default leavesRouter;
