@@ -31,7 +31,7 @@ const createUser = async (req, res) => {
     if (!user.password || !user.email || !user.name || !user.reportingManager || !user.role) {
       responseData.status = 400;
       responseData.message = 'Required attributes not suppied.';
-      res.send(responseData);
+      res.status(responseData.status).send(responseData);
     }
     const uniqueSalt = crypto.randomBytes(16).toString('hex');
     const hash = generateHash(user.password, uniqueSalt);
@@ -66,7 +66,7 @@ const createUser = async (req, res) => {
       await LeaveBalance.findOneAndDelete({ _id: record._id });
     });
   }
-  res.send(responseData);
+  res.status(responseData.status).send(responseData);
 };
 
 const authenticate = async (req, res) => {

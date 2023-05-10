@@ -31,7 +31,6 @@ export const GetUsersBasedOnCondition = (query) => async (dispatch) => {
   await dispatch({
     type: types.GET_USERS_BASED_ON_CONDITION_REQUEST
   });
-  console.log('inside user action');
   getUsers(query).then(async (axiosResponse) => {
     if (axiosResponse.data) {
       await dispatch({

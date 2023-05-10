@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CardContent, Grid, TextField, Typography, Button } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { createEmploymentDetails } from '../../services/UserCreation';
+import { API_RESPONSE_CODES } from '../../utils/constants';
 
 function EmploymentDetailsForm() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const data = location.state;
+
+  const [payload, setPayload] = useState({
+    joiningDate: '',
+    department: '',
+    designation: '',
+    project: '',
+    employeeType: ''
+  });
+
+  const handleSave = async () => {
+    payload.userId = data?.userInfo?.userId;
+    const createPersonalDetailResult = await createEmploymentDetails(payload);
+    if (createPersonalDetailResult.status === API_RESPONSE_CODES.SUCCESS_CREATE) {
+      navigate('/dashboard/');
+    }
+  };
   return (
     <div>
       <CardContent>
@@ -9,38 +31,114 @@ function EmploymentDetailsForm() {
           Employment Details
         </Typography>
         <Grid container spacing={1}>
-          <Grid item xs={12} alignItems="center">
-            <TextField fullWidth label="Full Name" required />
+          <Grid item xs={12} sm={6} alignItems="center">
+            <TextField
+              name="userName"
+              label="Name"
+              fullWidth
+              variant="outlined"
+              value={data?.userInfo?.name}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} alignItems="center">
+            <TextField
+              name="employeeId"
+              label="Employee Id"
+              variant="outlined"
+              value={data?.userInfo?.employeeId}
+              fullWidth
+              disabled
+            />
           </Grid>
           <Grid item xs={12} sm={6} alignItems="center">
             <TextField
               name="joiningDate"
               label="Joining Date"
-              fullWidth
-              variant="outlined"
-              required
               type="date"
+              variant="outlined"
+              value={payload.joiningDate}
+              onChange={(e) =>
+                setPayload({
+                  ...payload,
+                  joiningDate: e.target.value
+                })
+              }
               InputLabelProps={{
                 shrink: true
               }}
+              fullWidth
+              required
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="department" label="Department" fullWidth variant="outlined" required />
+            <TextField
+              name="department"
+              label="Department"
+              variant="outlined"
+              value={payload.department}
+              onChange={(e) =>
+                setPayload({
+                  ...payload,
+                  department: e.target.value
+                })
+              }
+              fullWidth
+              required
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="designation" label="Designation" fullWidth variant="outlined" required />
+            <TextField
+              name="designation"
+              label="Designation"
+              variant="outlined"
+              value={payload.designation}
+              onChange={(e) =>
+                setPayload({
+                  ...payload,
+                  designation: e.target.value
+                })
+              }
+              fullWidth
+              required
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="project" label="Project" fullWidth variant="outlined" required />
+            <TextField
+              name="project"
+              label="Project"
+              variant="outlined"
+              value={payload.project}
+              onChange={(e) =>
+                setPayload({
+                  ...payload,
+                  project: e.target.value
+                })
+              }
+              fullWidth
+              required
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="employeeType" label="Employee Type" fullWidth variant="outlined" required />
+            <TextField
+              name="employeeType"
+              label="Employee Type"
+              variant="outlined"
+              value={payload.employeeType}
+              onChange={(e) =>
+                setPayload({
+                  ...payload,
+                  employeeType: e.target.value
+                })
+              }
+              fullWidth
+              required
+            />
           </Grid>
         </Grid>
 
         <Grid item xs={12} sm={12} marginTop={3} className="d-flex justify-content-end">
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" onClick={handleSave}>
             Save
           </Button>
         </Grid>

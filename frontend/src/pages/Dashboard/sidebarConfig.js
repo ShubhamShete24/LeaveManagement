@@ -3,8 +3,8 @@ import {
   Home,
   Event,
   AccountCircle,
-  PermContactCalendar,
-  Dataset,
+  // PermContactCalendar,
+  // Dataset,
   HolidayVillage,
   Approval
 } from '@mui/icons-material';
@@ -28,18 +28,18 @@ const sidebarConfig = [
     path: '/dashboard/user',
     scope: ['ADMIN']
   },
-  {
-    title: 'Personal Info',
-    icon: <PermContactCalendar />,
-    path: '/dashboard/personal-info',
-    scope: ['ADMIN']
-  },
-  {
-    title: 'Employee Details',
-    icon: <Dataset />,
-    path: '/dashboard/details',
-    scope: ['ADMIN']
-  },
+  // {
+  //   title: 'Personal Info',
+  //   icon: <PermContactCalendar />,
+  //   path: '/dashboard/personal-info',
+  //   scope: ['ADMIN']
+  // },
+  // {
+  //   title: 'Employee Details',
+  //   icon: <Dataset />,
+  //   path: '/dashboard/employee-details',
+  //   scope: ['ADMIN']
+  // },
   {
     title: 'Holidays',
     icon: <HolidayVillage />,
