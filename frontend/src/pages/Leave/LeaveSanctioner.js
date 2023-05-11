@@ -47,6 +47,10 @@ function LeaveSanctioner() {
   const dispatch = useDispatch();
   const leaveApplicationUpdatedResponse = useSelector((state) => state.UpdateLeaveApplicationReducer);
   const [leaveApplicationStatusHasChanged, setLeaveApplicationStatusHasChanged] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [leaveApplication, setLeaveApplication] = useState();
+  const [leaveApplicationStatus, setLeaveApplicationStatus] = useState();
+
   const statusValuesMap = {};
   statusValues.forEach((elem) => {
     statusValuesMap[elem.name] = elem.value;
@@ -67,8 +71,8 @@ function LeaveSanctioner() {
     }
   }, [
     dispatch,
-    leaveApplication._id,
-    leaveApplication.leaveCount,
+    leaveApplication?._id,
+    leaveApplication?.leaveCount,
     leaveApplication?.leaveTypeId,
     leaveApplication?.userId,
     leaveApplicationStatus,
@@ -90,9 +94,6 @@ function LeaveSanctioner() {
     setOpen(true);
     setLeaveApplication(appliedLeaves?.find((data) => data._id === id));
   };
-  const [open, setOpen] = useState(false);
-  const [leaveApplication, setLeaveApplication] = useState();
-  const [leaveApplicationStatus, setLeaveApplicationStatus] = useState();
 
   const handleStatusChange = (e) => {
     setLeaveApplicationStatus(e.target.value);
