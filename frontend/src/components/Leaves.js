@@ -87,7 +87,7 @@ function Leaves() {
         const dayAdded = fromDate1.add(day, 'day');
         if (
           dayAdded.get('d') === 0 ||
-          holidays.filter((holiday) => dayjs(holiday.date).isSame(dayAdded, 'day')).length === 1
+          holidays?.filter((holiday) => dayjs(holiday.date).isSame(dayAdded, 'day')).length === 1
         ) {
           holidayCount += 1;
         }
@@ -109,7 +109,7 @@ function Leaves() {
     if (leaveTypes === undefined || leaveTypes.length === 0) {
       dispatch(GetLeaveTypes());
     }
-    if (holidays === undefined || holidays.length === 0) {
+    if (holidays === undefined || holidays?.length === 0) {
       dispatch(GetAllHolidays());
     }
     if (managers === undefined || managers.length === 0) {
