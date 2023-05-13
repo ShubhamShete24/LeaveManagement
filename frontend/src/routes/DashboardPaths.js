@@ -6,7 +6,8 @@ import Leaves from '../components/Leaves';
 // import UserForm from '../pages/CreateUser/UserForm';
 import PersonalDetailsForm from '../pages/CreateUser/PersonalDetailsForm';
 import EmploymentDetailsForm from '../pages/CreateUser/EmploymentDetailsForm';
-import HolidayPage from '../pages/Leave/HolidayPage';
+import HolidayPage from '../pages/holidays/HolidayPage';
+import HolidayForm from '../pages/holidays/HolidayForm';
 import LeaveSanctioner from '../pages/Leave/LeaveSanctioner';
 import { USER_INFO_KEY } from '../utils/constants';
 import Users from '../pages/CreateUser/Users';
@@ -26,6 +27,7 @@ function DashboardPaths() {
             <Route path="/user" element={<Users />} />
             <Route path="/personal-info" element={<PersonalDetailsForm />} />
             <Route path="/employee-details" element={<EmploymentDetailsForm />} />
+            <Route path="/holiday-form" element={<HolidayForm />} />
           </>
         ) : null}
         {sessionData?.user[0]?.role[0]?.roleName === 'MANAGER' ||

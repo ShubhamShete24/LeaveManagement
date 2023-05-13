@@ -47,6 +47,12 @@ const sidebarConfig = [
     scope: ['ADMIN', 'MANAGER', 'EMPLOYEE']
   },
   {
+    title: 'Holiday Form',
+    icon: <HolidayVillage />,
+    path: '/dashboard/holiday-form',
+    scope: ['ADMIN', 'MANAGER']
+  },
+  {
     title: 'Leave sanctioner',
     icon: <Approval />,
     path: '/dashboard/leave-sanctioner',
