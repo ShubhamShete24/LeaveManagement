@@ -290,6 +290,12 @@ const getUsers = async (req, res) => {
           foreignField: '_id',
           as: 'roles'
         }
+      },
+      {
+        $project: {
+          hash: 0,
+          salt: 0
+        }
       }
     ]);
 
