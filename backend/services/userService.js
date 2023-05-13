@@ -9,6 +9,8 @@ import EducationDetails from '../models/educationalDetails.js';
 import BankDetails from '../models/bankDetails.js';
 import EmploymentDetails from '../models/employmentDetails.js';
 import LeaveBalance from '../models/leaveBalance.js';
+import LeaveType from '../models/leaveType.js';
+import leaveTypesMap from '../constants/leaveTypes.js';
 
 dotenv.config();
 
@@ -20,7 +22,7 @@ const verifyHash = (hash, salt, plainText) =>
 // createUser
 const createUser = async (req, res) => {
   let user = req.body;
-  const responseData = {
+  let responseData = {
     status: 0,
     data: null,
     message: ''
@@ -47,9 +49,44 @@ const createUser = async (req, res) => {
       const userData = userCreated.toObject();
       delete userData.hash;
       delete userData.salt;
-      responseData.status = 201;
-      responseData.message = 'User has been created.';
-      responseData.data = userData;
+      const leaveTypes = await LeaveType.find({});
+      let count = 0;
+      for (let index = 0; index < leaveTypes.length; index += 1) {
+        const record = leaveTypes[index];
+        let leaveBalance = record.leavesAllowed;
+        if (leaveTypesMap.Annual === record.leaveType) {
+          leaveBalance /= 12;
+        }
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const leaveBalanceCreated = await LeaveBalance.create({
+            leaveType: new mongoose.Types.ObjectId(record._id),
+            leaveBalance,
+            user: userCreated._id,
+            leaveBalanceUpdatedForMonth: new Date().getMonth()
+          });
+          if (leaveBalanceCreated != null) {
+            leavesBalanceCreatedIds.push(leaveBalanceCreated._id);
+            count += 1;
+          }
+        } catch (e) {
+          responseData.message += e.message;
+          count = 0;
+          break;
+        }
+      }
+      if (leaveTypes.length === count) {
+        responseData = {
+          message: 'User has been created.',
+          userCreated
+        };
+        res.status(200).send(responseData);
+      } else {
+        responseData = {
+          message: 'User could not be created ',
+          userCreated: null
+        };
+      }
     } else {
       responseData.status = 500;
       responseData.message += 'User could not be created';
@@ -66,7 +103,7 @@ const createUser = async (req, res) => {
       await LeaveBalance.findOneAndDelete({ _id: record._id });
     });
   }
-  res.status(responseData.status).send(responseData);
+  res.status(responseData.status).send(responseData.data);
 };
 
 const authenticate = async (req, res) => {
