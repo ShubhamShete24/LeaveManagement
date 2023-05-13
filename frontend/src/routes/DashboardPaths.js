@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Home from '../pages/Dashboard/Home';
-import Leaves from '../components/Leaves';
+import Leaves from '../pages/Leave/Leaves';
 // import UserForm from '../pages/CreateUser/UserForm';
 import PersonalDetailsForm from '../pages/CreateUser/PersonalDetailsForm';
 import EmploymentDetailsForm from '../pages/CreateUser/EmploymentDetailsForm';
