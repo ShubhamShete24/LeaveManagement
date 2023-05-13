@@ -1,66 +1,83 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CustomDataGrid from './CustomDataGrid';
 import { getAllUsersData } from '../../redux/actions/userDetailActions';
+import DataGridComponent from '../../components/dataGrid/dataGrid';
 
 function Users() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const allusersdata = useSelector((state) => state.UserDetailReducers?.allUsers);
-  console.log('userss', allusersdata);
-
+  const userData = useSelector((state) => state.UserDetailReducers?.allUsers);
   useEffect(() => {
     dispatch(getAllUsersData());
-  }, [dispatch]);
+  }, []);
 
-  const columns = [
-    { field: 'id', headerName: 'ID', width: 80 },
-    { field: 'name', headerName: 'Name ', width: 130 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'age', headerName: 'Age', type: 'number', width: 90 },
+  const userDataHeader = [
+    {
+      field: '_id',
+      headerName: 'ID',
+      flex: 0.25,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center'
+    },
+    {
+      field: 'name',
+      headerName: 'Name ',
+      flex: 1
+    },
+    {
+      field: 'email',
+      headerName: 'Email',
+      flex: 1
+    },
+    {
+      field: 'age',
+      headerName: 'Age',
+      flex: 0.25,
+      headerAlign: 'center',
+      align: 'center'
+    },
     {
       field: 'edit',
       headerName: 'Edit',
-      width: 100,
+      flex: 0.25,
+      headerAlign: 'center',
+      align: 'center',
+      sortable: false,
+      disableColumnMenu: true,
       renderCell: (params) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <EditIcon style={{ color: 'blue', cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
-        </div>
+        <EditIcon style={{ color: 'blue', cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
       )
     },
     {
       field: 'delete',
       headerName: 'Delete',
-      width: 100,
+      flex: 0.25,
+      align: 'center',
+      headerAlign: 'center',
+      sortable: false,
+      disableColumnMenu: true,
       renderCell: (params) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <DeleteIcon style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
-        </div>
+        <DeleteIcon style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
       )
     }
   ];
 
   const handleEdit = (rowData) => {
     console.log(rowData);
-    // Open a form to edit the user data
   };
-
-  const rows = [
-    { id: 1, Name: 'John', email: 'johndoe@example.com', age: 25 },
-    { id: 2, Name: 'Jane', email: 'janedoe@example.com', age: 32 },
-    { id: 3, Name: 'Bob', email: 'bobsmith@example.com', age: 45 },
-    { id: 4, Name: 'Alice', email: 'alicejohnson@example.com', age: 28 },
-    { id: 5, Name: 'Mark', email: 'markdavis@example.com', age: 34 }
-  ];
 
   return (
     <div>
-      Users
-      <CustomDataGrid columns={columns} rows={rows} />
+      <Typography sx={{ fontSize: 27 }} margin="0 16px 16px 0" color="text.secondary">
+        Users
+      </Typography>
+      <DataGridComponent tableData={userData} headers={userDataHeader} getRowId={(row) => row._id} />
     </div>
   );
 }

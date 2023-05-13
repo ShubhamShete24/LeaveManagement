@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Home from '../pages/Dashboard/Home';
 import Leaves from '../pages/Leave/Leaves';
-// import UserForm from '../pages/CreateUser/UserForm';
+import UserForm from '../pages/CreateUser/UserForm';
 import PersonalDetailsForm from '../pages/CreateUser/PersonalDetailsForm';
 import EmploymentDetailsForm from '../pages/CreateUser/EmploymentDetailsForm';
 import HolidayPage from '../pages/Leave/HolidayPage';
@@ -24,6 +24,7 @@ function DashboardPaths() {
         {sessionData?.user[0]?.role[0]?.roleName === 'ADMIN' ? (
           <>
             <Route path="/user" element={<Users />} />
+            <Route path="/user-details" element={<UserForm />} />
             <Route path="/personal-info" element={<PersonalDetailsForm />} />
             <Route path="/employee-details" element={<EmploymentDetailsForm />} />
           </>
