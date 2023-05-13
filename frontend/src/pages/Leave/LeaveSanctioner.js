@@ -43,9 +43,9 @@ function LeaveSanctioner() {
 
   const sessionData =
     useSelector((state) => state.LoginUserDetailsReducer.response) || JSON.parse(localStorage.getItem(USER_INFO_KEY));
-  const appliedLeaves = useSelector((state) => state.GetAppliedLeavesReducer?.appliedLeaves) || [];
+  const appliedLeaves = useSelector((state) => state.LeaveReducer?.appliedLeaves) || [];
   const dispatch = useDispatch();
-  const leaveApplicationUpdatedResponse = useSelector((state) => state.UpdateLeaveApplicationReducer);
+  const leaveApplicationUpdatedResponse = useSelector((state) => state.LeaveReducer);
   const [leaveApplicationStatusHasChanged, setLeaveApplicationStatusHasChanged] = useState(false);
   const [open, setOpen] = useState(false);
   const [leaveApplication, setLeaveApplication] = useState();
@@ -57,6 +57,9 @@ function LeaveSanctioner() {
   });
   useEffect(() => {
     dispatch(GetAppliedLeaves(sessionData?.user[0]._id));
+  }, [dispatch, leaveApplicationStatusHasChanged]);
+
+  useEffect(() => {
     if (leaveApplicationStatusHasChanged) {
       dispatch(
         UpdateLeaveApplication({
