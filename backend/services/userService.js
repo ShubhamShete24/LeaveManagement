@@ -46,10 +46,16 @@ const createUser = async (req, res) => {
     user = { ...user, role: objIdRole };
     userCreated = await User.create(user);
     if (userCreated) {
+      console.log('[*] User created');
       const userData = userCreated.toObject();
       delete userData.hash;
       delete userData.salt;
       const leaveTypes = await LeaveType.find({});
+      if (leaveTypes?.length !== 0) {
+        console.log(`[*] Found leave types. Trying to create respective leave balances.`);
+      } else {
+        console.log(`[*] No leave types found. `);
+      }
       let count = 0;
       for (let index = 0; index < leaveTypes.length; index += 1) {
         const record = leaveTypes[index];
@@ -60,50 +66,66 @@ const createUser = async (req, res) => {
         try {
           // eslint-disable-next-line no-await-in-loop
           const leaveBalanceCreated = await LeaveBalance.create({
-            leaveType: new mongoose.Types.ObjectId(record._id),
+            leaveTypeId: new mongoose.Types.ObjectId(record._id),
             leaveBalance,
-            user: userCreated._id,
+            userId: userCreated._id,
             leaveBalanceUpdatedForMonth: new Date().getMonth()
           });
           if (leaveBalanceCreated != null) {
+            console.log(`[*] Leave balance created for leaveType : ${record.leaveType} `);
             leavesBalanceCreatedIds.push(leaveBalanceCreated._id);
             count += 1;
+          } else {
+            console.log('[*] Could not create leave balance. Breaking.');
+            responseData.message += 'leaveBalance Validation failed';
+            responseData.status = 400;
+            count = 0;
+            break;
           }
         } catch (e) {
+          console.log(`[*] There was an exception while trying to create leave balance : ${e.message}`);
           responseData.message += e.message;
+          responseData.status = 400;
+          console.log(e);
           count = 0;
           break;
         }
       }
       if (leaveTypes.length === count) {
-        responseData = {
+        console.log('[*] Leave balances created for each leavetypes! User creation process completed.');
+        responseData.data = {
           message: 'User has been created.',
           userCreated
         };
-        res.status(200).send(responseData);
+        responseData.status = 201;
       } else {
+        console.log('[*] User could not be created due to difference in leave types and leave balance created');
+        responseData.status = 400;
         responseData = {
           message: 'User could not be created ',
           userCreated: null
         };
       }
     } else {
+      console.log('[*] User could not be created due to difference in leave types and leave balance created');
       responseData.status = 500;
       responseData.message += 'User could not be created';
       responseData.data = null;
     }
   } catch (err) {
+    console.log(`[*] User could not be created due to an exception : ${err.message}`);
     responseData.status = 500;
     responseData.message = err.message;
   }
   if (responseData.status !== 201 && userCreated !== null) {
     // rollback
+    console.log(`[*] Rolling back all the changes`);
     await User.findOneAndDelete({ _id: userCreated._id });
     leavesBalanceCreatedIds.forEach(async (record) => {
       await LeaveBalance.findOneAndDelete({ _id: record._id });
     });
   }
-  res.status(responseData.status).send(responseData.data);
+  res.status(responseData.status).send(responseData);
 };
 
 const authenticate = async (req, res) => {
