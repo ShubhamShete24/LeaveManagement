@@ -22,7 +22,7 @@ const verifyHash = (hash, salt, plainText) =>
 // createUser
 const createUser = async (req, res) => {
   let user = req.body;
-  let responseData = {
+  const responseData = {
     status: 0,
     data: null,
     message: ''
@@ -93,18 +93,14 @@ const createUser = async (req, res) => {
       }
       if (leaveTypes.length === count) {
         console.log('[*] Leave balances created for each leavetypes! User creation process completed.');
-        responseData.data = {
-          message: 'User has been created.',
-          userCreated
-        };
+        responseData.data = userCreated;
+        responseData.message = 'User has been created.';
         responseData.status = 201;
       } else {
         console.log('[*] User could not be created due to difference in leave types and leave balance created');
         responseData.status = 400;
-        responseData = {
-          message: 'User could not be created ',
-          userCreated: null
-        };
+        responseData.message = 'User could not be created ';
+        responseData.data = null;
       }
     } else {
       console.log('[*] User could not be created due to difference in leave types and leave balance created');
@@ -124,6 +120,47 @@ const createUser = async (req, res) => {
     leavesBalanceCreatedIds.forEach(async (record) => {
       await LeaveBalance.findOneAndDelete({ _id: record._id });
     });
+    // respndata
+    responseData.status = 400;
+    responseData.message += 'User could not be created. Due  to some problem we had to roll back';
+    responseData.data = null;
+  }
+  res.status(responseData.status).send(responseData);
+};
+
+// Delete user
+/**
+ * Here as of now we are not hard deleting user. We are just marking a user as delete.
+ */
+const deleteUser = async (req, res) => {
+  const responseData = {
+    status: 0,
+    data: {
+      message: '',
+      deletedUser: null
+    }
+  };
+
+  const { userId } = req.body;
+  try {
+    const deletedUser = await User.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(userId) },
+      { isDeleted: true },
+      { new: true }
+    );
+    if (deletedUser != null) {
+      console.log(`[*] User deleted successfully.`);
+      responseData.status = 200;
+      responseData.data = deletedUser;
+    } else {
+      console.log(`[*] No user found`);
+      responseData.status = 200;
+      responseData.data = null;
+    }
+  } catch (e) {
+    console.log(`[*] User could not be deleted because of an exception : ${e.message} `);
+    responseData.status = 500;
+    responseData.data.message = e.message;
   }
   res.status(responseData.status).send(responseData);
 };
@@ -474,5 +511,6 @@ export {
   getUsers,
   createPersonalDetails,
   createEmploymentDetails,
-  getUsersBasedOnCondition
+  getUsersBasedOnCondition,
+  deleteUser
 };

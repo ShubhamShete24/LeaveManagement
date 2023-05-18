@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false
     }
   },
   {

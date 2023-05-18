@@ -9,7 +9,8 @@ import {
   getUsers,
   createPersonalDetails,
   createEmploymentDetails,
-  getUsersBasedOnCondition
+  getUsersBasedOnCondition,
+  deleteUser
 } from '../services/userService.js';
 
 const userRouter = express.Router();
@@ -23,5 +24,6 @@ userRouter.post('/get-users-based-on-condition', getUsersBasedOnCondition);
 userRouter.post('/create-user', verifyAdmin, createUser);
 userRouter.post('/create-personalDetails', verifyAdmin, createPersonalDetails);
 userRouter.post('/create-employmentDetails', verifyAdmin, createEmploymentDetails);
+userRouter.delete('/delete-user', verifyAdmin, deleteUser);
 
 export default userRouter;
