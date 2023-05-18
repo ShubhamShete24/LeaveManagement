@@ -78,7 +78,7 @@ function Leaves() {
     (fromDate, toDate) => {
       const toDate1 = dayjs(toDate);
       const fromDate1 = dayjs(fromDate);
-      let diff = toDate1.diff(fromDate, 'days');
+      let diff = toDate1.diff(fromDate1, 'days');
       console.log('I am called', diff);
       if (diff < 0) {
         return 0;

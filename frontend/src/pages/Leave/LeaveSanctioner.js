@@ -1,30 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Box,
-  Button,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Paper,
-  Select,
-  Snackbar,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography
-} from '@mui/material';
+import { Box, IconButton, InputLabel, MenuItem, Modal, Select, Snackbar, Tooltip, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import TaskTwoToneIcon from '@mui/icons-material/TaskTwoTone';
 import { USER_INFO_KEY, statusValues } from '../../utils/constants';
 import {
   GetAppliedLeaves,
   ResetLeaveApplicationUpdateResponse,
   UpdateLeaveApplication
 } from '../../redux/actions/leaveActions';
+import DataGridComponent from '../../components/dataGrid/dataGrid';
 
 function LeaveSanctioner() {
   const style = {
@@ -92,9 +77,9 @@ function LeaveSanctioner() {
   const handleModalClosed = () => {
     setOpen(false);
   };
-  const handelModalOpen = (id) => {
+  const handelModalOpen = (data) => {
     setOpen(true);
-    setLeaveApplication(appliedLeaves?.find((data) => data._id === id));
+    setLeaveApplication(appliedLeaves?.find((_) => _._id === data._id));
   };
 
   const handleStatusChange = (e) => {
@@ -112,49 +97,99 @@ function LeaveSanctioner() {
       <CloseIcon fontSize="small" />
     </IconButton>
   );
+
+  const leaveApplicationsDataHeader = [
+    {
+      field: 'userInfo',
+      headerName: 'Name ',
+      valueGetter: (params) => params.value[0].name,
+      flex: 1
+    },
+    {
+      field: 'fromDate',
+      headerName: 'From Date',
+      valueGetter: (params) => new Date(params.value).toDateString(),
+      flex: 1
+    },
+    {
+      field: 'fromSession',
+      headerName: 'fromSession',
+      flex: 1,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center'
+    },
+    {
+      field: 'toDate',
+      headerName: 'To Date',
+      valueGetter: (params) => new Date(params.value).toDateString(),
+      flex: 1
+    },
+    {
+      field: 'toSession',
+      headerName: 'To Session',
+      flex: 1,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center'
+    },
+    {
+      field: 'leaveType',
+      headerName: 'Leave Type ',
+      valueGetter: (params) => params.value[0].leaveType,
+      flex: 1
+    },
+    {
+      field: 'leaveCount',
+      headerName: 'Leave count',
+      flex: 1,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center'
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 1,
+      valueGetter: (param) => statusValues.find((_) => _.value === param.value).name,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center'
+    },
+    {
+      field: 'edit',
+      headerName: 'Edit',
+      flex: 0.25,
+      headerAlign: 'center',
+      align: 'center',
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) =>
+        params.row.status === statusValuesMap?.approved ? (
+          <Tooltip title="You have approved leave application! contact admin for any change">
+            <TaskTwoToneIcon
+              sx={{
+                color: 'grey',
+                backgroundColor: 'darkgrey'
+              }}
+            />
+          </Tooltip>
+        ) : (
+          <TaskTwoToneIcon
+            style={{ color: 'steelblue', cursor: 'pointer' }}
+            onClick={() => handelModalOpen(params.row)}
+          />
+        )
+    }
+  ];
+
   return (
     <>
-      <div id="filters" />
-      <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: 0 }}>
-        <TableContainer component={Paper} style={{ width: 1300, alignSelf: 'center', margin: 'auto' }}>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>User</TableCell>
-                <TableCell align="right">From date</TableCell>
-                <TableCell align="right">From session</TableCell>
-                <TableCell align="right">To date</TableCell>
-                <TableCell align="right">To session</TableCell>
-                <TableCell align="right">Leave Type</TableCell>
-                <TableCell align="right">Num. of days</TableCell>
-                <TableCell align="right">status</TableCell>
-                <TableCell align="right">Review and sanction</TableCell>
-              </TableRow>
-            </TableHead>
+      {/*
             <TableBody>
               {appliedLeaves?.map((data) => (
-                <TableRow key={data._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell style={{ minWidth: 100 }} component="th" scope="row">
-                    {data.userInfo[0].name}
-                  </TableCell>
-                  <TableCell style={{ minWidth: 100 }} align="right">
-                    {new Date(data.fromDate).toDateString()}
-                  </TableCell>
-                  <TableCell style={{ minWidth: 100 }} align="right">
-                    {data.fromSession}
-                  </TableCell>
-                  <TableCell style={{ minWidth: 100 }} align="right">
-                    {new Date(data.toDate).toDateString()}
-                  </TableCell>
-                  <TableCell style={{ minWidth: 100 }} align="right">
-                    {data.toSession}
-                  </TableCell>
-                  <TableCell style={{ minWidth: 100 }} align="right">
-                    {data.leaveType[0].leaveType}
-                  </TableCell>
-                  <TableCell style={{ minWidth: 90 }} align="right">
-                    {data.leaveCount}
-                  </TableCell>
+               
+                 
                   <TableCell style={{ minWidth: 100 }} align="right">
                     {statusValues.find((_) => _.value === data.status).name}
                   </TableCell>
@@ -171,7 +206,8 @@ function LeaveSanctioner() {
             </TableBody>
           </Table>
         </TableContainer>
-      </Paper>
+      </Paper> */}
+      <DataGridComponent headers={leaveApplicationsDataHeader} tableData={appliedLeaves} getRowId={(row) => row._id} />
       <Modal
         open={open}
         onClose={handleModalClosed}
