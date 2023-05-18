@@ -327,19 +327,65 @@ const getUsers = async (req, res) => {
         }
       },
       {
+        $unwind: {
+          path: '$reportingManager',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $lookup: {
-          from: 'personalDetails',
-          localField: 'personalDetailsId',
+          from: 'personaldetails',
+          localField: 'personalDetails',
           foreignField: '_id',
           as: 'personalDetails'
         }
       },
       {
+        $unwind: {
+          path: '$personalDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $lookup: {
-          from: 'employmentDetails',
+          from: 'bankdetails',
+          localField: 'personalDetails.bankDetails',
+          foreignField: '_id',
+          as: 'personalDetails.bankDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$personalDetails.bankDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'educationdetails',
+          localField: 'personalDetails.educationalDetails',
+          foreignField: '_id',
+          as: 'personalDetails.educationalDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$personalDetails.educationalDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'employmentdetails',
           localField: 'employmentDetails',
           foreignField: '_id',
-          as: 'employeeDetails'
+          as: 'employmentDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$employmentDetails',
+          preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -347,7 +393,21 @@ const getUsers = async (req, res) => {
           from: 'roles',
           localField: 'role',
           foreignField: '_id',
-          as: 'roles'
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                roleName: 1
+              }
+            }
+          ],
+          as: 'role'
+        }
+      },
+      {
+        $unwind: {
+          path: '$role',
+          preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -361,14 +421,14 @@ const getUsers = async (req, res) => {
     responseData.data = users;
     responseData.message = 'Users found!';
     responseData.status = 200;
-    res.send(responseData);
+    res.status(responseData.status).send(responseData);
   } catch (e) {
     responseData = {
       status: 500,
       message: e,
       data: null
     };
-    res.send(responseData);
+    res.status(responseData.status).send(responseData);
   }
 };
 
