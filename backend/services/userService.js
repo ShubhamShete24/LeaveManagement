@@ -467,6 +467,68 @@ const createPersonalDetails = async (req, res) => {
   }
 };
 
+const updatePersonalDetail = async (req, res) => {
+  const personalDetail = req.body;
+  let status = 200;
+  const responseData = {
+    data: null,
+    message: ''
+  };
+  const personalDetailId = personalDetail._id;
+  const { educationalDetails, bankDetails } = personalDetail;
+  delete personalDetail._id;
+  delete personalDetail.educationalDetails;
+  delete personalDetail.bankDetails;
+
+  const educationDetailId = educationalDetails._id;
+  delete educationalDetails._id;
+
+  const backDetailId = bankDetails._id;
+  delete bankDetails._id;
+
+  try {
+    const updatedEducationDetails = await EducationDetails.findByIdAndUpdate(
+      { _id: new mongoose.Types.ObjectId(educationDetailId) },
+      educationalDetails,
+      {
+        new: true
+      }
+    );
+    const updatedBankDetails = await BankDetails.findByIdAndUpdate(
+      { _id: new mongoose.Types.ObjectId(backDetailId) },
+      bankDetails,
+      { new: true }
+    );
+    if (updatedBankDetails !== null && updatedEducationDetails !== null) {
+      const updatedPersonalDetail = await PersonalDetails.findByIdAndUpdate(
+        { _id: new mongoose.Types.ObjectId(personalDetailId) },
+        personalDetail,
+        {
+          new: true
+        }
+      );
+      if (updatedPersonalDetail !== null) {
+        responseData.data = {
+          updatedPersonalDetail,
+          updatedBankDetails,
+          updatedEducationDetails
+        };
+        responseData.message = 'updated personal details successfully.';
+      } else {
+        status = 400;
+        responseData.message = 'Personal details could not be found or there must been some other issue.';
+      }
+    } else {
+      status = 400;
+      responseData.message =
+        'Personal details could not be updated as dependent objects (education or bank details) could not be updated.';
+    }
+  } catch (e) {
+    responseData.message += `There was an exception. ${e.message}`;
+  }
+  res.status(status).send(responseData);
+};
+
 // Employment Details
 const createEmploymentDetails = async (req, res) => {
   const { joiningDate, department, designation, project, employeeType, userId } = req.body;
@@ -501,6 +563,36 @@ const createEmploymentDetails = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+};
+
+const updateEmploymentDetail = async (req, res) => {
+  const employmentDetail = req.body;
+  let status = 200;
+  const responseData = {
+    data: null,
+    message: ''
+  };
+  const employmentDetailId = employmentDetail._id;
+  delete employmentDetail._id;
+  try {
+    const updatedPersonalDetail = await EmploymentDetails.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(employmentDetailId) },
+      employmentDetail,
+      {
+        new: true
+      }
+    );
+    if (updatedPersonalDetail !== null) {
+      responseData.data = updatedPersonalDetail;
+      responseData.message = 'Employment details updated successfully. ';
+    } else {
+      status = 400;
+      responseData.message = 'Employment details could not be found or there must been some other issue.';
+    }
+  } catch (e) {
+    responseData.message += `There was an exception. ${e.message}`;
+  }
+  res.status(status).send(responseData);
 };
 
 const getUsersBasedOnCondition = async (req, res) => {
@@ -572,5 +664,7 @@ export {
   createPersonalDetails,
   createEmploymentDetails,
   getUsersBasedOnCondition,
-  deleteUser
+  deleteUser,
+  updatePersonalDetail,
+  updateEmploymentDetail
 };
