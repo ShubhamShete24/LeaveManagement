@@ -2,15 +2,23 @@ import mongoose from 'mongoose';
 
 const holidaySchema = mongoose.Schema(
   {
-    holidayName: {
-      type: String,
-      required: true,
-      unique: true
-    },
-    date: {
-      type: Date,
+    year: {
+      type: Number,
       required: true
-    }
+    },
+    hollidayList: [
+      {
+        holidayName: {
+          type: String,
+          required: true,
+          unique: true
+        },
+        date: {
+          type: Date,
+          required: true
+        }
+      }
+    ]
   },
   {
     timestamps: {

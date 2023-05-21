@@ -25,6 +25,23 @@ export default function GetHolidaysReducer(state = holidaysInitialState, action)
         message: action.payload.message
       };
     }
+    case types.CREATE_HOLIDAY_FAILURE: {
+      return {
+        ...state
+      };
+    }
+    case types.CREATE_HOLIDAY_REQUEST: {
+      return {
+        ...state
+      };
+    }
+    case types.CREATE_HOLIDAY_SUCCESS: {
+      return {
+        ...state,
+        createholidays: action.payload.createholidays,
+        message: action.payload.message
+      };
+    }
     default: {
       return state;
     }

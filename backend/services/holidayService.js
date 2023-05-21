@@ -4,8 +4,8 @@ import Holiday from '../models/holiday.js';
 const createHoliday = async (req, res) => {
   const responseData = {
     status: 0,
+    message: '',
     data: {
-      message: '',
       createdHoliday: null
     }
   };
@@ -14,7 +14,7 @@ const createHoliday = async (req, res) => {
     const newHoliday = await Holiday.create(holiday);
     if (newHoliday != null) {
       responseData.status = 201;
-      responseData.data.message = 'Leave type created successfully!';
+      responseData.data.message = 'Holidays  created successfully!';
       responseData.data.createdHoliday = newHoliday;
     } else {
       responseData.status = 500;
