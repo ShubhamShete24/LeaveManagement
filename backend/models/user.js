@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
       ref: 'roles',
       required: true
     },
-    personalDetailsId: {
+    personalDetails: {
       type: mongoose.Types.ObjectId,
       ref: 'personalDetails',
       required: false
@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false
     }
   },
   {

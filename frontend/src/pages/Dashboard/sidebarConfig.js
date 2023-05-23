@@ -23,7 +23,7 @@ const sidebarConfig = [
     scope: ['ADMIN', 'EMPLOYEE', 'MANAGER']
   },
   {
-    title: 'Create User',
+    title: 'User',
     icon: <AccountCircle />,
     path: '/dashboard/user',
     scope: ['ADMIN']

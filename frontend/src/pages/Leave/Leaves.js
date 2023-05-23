@@ -18,10 +18,10 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { GetLeaveTypes, ApplyForLeaves, GetLeaveBalances } from '../redux/actions/leaveActions';
-import { GetAllHolidays } from '../redux/actions/holidayActions';
-import { USER_INFO_KEY } from '../utils/constants';
-import { GetUsersBasedOnCondition } from '../redux/actions/userDetailActions';
+import { GetLeaveTypes, ApplyForLeaves, GetLeaveBalances } from '../../redux/actions/leaveActions';
+import { GetAllHolidays } from '../../redux/actions/holidayActions';
+import { USER_INFO_KEY } from '../../utils/constants';
+import { GetUsersBasedOnCondition } from '../../redux/actions/userDetailActions';
 
 function Leaves() {
   // styling of the form
@@ -52,23 +52,23 @@ function Leaves() {
     leaveTypeId: '',
     fromSession: '',
     toSession: '',
-    leaveCount: 0,
+    leaveCount: 1,
     reason: '',
     status: 3, // pending. Need to use enum or use anything that should prevent hardcoding
     reportingManagerIds: []
   });
   const dispatch = useDispatch();
-  const leaveTypes = useSelector((state) => state.GetLeaveTypesReducer.leaveTypes);
+  const leaveTypes = useSelector((state) => state.LeaveReducer.leaveTypes);
   const holidays = useSelector((state) => state.GetHolidaysReducer.holidays);
   const managers = useSelector((state) => state.UserDetailReducers.usersBasedOnCondition);
-  const leaveBalances = useSelector((state) => state.GetLeaveBalancesReducer.leaveBalances);
-  const { leavesApplied, leaveAppliedMessage } = useSelector((state) => ({
-    leavesApplied: state.ApplyForLeavesReducer.leavesApplied,
-    leaveAppliedMessage: state.ApplyForLeavesReducer.leaveAppliedMessage
+  const leaveBalances = useSelector((state) => state.LeaveReducer.leaveBalances);
+  const { leavesApplied, leaveMessage } = useSelector((state) => ({
+    leavesApplied: state.LeaveReducer.leavesApplied,
+    leaveMessage: state.LeaveReducer.message
   }));
   const [shouldSubmitForm, setShouldSubmitForm] = useState(false);
   const [selectedManagers, setSelectedManager] = useState([]);
-  const [leaveCount, setLeaveCount] = useState(0);
+  const [leaveCount, setLeaveCount] = useState(1);
   const [existingLeaveBalance, setExistingLeaveBalance] = useState(0);
   const [isLeaveTypeSelected, setIsLeaveTypeSelected] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
@@ -78,51 +78,40 @@ function Leaves() {
     (fromDate, toDate) => {
       const toDate1 = dayjs(toDate);
       const fromDate1 = dayjs(fromDate);
-      let diff = toDate1.diff(fromDate, 'days');
+      let diff = toDate1.diff(fromDate1, 'days');
+      console.log('I am called', diff);
       if (diff < 0) {
         return 0;
       }
-      let holidayCount = 0;
-      for (let day = 0; day <= diff; day += 1) {
-        const dayAdded = fromDate1.add(day, 'day');
-        if (
-          dayAdded.get('d') === 0 ||
-          holidays?.filter((holiday) => dayjs(holiday.date).isSame(dayAdded, 'day')).length === 1
-        ) {
-          holidayCount += 1;
-        }
-      }
+      // let holidayCount = 0;
+      // let day = 0;
+      // while (day <= diff) {
+      //   const dayAdded = fromDate1.add(day, 'day');
+      //   if (
+      //     dayAdded.get('d') === 0 ||
+      //     holidays?.filter((holiday) => dayjs(holiday.date).isSame(dayAdded, 'day')).length === 1
+      //   ) {
+      //     holidayCount += 1;
+      //     console.log('holiday count increased', dayAdded.get('d'));
+      //   }
+      //   day += 1;
+      // }
       diff += 1;
-      if (leaveApplication.fromSession === 'morning' || leaveApplication.fromSession === 'afternoon') {
+      if (leaveApplication.fromSession === 'morning' || (leaveApplication.fromSession === 'afternoon' && diff >= 1)) {
         diff -= 0.5;
       }
-      if (leaveApplication.toSession === 'morning' || leaveApplication.toSession === 'afternoon') {
+      if (leaveApplication.toSession === 'morning' || (leaveApplication.toSession === 'afternoon' && diff >= 1)) {
         diff -= 0.5;
       }
-      diff -= holidayCount;
+      console.log(diff, 'now');
+      // diff -= holidayCount;
+      // console.log(diff);
       return diff;
     },
     [holidays, leaveApplication.fromSession, leaveApplication.toSession]
   );
 
   useEffect(() => {
-    if (leaveTypes === undefined || leaveTypes.length === 0) {
-      dispatch(GetLeaveTypes());
-    }
-    if (holidays === undefined || holidays?.length === 0) {
-      dispatch(GetAllHolidays());
-    }
-    if (managers === undefined || managers.length === 0) {
-      dispatch(
-        GetUsersBasedOnCondition({
-          attribute: 'role',
-          value: 'MANAGER'
-        })
-      );
-    }
-    if (leaveBalances === undefined || leaveBalances.length === 0) {
-      dispatch(GetLeaveBalances(sessionData?.user[0]?._id));
-    }
     if (shouldSubmitForm) {
       console.log(leaveApplication);
       const fromDate = dayjs(leaveApplication?.fromDate);
@@ -134,10 +123,6 @@ function Leaves() {
         dispatch(ApplyForLeaves(leaveApplication));
       }
     }
-    if (leavesApplied !== undefined && leaveAppliedMessage !== '') {
-      alert(leaveAppliedMessage);
-    }
-    setLeaveCount(calculateLeaveDays(leaveApplication.fromDate, leaveApplication.toDate));
     if (isLeaveTypeSelected) {
       setExistingLeaveBalance(
         leaveBalances?.find((elem) => elem.leaveTypeId === leaveApplication.leaveTypeId)?.leaveBalance
@@ -146,25 +131,39 @@ function Leaves() {
     setIsLeaveTypeSelected(false);
     setShouldSubmitForm(false);
     // Here a problem was being faced regarding infinite loop when session?.user was added as dependency
-    // hence eslint was disabled here. Any solution to problem is welcome
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leaveApplication, shouldSubmitForm, leavesApplied, selectedManagers, leaveBalances, isLeaveTypeSelected]);
+  useEffect(() => {
+    setLeaveCount(calculateLeaveDays(leaveApplication.fromDate, leaveApplication.toDate));
   }, [
-    dispatch,
-    leaveTypes,
-    holidays,
-    leaveApplication,
-    managers,
-    shouldSubmitForm,
-    leavesApplied,
-    leaveAppliedMessage,
-    selectedManagers,
-    leaveCount,
-    leaveBalances,
-    setLeaveCount,
-    calculateLeaveDays,
-    existingLeaveBalance,
-    isLeaveTypeSelected
+    leaveApplication.fromDate,
+    leaveApplication.toDate,
+    leaveApplication.toSession,
+    leaveApplication.fromSession,
+    calculateLeaveDays
   ]);
+  useEffect(() => {
+    setLeaveCount(1);
+    dispatch(GetLeaveTypes());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(GetAllHolidays());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(
+      GetUsersBasedOnCondition({
+        attribute: 'role',
+        value: 'MANAGER'
+      })
+    );
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(GetLeaveBalances(sessionData?.user[0]?._id));
+  }, [dispatch]);
+  useEffect(() => {
+    setSnackBarMessage(leaveMessage);
+    setSnackBarOpen(true);
+  }, [leavesApplied, leaveMessage]);
   const handleOnChangeSelectManager = (val) => {
     setSelectedManager(val);
   };

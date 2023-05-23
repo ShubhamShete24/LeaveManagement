@@ -57,7 +57,6 @@ function UserForm() {
   };
 
   useEffect(() => {
-    console.log(selectedManagers);
     if (managers === undefined || managers.length === 0) {
       dispatch(
         GetUsersBasedOnCondition({
@@ -66,7 +65,7 @@ function UserForm() {
         })
       );
     }
-  }, [dispatch, managers, selectedManagers]);
+  }, [dispatch, managers]);
 
   return (
     <div>

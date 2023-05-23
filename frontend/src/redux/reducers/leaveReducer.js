@@ -2,11 +2,15 @@ import * as types from '../constants';
 
 const leaveTypesInitialState = {
   leaveTypes: '',
-  message: ''
+  message: '',
+  leaveBalances: '',
+  leaveApplication: '',
+  leavesApplied: '',
+  appliedLeaves: ''
 };
 
 // eslint-disable-next-line default-param-last
-export function GetLeaveTypesReducer(state = leaveTypesInitialState, action) {
+export function LeaveReducer(state = leaveTypesInitialState, action) {
   switch (action.type) {
     case types.GET_LEAVE_TYPES_FAILURE: {
       return {
@@ -26,22 +30,27 @@ export function GetLeaveTypesReducer(state = leaveTypesInitialState, action) {
         message: action.payload.message
       };
     }
-    default: {
-      return state;
+    case types.GET_LEAVE_BALANCES_REQUEST: {
+      return {
+        ...state
+      };
     }
-  }
-}
-const leavesAppliedInitialState = {
-  leavesApplied: '',
-  leaveAppliedMessage: ''
-};
-// eslint-disable-next-line default-param-last
-export function ApplyForLeavesReducer(state = leavesAppliedInitialState, action) {
-  switch (action.type) {
+    case types.GET_LEAVE_BALANCES_FAILURE: {
+      return {
+        ...state
+      };
+    }
+    case types.GET_LEAVE_BALANCES_SUCCESS: {
+      return {
+        ...state,
+        leaveBalances: action.payload.leaveBalances,
+        message: action.payload.message
+      };
+    }
     case types.APPLY_FOR_LEAVE_FAILURE: {
       return {
         ...state,
-        leaveAppliedMessage: action.payload.message
+        message: action.payload.message
       };
     }
     case types.APPLY_FOR_LEAVE_REQUEST: {
@@ -52,24 +61,10 @@ export function ApplyForLeavesReducer(state = leavesAppliedInitialState, action)
     case types.APPLY_FOR_LEAVE_SUCCESS: {
       return {
         ...state,
-        leavesApplied: action.payload.leavesApplied,
-        leaveAppliedMessage: action.payload.message
+        leavesApplied: action.payload.appliedLeaves,
+        message: action.payload.message
       };
     }
-    default: {
-      return state;
-    }
-  }
-}
-
-const appliedLeavesInitialState = {
-  appliedLeaves: '',
-  message: ''
-};
-// eslint-disable-next-line default-param-last
-export function GetAppliedLeavesReducer(state = appliedLeavesInitialState, action) {
-  // console.log('this is in reducer');
-  switch (action.type) {
     case types.GET_APPLIED_LEAVES_FAILURE: {
       return {
         ...state,
@@ -88,19 +83,6 @@ export function GetAppliedLeavesReducer(state = appliedLeavesInitialState, actio
         message: action.payload.message
       };
     }
-    default: {
-      return state;
-    }
-  }
-}
-
-const leaveApplicationInitialState = {
-  leaveApplication: '',
-  message: ''
-};
-// eslint-disable-next-line default-param-last
-export function UpdateLeaveApplicationReducer(state = leaveApplicationInitialState, action) {
-  switch (action.type) {
     case types.UPDATE_LEAVE_APPLICATION_FAILURE: {
       return {
         ...state,
@@ -124,36 +106,6 @@ export function UpdateLeaveApplicationReducer(state = leaveApplicationInitialSta
         ...state,
         leaveApplication: null,
         message: ''
-      };
-    }
-    default: {
-      return state;
-    }
-  }
-}
-
-const leaveBalancesInitialState = {
-  leaveBalances: '',
-  message: ''
-};
-// eslint-disable-next-line default-param-last
-export function GetLeaveBalancesReducer(state = leaveBalancesInitialState, action) {
-  switch (action.type) {
-    case types.GET_LEAVE_BALANCES_REQUEST: {
-      return {
-        ...state
-      };
-    }
-    case types.GET_LEAVE_BALANCES_FAILURE: {
-      return {
-        ...state
-      };
-    }
-    case types.GET_LEAVE_BALANCES_SUCCESS: {
-      return {
-        ...state,
-        leaveBalances: action.payload.leaveBalances,
-        message: action.payload.message
       };
     }
     default: {
