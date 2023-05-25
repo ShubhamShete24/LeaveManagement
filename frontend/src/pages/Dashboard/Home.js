@@ -48,11 +48,11 @@ function Home() {
   const userInfo = JSON.parse(localStorage.getItem(USER_INFO_KEY));
 
   useEffect(() => {
-    dispatch(getAllUsersData());
     if (userInfo?.user[0]?.role[0].roleName === 'ADMIN') {
       dispatch(getRolesData());
+      dispatch(getAllUsersData());
     }
-  }, [dispatch, userInfo]);
+  }, []);
 
   return (
     <div className="p-2">

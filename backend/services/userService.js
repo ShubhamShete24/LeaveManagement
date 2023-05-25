@@ -9,6 +9,8 @@ import EducationDetails from '../models/educationalDetails.js';
 import BankDetails from '../models/bankDetails.js';
 import EmploymentDetails from '../models/employmentDetails.js';
 import LeaveBalance from '../models/leaveBalance.js';
+import LeaveType from '../models/leaveType.js';
+import leaveTypesMap from '../constants/leaveTypes.js';
 
 dotenv.config();
 
@@ -44,27 +46,121 @@ const createUser = async (req, res) => {
     user = { ...user, role: objIdRole };
     userCreated = await User.create(user);
     if (userCreated) {
+      console.log('[*] User created');
       const userData = userCreated.toObject();
       delete userData.hash;
       delete userData.salt;
-      responseData.status = 201;
-      responseData.message = 'User has been created.';
-      responseData.data = userData;
+      const leaveTypes = await LeaveType.find({});
+      if (leaveTypes?.length !== 0) {
+        console.log(`[*] Found leave types. Trying to create respective leave balances.`);
+      } else {
+        console.log(`[*] No leave types found. `);
+      }
+      let count = 0;
+      for (let index = 0; index < leaveTypes.length; index += 1) {
+        const record = leaveTypes[index];
+        let leaveBalance = record.leavesAllowed;
+        if (leaveTypesMap.Annual === record.leaveType) {
+          leaveBalance /= 12;
+        }
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const leaveBalanceCreated = await LeaveBalance.create({
+            leaveTypeId: new mongoose.Types.ObjectId(record._id),
+            leaveBalance,
+            userId: userCreated._id,
+            leaveBalanceUpdatedForMonth: new Date().getMonth()
+          });
+          if (leaveBalanceCreated != null) {
+            console.log(`[*] Leave balance created for leaveType : ${record.leaveType} `);
+            leavesBalanceCreatedIds.push(leaveBalanceCreated._id);
+            count += 1;
+          } else {
+            console.log('[*] Could not create leave balance. Breaking.');
+            responseData.message += 'leaveBalance Validation failed';
+            responseData.status = 400;
+            count = 0;
+            break;
+          }
+        } catch (e) {
+          console.log(`[*] There was an exception while trying to create leave balance : ${e.message}`);
+          responseData.message += e.message;
+          responseData.status = 400;
+          console.log(e);
+          count = 0;
+          break;
+        }
+      }
+      if (leaveTypes.length === count) {
+        console.log('[*] Leave balances created for each leavetypes! User creation process completed.');
+        responseData.data = userCreated;
+        responseData.message = 'User has been created.';
+        responseData.status = 201;
+      } else {
+        console.log('[*] User could not be created due to difference in leave types and leave balance created');
+        responseData.status = 400;
+        responseData.message = 'User could not be created ';
+        responseData.data = null;
+      }
     } else {
+      console.log('[*] User could not be created due to difference in leave types and leave balance created');
       responseData.status = 500;
       responseData.message += 'User could not be created';
       responseData.data = null;
     }
   } catch (err) {
+    console.log(`[*] User could not be created due to an exception : ${err.message}`);
     responseData.status = 500;
     responseData.message = err.message;
   }
   if (responseData.status !== 201 && userCreated !== null) {
     // rollback
+    console.log(`[*] Rolling back all the changes`);
     await User.findOneAndDelete({ _id: userCreated._id });
     leavesBalanceCreatedIds.forEach(async (record) => {
       await LeaveBalance.findOneAndDelete({ _id: record._id });
     });
+    // respndata
+    responseData.status = 400;
+    responseData.message += 'User could not be created. Due  to some problem we had to roll back';
+    responseData.data = null;
+  }
+  res.status(responseData.status).send(responseData);
+};
+
+// Delete user
+/**
+ * Here as of now we are not hard deleting user. We are just marking a user as delete.
+ */
+const deleteUser = async (req, res) => {
+  const responseData = {
+    status: 0,
+    data: {
+      message: '',
+      deletedUser: null
+    }
+  };
+
+  const { userId } = req.body;
+  try {
+    const deletedUser = await User.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(userId) },
+      { isDeleted: true },
+      { new: true }
+    );
+    if (deletedUser != null) {
+      console.log(`[*] User deleted successfully.`);
+      responseData.status = 200;
+      responseData.data = deletedUser;
+    } else {
+      console.log(`[*] No user found`);
+      responseData.status = 200;
+      responseData.data = null;
+    }
+  } catch (e) {
+    console.log(`[*] User could not be deleted because of an exception : ${e.message} `);
+    responseData.status = 500;
+    responseData.data.message = e.message;
   }
   res.status(responseData.status).send(responseData);
 };
@@ -231,19 +327,65 @@ const getUsers = async (req, res) => {
         }
       },
       {
+        $unwind: {
+          path: '$reportingManager',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $lookup: {
-          from: 'personalDetails',
-          localField: 'personalDetailsId',
+          from: 'personaldetails',
+          localField: 'personalDetails',
           foreignField: '_id',
           as: 'personalDetails'
         }
       },
       {
+        $unwind: {
+          path: '$personalDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $lookup: {
-          from: 'employmentDetails',
+          from: 'bankdetails',
+          localField: 'personalDetails.bankDetails',
+          foreignField: '_id',
+          as: 'personalDetails.bankDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$personalDetails.bankDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'educationdetails',
+          localField: 'personalDetails.educationalDetails',
+          foreignField: '_id',
+          as: 'personalDetails.educationalDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$personalDetails.educationalDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'employmentdetails',
           localField: 'employmentDetails',
           foreignField: '_id',
-          as: 'employeeDetails'
+          as: 'employmentDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$employmentDetails',
+          preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -251,7 +393,27 @@ const getUsers = async (req, res) => {
           from: 'roles',
           localField: 'role',
           foreignField: '_id',
-          as: 'roles'
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                roleName: 1
+              }
+            }
+          ],
+          as: 'role'
+        }
+      },
+      {
+        $unwind: {
+          path: '$role',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          hash: 0,
+          salt: 0
         }
       }
     ]);
@@ -259,14 +421,14 @@ const getUsers = async (req, res) => {
     responseData.data = users;
     responseData.message = 'Users found!';
     responseData.status = 200;
-    res.send(responseData);
+    res.status(responseData.status).send(responseData);
   } catch (e) {
     responseData = {
       status: 500,
       message: e,
       data: null
     };
-    res.send(responseData);
+    res.status(responseData.status).send(responseData);
   }
 };
 
@@ -305,6 +467,68 @@ const createPersonalDetails = async (req, res) => {
   }
 };
 
+const updatePersonalDetail = async (req, res) => {
+  const personalDetail = req.body;
+  let status = 200;
+  const responseData = {
+    data: null,
+    message: ''
+  };
+  const personalDetailId = personalDetail._id;
+  const { educationalDetails, bankDetails } = personalDetail;
+  delete personalDetail._id;
+  delete personalDetail.educationalDetails;
+  delete personalDetail.bankDetails;
+
+  const educationDetailId = educationalDetails._id;
+  delete educationalDetails._id;
+
+  const backDetailId = bankDetails._id;
+  delete bankDetails._id;
+
+  try {
+    const updatedEducationDetails = await EducationDetails.findByIdAndUpdate(
+      { _id: new mongoose.Types.ObjectId(educationDetailId) },
+      educationalDetails,
+      {
+        new: true
+      }
+    );
+    const updatedBankDetails = await BankDetails.findByIdAndUpdate(
+      { _id: new mongoose.Types.ObjectId(backDetailId) },
+      bankDetails,
+      { new: true }
+    );
+    if (updatedBankDetails !== null && updatedEducationDetails !== null) {
+      const updatedPersonalDetail = await PersonalDetails.findByIdAndUpdate(
+        { _id: new mongoose.Types.ObjectId(personalDetailId) },
+        personalDetail,
+        {
+          new: true
+        }
+      );
+      if (updatedPersonalDetail !== null) {
+        responseData.data = {
+          updatedPersonalDetail,
+          updatedBankDetails,
+          updatedEducationDetails
+        };
+        responseData.message = 'updated personal details successfully.';
+      } else {
+        status = 400;
+        responseData.message = 'Personal details could not be found or there must been some other issue.';
+      }
+    } else {
+      status = 400;
+      responseData.message =
+        'Personal details could not be updated as dependent objects (education or bank details) could not be updated.';
+    }
+  } catch (e) {
+    responseData.message += `There was an exception. ${e.message}`;
+  }
+  res.status(status).send(responseData);
+};
+
 // Employment Details
 const createEmploymentDetails = async (req, res) => {
   const { joiningDate, department, designation, project, employeeType, userId } = req.body;
@@ -339,6 +563,36 @@ const createEmploymentDetails = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+};
+
+const updateEmploymentDetail = async (req, res) => {
+  const employmentDetail = req.body;
+  let status = 200;
+  const responseData = {
+    data: null,
+    message: ''
+  };
+  const employmentDetailId = employmentDetail._id;
+  delete employmentDetail._id;
+  try {
+    const updatedPersonalDetail = await EmploymentDetails.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(employmentDetailId) },
+      employmentDetail,
+      {
+        new: true
+      }
+    );
+    if (updatedPersonalDetail !== null) {
+      responseData.data = updatedPersonalDetail;
+      responseData.message = 'Employment details updated successfully. ';
+    } else {
+      status = 400;
+      responseData.message = 'Employment details could not be found or there must been some other issue.';
+    }
+  } catch (e) {
+    responseData.message += `There was an exception. ${e.message}`;
+  }
+  res.status(status).send(responseData);
 };
 
 const getUsersBasedOnCondition = async (req, res) => {
@@ -409,5 +663,8 @@ export {
   getUsers,
   createPersonalDetails,
   createEmploymentDetails,
-  getUsersBasedOnCondition
+  getUsersBasedOnCondition,
+  deleteUser,
+  updatePersonalDetail,
+  updateEmploymentDetail
 };

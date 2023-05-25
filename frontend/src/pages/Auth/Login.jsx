@@ -20,7 +20,6 @@ export default function Login({ setIsSignUp, isSignUp }) {
   const navigate = useNavigate();
   const response = useSelector((state) => state.LoginUserDetailsReducer.response);
   useEffect(() => {
-    console.log(setIsSignUp, isSignUp);
     if (response.user != null || localStorage.getItem(USER_INFO_KEY)) {
       navigate('/dashboard');
     }
