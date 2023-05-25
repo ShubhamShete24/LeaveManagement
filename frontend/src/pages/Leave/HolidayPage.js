@@ -1,33 +1,43 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-function HolidayPage() {
-  const holidays = [
-    { name: "New Year's Day", date: '01/01' },
-    { name: 'Martin Luther King Jr. Day', date: '01/17' },
-    { name: "President's Day", date: '02/21' },
-    { name: 'Memorial Day', date: '05/30' },
-    { name: 'Independence Day', date: '07/04' },
-    { name: 'Labor Day', date: '09/05' },
-    { name: 'Columbus Day', date: '10/10' },
-    { name: 'Veterans Day', date: '11/11' },
-    { name: 'Thanksgiving Day', date: '11/24' },
-    { name: 'Christmas Day', date: '12/25' }
-  ];
-
+function HolidayPage({ holidays }) {
   const useStyles = makeStyles({
     card: {
       height: 200,
       width: 300,
-      marginBottom: 16
+      marginBottom: 16,
+      transition: 'transform 0.3s ease-in-out',
+      '&:hover': {
+        transform: 'scale(1.05)'
+      }
+    },
+    '@media (min-width: 600px)': {
+      card: {
+        height: 200,
+        width: 300
+      }
+    },
+    '@media (min-width: 960px)': {
+      card: {
+        height: 220,
+        width: 320
+      }
+    },
+    '@media (min-width: 375px) and (max-width: 667px)': {
+      card: {
+        width: 172,
+        height: 161
+      }
     }
   });
 
   const classes = useStyles();
   const getHolidaysByMonth = () => {
     const holidaysByMonth = Array.from(Array(12).keys()).map((month) => {
-      const monthHolidays = holidays.filter((holiday) => {
+      const monthHolidays = holidays?.filter((holiday) => {
         const holidayMonth = new Date(`2023-${holiday.date}`).getMonth();
         return holidayMonth === month;
       });
@@ -41,19 +51,19 @@ function HolidayPage() {
   };
 
   return (
-    <div className="p-5">
+    <div className="p-2">
       <div className="p-1">
         <Grid container spacing={2} justifyContent="center">
-          {getHolidaysByMonth().map((month) => (
-            <Grid key={month.month} item xs={12} sm={4}>
+          {getHolidaysByMonth()?.map((month) => (
+            <Grid key={month.month} itemxs={12} sm={6} md={4}>
               <Typography variant="h6" sx={{ marginBottom: 2 }}>
                 {month.month}
               </Typography>
 
-              {month.holidays.length > 0 ? (
+              {month.holidays?.length > 0 ? (
                 <Card variant="outlined" className={classes.card}>
                   <CardContent>
-                    {month.holidays.map((holiday) => (
+                    {month.holidays?.map((holiday) => (
                       <Typography key={holiday.date} variant="body2" component="p">
                         {holiday.name} -{' '}
                         {new Date(`2023-${holiday.date}`).toLocaleDateString(undefined, {
@@ -80,5 +90,13 @@ function HolidayPage() {
     </div>
   );
 }
+HolidayPage.propTypes = {
+  holidays: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      date: PropTypes.string.isRequired
+    })
+  ).isRequired
+};
 
 export default HolidayPage;

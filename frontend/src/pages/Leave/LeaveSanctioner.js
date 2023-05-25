@@ -17,7 +17,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { USER_INFO_KEY, statusValues } from '../../utils/constants';
@@ -28,12 +30,16 @@ import {
 } from '../../redux/actions/leaveActions';
 
 function LeaveSanctioner() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 700,
+    width: isMobile ? '90%' : 700,
+    maxWidth: 700,
     bgcolor: 'background.paper',
     border: 'none',
     boxShadow: 30,

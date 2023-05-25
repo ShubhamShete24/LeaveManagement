@@ -30,9 +30,15 @@ function Home() {
         transform: theme.card['&:hover'].transform
       }
     },
+    '@media (min-width: 375px) and (max-width: 667px)': {
+      card: {
+        width: '106%',
+        height: 216
+      }
+    },
     arrow: {
       right: 0,
-      margin: ' 18px'
+      margin: '18px'
     }
   });
 
@@ -49,11 +55,11 @@ function Home() {
   }, [dispatch, userInfo]);
 
   return (
-    <div className="p-5">
+    <div className="p-2">
       <div className="p-1">
         <ThemeProvider theme={theme}>
           <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <Card variant="outlined" className={classes.card}>
                 <CardContent>
                   <Typography variant="h5" component="h2">
@@ -65,7 +71,7 @@ function Home() {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <Card variant="outlined" className={classes.card}>
                 <CardContent>
                   <Typography variant="h5" component="h2">
@@ -78,7 +84,7 @@ function Home() {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <Card variant="outlined" className={classes.card}>
                 <CardContent>
                   <Typography variant="h5" component="h2">
