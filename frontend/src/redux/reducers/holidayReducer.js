@@ -2,6 +2,7 @@ import * as types from '../constants';
 
 const holidaysInitialState = {
   holidays: [],
+  createholidays: [],
   message: ''
 };
 

@@ -13,25 +13,31 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import AddIcon from '@mui/icons-material/Add';
-import HolidayPage from './HolidayPage';
 import { createHoliday } from '../../services/HolidayService';
+import { CreateHolidays } from '../../redux/actions/holidayActions';
 import { API_RESPONSE_CODES } from '../../utils/constants';
 
 function HolidayForm() {
   const dispatch = useDispatch();
   const [holidays, setHolidays] = useState([]);
+  const [payload, setPayload] = useState({
+    year: '',
+    holidayList: []
+  });
   const [newHolidayName, setNewHolidayName] = useState('');
   const [newHolidayDate, setNewHolidayDate] = useState(null);
-  const addHoliday = useSelector((state) => state.CreateHolidays.holidays);
+  // const addHoliday = useSelector((state) => state.createholidays.holidays);
 
   const handleAddHoliday = (event) => {
     event.preventDefault();
     if (newHolidayName && newHolidayDate) {
+      setPayload({ ...payload, holidayList: [...payload.holidayList, { name: newHolidayName, date: newHolidayDate }] });
       setHolidays([...holidays, { name: newHolidayName, date: newHolidayDate }]);
       setNewHolidayName('');
       setNewHolidayDate(null);
     }
   };
+  console.log('payload is', payload);
 
   const handleDeleteHoliday = (index) => {
     const updatedHolidays = holidays.filter((holiday, i) => i !== index);
@@ -42,8 +48,13 @@ function HolidayForm() {
     // Pass holidays data to HolidayPage component
     // You can perform any other logic here if needed
     // Dispatch createHoliday action here with the holidays data
-    dispatch(createHoliday(holidays));
-    console.log(holidays);
+    const currentYear = new Date().getFullYear(); // Get the current year
+    const holidaysWithYear = holidays.map((holiday) => ({
+      ...holiday,
+      year: currentYear
+    }));
+    dispatch(CreateHolidays(holidaysWithYear));
+    console.log(holidaysWithYear);
   };
 
   return (
@@ -83,7 +94,7 @@ function HolidayForm() {
         <br />
         <br />
         <List>
-          {holidays.map((holiday, index) => (
+          {holidays?.map((holiday, index) => (
             <ListItem key={index}>
               <ListItemText primary={holiday.name} secondary={new Date(holiday.date).toLocaleDateString()} />
               <ListItemSecondaryAction>
@@ -93,7 +104,6 @@ function HolidayForm() {
           ))}
         </List>
       </Container>
-      <HolidayPage holidays={holidays} />
     </div>
   );
 }

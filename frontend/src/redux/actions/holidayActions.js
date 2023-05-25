@@ -25,7 +25,8 @@ export const CreateHolidays = (data) => async (dispatch) => {
   await dispatch({
     type: types.CREATE_HOLIDAY_REQUEST
   });
-  postData(`${BASE_URL}${HOLIDAY_API_URL}create-holidays`, data).then(async (axiosResponse) => {
+  console.log('holiday Success');
+  postData(`${BASE_URL}${HOLIDAY_API_URL}create-holiday`, data).then(async (axiosResponse) => {
     if (axiosResponse.data) {
       await dispatch({
         type: types.CREATE_HOLIDAY_SUCCESS,

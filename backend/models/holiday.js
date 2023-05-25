@@ -6,7 +6,7 @@ const holidaySchema = mongoose.Schema(
       type: Number,
       required: true
     },
-    hollidayList: [
+    holidayList: [
       {
         holidayName: {
           type: String,

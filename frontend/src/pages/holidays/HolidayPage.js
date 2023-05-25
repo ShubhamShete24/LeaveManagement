@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-function HolidayPage({ holidays }) {
+function HolidayPage() {
   const useStyles = makeStyles({
     card: {
       height: 200,
@@ -11,6 +11,8 @@ function HolidayPage({ holidays }) {
       marginBottom: 16
     }
   });
+
+  const holidays = [];
 
   const classes = useStyles();
   const getHolidaysByMonth = () => {
