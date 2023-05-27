@@ -1,4 +1,7 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const sendEmail = async (req, res) => {
   const { receipientList, body, subject } = req.body;
@@ -12,7 +15,7 @@ const sendEmail = async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'arunangshu.biswas.x@gmail.com',
-        pass: 'tcisvsfbpzwingwq'
+        pass: process.env.EMAIL_AUTH_PASSWORD
       }
     });
     smtpTransport
