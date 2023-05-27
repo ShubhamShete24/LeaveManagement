@@ -4,6 +4,7 @@ import leavesRouter from './leavesRouter.js';
 import roleRouter from './roleRouter.js';
 import userRouter from './userRouter.js';
 import holidayRouter from './holidayRouter.js';
+import mailRouter from './mailRouter.js';
 
 const apiRouter = express.Router();
 
@@ -12,5 +13,6 @@ apiRouter.use('/user', userRouter);
 apiRouter.use('/role', roleRouter);
 apiRouter.use('/leaves', leavesRouter);
 apiRouter.use('/holiday', holidayRouter);
+apiRouter.use('/mail', mailRouter);
 
 export default apiRouter;
