@@ -468,23 +468,15 @@ const createPersonalDetails = async (req, res) => {
 };
 
 const updatePersonalDetail = async (req, res) => {
-  const personalDetail = req.body;
   let status = 200;
   const responseData = {
-    data: null,
     message: ''
   };
-  const personalDetailId = personalDetail._id;
-  const { educationalDetails, bankDetails } = personalDetail;
-  delete personalDetail._id;
-  delete personalDetail.educationalDetails;
-  delete personalDetail.bankDetails;
 
+  const { educationalDetails, bankDetails, personalDetails } = req.body;
+  const personalDetailId = personalDetails._id;
   const educationDetailId = educationalDetails._id;
-  delete educationalDetails._id;
-
   const backDetailId = bankDetails._id;
-  delete bankDetails._id;
 
   try {
     const updatedEducationDetails = await EducationDetails.findByIdAndUpdate(
@@ -502,18 +494,13 @@ const updatePersonalDetail = async (req, res) => {
     if (updatedBankDetails !== null && updatedEducationDetails !== null) {
       const updatedPersonalDetail = await PersonalDetails.findByIdAndUpdate(
         { _id: new mongoose.Types.ObjectId(personalDetailId) },
-        personalDetail,
+        personalDetails,
         {
           new: true
         }
       );
       if (updatedPersonalDetail !== null) {
-        responseData.data = {
-          updatedPersonalDetail,
-          updatedBankDetails,
-          updatedEducationDetails
-        };
-        responseData.message = 'updated personal details successfully.';
+        responseData.message = 'Personal details updated successfully.';
       } else {
         status = 400;
         responseData.message = 'Personal details could not be found or there must been some other issue.';
@@ -569,11 +556,11 @@ const updateEmploymentDetail = async (req, res) => {
   const employmentDetail = req.body;
   let status = 200;
   const responseData = {
-    data: null,
     message: ''
   };
+
   const employmentDetailId = employmentDetail._id;
-  delete employmentDetail._id;
+
   try {
     const updatedPersonalDetail = await EmploymentDetails.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(employmentDetailId) },
@@ -583,7 +570,6 @@ const updateEmploymentDetail = async (req, res) => {
       }
     );
     if (updatedPersonalDetail !== null) {
-      responseData.data = updatedPersonalDetail;
       responseData.message = 'Employment details updated successfully. ';
     } else {
       status = 400;
