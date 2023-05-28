@@ -37,7 +37,7 @@ const sidebarConfig = [
   // {
   //   title: 'Employee Details',
   //   icon: <Dataset />,
-  //   path: '/dashboard/employee-details',
+  //   path: '/dashboard/employment-details',
   //   scope: ['ADMIN']
   // },
   {
