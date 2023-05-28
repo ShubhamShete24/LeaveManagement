@@ -10,11 +10,13 @@ import { getAllUsersData } from '../../redux/actions/userDetailActions';
 import DataGridComponent from '../../components/dataGrid/dataGrid';
 import Popup from '../../components/Popup';
 import ActionButton from '../../components/controls/ActionButtoon';
+import { deleteUser } from '../../services/UserCreation';
 
 function Users() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.UserDetailReducers?.allUsers);
+  const allUserData = useSelector((state) => state.UserDetailReducers?.allUsers);
+  const userData = allUserData.filter((e) => e.isDeleted === false);
 
   const [editPopup, setEditPopup] = useState(false);
   const [editInfo, setEditInfo] = useState('');
@@ -22,6 +24,11 @@ function Users() {
   const handleEdit = (rowData) => {
     setEditPopup(true);
     setEditInfo(rowData);
+  };
+
+  const handleDelete = async (rowData) => {
+    await deleteUser({ userId: rowData._id });
+    dispatch(getAllUsersData());
   };
 
   const calculateAge = (rowData) => {
@@ -81,7 +88,7 @@ function Users() {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <ActionButton onClick={() => handleEdit(params.row)}>
+        <ActionButton onClick={() => handleDelete(params.row)}>
           <DeleteIcon style={{ color: 'red' }} />
         </ActionButton>
       )
