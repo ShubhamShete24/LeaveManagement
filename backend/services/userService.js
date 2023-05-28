@@ -135,10 +135,7 @@ const createUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const responseData = {
     status: 0,
-    data: {
-      message: '',
-      deletedUser: null
-    }
+    message: ''
   };
 
   const { userId } = req.body;
@@ -150,17 +147,16 @@ const deleteUser = async (req, res) => {
     );
     if (deletedUser != null) {
       console.log(`[*] User deleted successfully.`);
-      responseData.status = 200;
-      responseData.data = deletedUser;
+      responseData.status = 204;
     } else {
-      console.log(`[*] No user found`);
-      responseData.status = 200;
-      responseData.data = null;
+      console.log(`[*] User not found`);
+      responseData.status = 404;
+      responseData.message = 'User not found';
     }
   } catch (e) {
     console.log(`[*] User could not be deleted because of an exception : ${e.message} `);
     responseData.status = 500;
-    responseData.data.message = e.message;
+    responseData.message = e.message;
   }
   res.status(responseData.status).send(responseData);
 };
