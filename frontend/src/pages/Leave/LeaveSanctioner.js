@@ -201,28 +201,6 @@ function LeaveSanctioner() {
 
   return (
     <>
-      {/*
-            <TableBody>
-              {appliedLeaves?.map((data) => (
-               
-                 
-                  <TableCell style={{ minWidth: 100 }} align="right">
-                    {statusValues.find((_) => _.value === data.status).name}
-                  </TableCell>
-                  <TableCell style={{ minWidth: 200 }} align="right">
-                    <Button
-                      disabled={data.status === statusValuesMap?.approved}
-                      onClick={() => handelModalOpen(data._id)}
-                    >
-                      Action
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper> */}
       <DataGridComponent headers={leaveApplicationsDataHeader} tableData={appliedLeaves} getRowId={(row) => row._id} />
       <Modal
         open={open}

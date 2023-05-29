@@ -41,9 +41,11 @@ export default function Login({ setIsSignUp, isSignUp }) {
       password: ''
     });
   };
-  // const handleClick = () => {
-  //   setIsSignUp(!isSignUp);
-  // };
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSignIn(event);
+    }
+  };
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -75,6 +77,7 @@ export default function Login({ setIsSignUp, isSignUp }) {
               name="password"
               type={showPassword ? 'text' : 'password'}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
