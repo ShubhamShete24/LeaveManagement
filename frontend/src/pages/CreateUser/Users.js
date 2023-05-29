@@ -1,18 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import { getAllUsersData } from '../../redux/actions/userDetailActions';
 import DataGridComponent from '../../components/dataGrid/dataGrid';
+import Popup from '../../components/Popup';
 import ActionButton from '../../components/controls/ActionButtoon';
+import { deleteUser } from '../../services/UserCreation';
 
 function Users() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.UserDetailReducers?.allUsers);
+  const allUserData = useSelector((state) => state.UserDetailReducers?.allUsers);
+  const userData = allUserData.filter((e) => e.isDeleted === false);
+
+  const [editPopup, setEditPopup] = useState(false);
+  const [editInfo, setEditInfo] = useState('');
+
+  const handleEdit = (rowData) => {
+    setEditPopup(true);
+    setEditInfo(rowData);
+  };
+
+  const handleDelete = async (rowData) => {
+    await deleteUser({ userId: rowData._id });
+    dispatch(getAllUsersData());
+  };
 
   const calculateAge = (rowData) => {
     const dob = dayjs(rowData?.personalDetails?.dob, 'YYYY-MM-DD');
@@ -57,7 +74,7 @@ function Users() {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <ActionButton>
+        <ActionButton onClick={() => handleEdit(params.row)}>
           <EditIcon style={{ color: 'blue' }} />
         </ActionButton>
       )
@@ -71,7 +88,7 @@ function Users() {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <ActionButton>
+        <ActionButton onClick={() => handleDelete(params.row)}>
           <DeleteIcon style={{ color: 'red' }} />
         </ActionButton>
       )
@@ -84,10 +101,53 @@ function Users() {
 
   return (
     <div>
-      <Typography sx={{ fontSize: 27 }} margin="0 16px 16px 0" color="text.secondary">
-        Users
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <Typography sx={{ fontSize: 27 }} color="text.secondary">
+          Users
+        </Typography>
+        <Button variant="contained" color="primary" onClick={() => navigate('/dashboard/user-details')}>
+          <AddIcon style={{ marginRight: '5px' }} /> Create User
+        </Button>
+      </Box>
       <DataGridComponent tableData={userData} headers={userDataHeader} getRowId={(row) => row.employeeId} />
+      <Popup title="Edit User Detals" openPopup={editPopup} setOpenPopup={setEditPopup}>
+        <div style={{ display: 'flex' }}>
+          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+            User Details
+          </Typography>
+          <ActionButton
+            onClick={() => {
+              navigate('/dashboard/user-details', { state: { userInfo: editInfo, isEdit: true } });
+            }}
+          >
+            <EditIcon style={{ color: 'blue' }} />
+          </ActionButton>
+        </div>
+        <div style={{ display: 'flex' }}>
+          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+            Personal Details
+          </Typography>
+          <ActionButton
+            onClick={() => {
+              navigate('/dashboard/personal-info', { state: { userInfo: editInfo, isEdit: true } });
+            }}
+          >
+            <EditIcon style={{ color: 'blue' }} />
+          </ActionButton>
+        </div>
+        <div style={{ display: 'flex' }}>
+          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+            Employment Details
+          </Typography>
+          <ActionButton
+            onClick={() => {
+              navigate('/dashboard/employment-details', { state: { userInfo: editInfo, isEdit: true } });
+            }}
+          >
+            <EditIcon style={{ color: 'blue' }} />
+          </ActionButton>
+        </div>
+      </Popup>
     </div>
   );
 }
