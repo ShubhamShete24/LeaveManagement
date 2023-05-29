@@ -31,24 +31,6 @@ const useStyles = makeStyles({
   }
 });
 
-const useStyles = makeStyles({
-  dataGridContainer: {
-    width: '100%',
-    overflowX: 'auto'
-  },
-  dataGrid: {
-    padding: '0 30px',
-    '@media (max-width: 467px)': {
-      width: '100%',
-      '& .MuiDataGrid-cell': {
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis'
-      }
-    }
-  }
-});
-
 function Users() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -141,53 +123,53 @@ function Users() {
     <div className="p-2">
       <div className="p-1">
         <div className={classes.dataGrid}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <Typography sx={{ fontSize: 27 }} color="text.secondary">
               Users
             </Typography>
-        <Button variant="contained" color="primary" onClick={() => navigate('/dashboard/user-details')}>
-          <AddIcon style={{ marginRight: '5px' }} /> Create User
-        </Button>
-      </Box>
+            <Button variant="contained" color="primary" onClick={() => navigate('/dashboard/user-details')}>
+              <AddIcon style={{ marginRight: '5px' }} /> Create User
+            </Button>
+          </Box>
           <DataGridComponent tableData={userData} headers={userDataHeader} getRowId={(row) => row.employeeId} />
-      <Popup title="Edit User Detals" openPopup={editPopup} setOpenPopup={setEditPopup}>
-        <div style={{ display: 'flex' }}>
-          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
-            User Details
-          </Typography>
-          <ActionButton
-            onClick={() => {
-              navigate('/dashboard/user-details', { state: { userInfo: editInfo, isEdit: true } });
-            }}
-          >
-            <EditIcon style={{ color: 'blue' }} />
-          </ActionButton>
-        </div>
-        <div style={{ display: 'flex' }}>
-          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
-            Personal Details
-          </Typography>
-          <ActionButton
-            onClick={() => {
-              navigate('/dashboard/personal-info', { state: { userInfo: editInfo, isEdit: true } });
-            }}
-          >
-            <EditIcon style={{ color: 'blue' }} />
-          </ActionButton>
-        </div>
-        <div style={{ display: 'flex' }}>
-          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
-            Employment Details
-          </Typography>
-          <ActionButton
-            onClick={() => {
-              navigate('/dashboard/employment-details', { state: { userInfo: editInfo, isEdit: true } });
-            }}
-          >
-            <EditIcon style={{ color: 'blue' }} />
-          </ActionButton>
-        </div>
-      </Popup>
+          <Popup title="Edit User Detals" openPopup={editPopup} setOpenPopup={setEditPopup}>
+            <div style={{ display: 'flex' }}>
+              <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+                User Details
+              </Typography>
+              <ActionButton
+                onClick={() => {
+                  navigate('/dashboard/user-details', { state: { userInfo: editInfo, isEdit: true } });
+                }}
+              >
+                <EditIcon style={{ color: 'blue' }} />
+              </ActionButton>
+            </div>
+            <div style={{ display: 'flex' }}>
+              <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+                Personal Details
+              </Typography>
+              <ActionButton
+                onClick={() => {
+                  navigate('/dashboard/personal-info', { state: { userInfo: editInfo, isEdit: true } });
+                }}
+              >
+                <EditIcon style={{ color: 'blue' }} />
+              </ActionButton>
+            </div>
+            <div style={{ display: 'flex' }}>
+              <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+                Employment Details
+              </Typography>
+              <ActionButton
+                onClick={() => {
+                  navigate('/dashboard/employment-details', { state: { userInfo: editInfo, isEdit: true } });
+                }}
+              >
+                <EditIcon style={{ color: 'blue' }} />
+              </ActionButton>
+            </div>
+          </Popup>
         </div>
       </div>
     </div>
