@@ -12,7 +12,7 @@ import LeaveBalance from '../models/leaveBalance.js';
 import LeaveType from '../models/leaveType.js';
 import leaveTypesMap from '../constants/leaveTypes.js';
 import Counter from '../models/counter.js';
-import { EMPIDCHAR, PADDER, RANDOM_BYTES_CHARACTERS } from '../constants/constants.js';
+import { EMPIDCHAR, PADDER } from '../constants/constants.js';
 import { BAD_REQUEST, CREATED, NOT_FOUND, SERVER_ERROR, SUCCESS, UNAUHTORIZED_ACCESS } from '../constants/response.js';
 
 dotenv.config();
@@ -215,32 +215,26 @@ const authenticate = async (req, res) => {
 };
 
 const updateUserInfo = async (req, res) => {
-  let { userInfo } = req.body;
-  delete userInfo.role;
+  const userInfo = req.body;
   const responseData = {
     status: 0,
-    message: '',
-    data: null
+    message: ''
   };
-  const { updatePassword } = req.body;
-  if (!updatePassword) {
-    // logic for regenrating the hash
-    delete userInfo.password;
-  } else {
-    const uniqueSalt = crypto.randomBytes(RANDOM_BYTES_CHARACTERS).toString('hex');
-    const hash = generateHash(userInfo.password, uniqueSalt);
-    userInfo = { ...userInfo, hash };
-    userInfo = { ...userInfo, salt: uniqueSalt };
-    delete userInfo.password;
+  try {
+    const updatedUser = await User.findOneAndUpdate({ email: userInfo.email }, userInfo, {
+      new: true
+    });
+    if (updatedUser !== null) {
+      responseData.status = SUCCESS;
+      responseData.message = 'User details updated successfully.';
+    } else {
+      responseData.status = BAD_REQUEST;
+      responseData.message = 'User details could not be found or there must been some other issue.';
+    }
+  } catch (e) {
+    responseData.message += `There was an exception. ${e.message}`;
   }
-
-  const updatedUser = await User.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(userInfo.id) }, userInfo, {
-    new: true
-  });
-  responseData.status = SUCCESS;
-  responseData.message = 'User details updated successfully.';
-  responseData.data = updatedUser;
-  res.send(responseData);
+  res.status(responseData.status).send(responseData);
 };
 
 // follow single responsibility
@@ -451,7 +445,7 @@ const createPersonalDetails = async (req, res) => {
       await User.findOneAndUpdate(
         { _id: new mongoose.Types.ObjectId(userId) },
         {
-          personalDetailsId: newPersonalDetails._id
+          personalDetails: newPersonalDetails._id
         },
         { new: true }
       );
