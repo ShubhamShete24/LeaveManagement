@@ -11,6 +11,9 @@ import EmploymentDetails from '../models/employmentDetails.js';
 import LeaveBalance from '../models/leaveBalance.js';
 import LeaveType from '../models/leaveType.js';
 import leaveTypesMap from '../constants/leaveTypes.js';
+import Counter from '../models/counter.js';
+import { EMPIDCHAR, PADDER, RANDOM_BYTES_CHARACTERS } from '../constants/constants.js';
+import { BAD_REQUEST, CREATED, NOT_FOUND, SERVER_ERROR, SUCCESS, UNAUHTORIZED_ACCESS } from '../constants/response.js';
 
 dotenv.config();
 
@@ -23,7 +26,7 @@ const verifyHash = (hash, salt, plainText) =>
 const createUser = async (req, res) => {
   let user = req.body;
   const responseData = {
-    status: 0,
+    status: SUCCESS,
     data: null,
     message: ''
   };
@@ -31,7 +34,7 @@ const createUser = async (req, res) => {
   const leavesBalanceCreatedIds = [];
   try {
     if (!user.password || !user.email || !user.name || !user.reportingManager || !user.role) {
-      responseData.status = 400;
+      responseData.status = BAD_REQUEST;
       responseData.message = 'Required attributes not suppied.';
       res.status(responseData.status).send(responseData);
     }
@@ -44,8 +47,13 @@ const createUser = async (req, res) => {
     const objIdRole = new mongoose.Types.ObjectId(user.role);
     user = { ...user, reportingManager: objIdReportingManager };
     user = { ...user, role: objIdRole };
+    const counter = await Counter.findOneAndUpdate({ name: 'counter' }, { $inc: { index: 1 } }, { new: true });
+    // create employee id
+    const empId = `${EMPIDCHAR}${counter.index.toString().padStart(PADDER, 0)}`;
+    user = { ...user, employeeId: empId };
     userCreated = await User.create(user);
-    if (userCreated) {
+
+    if (userCreated !== null) {
       console.log('[*] User created');
       const userData = userCreated.toObject();
       delete userData.hash;
@@ -78,14 +86,14 @@ const createUser = async (req, res) => {
           } else {
             console.log('[*] Could not create leave balance. Breaking.');
             responseData.message += 'leaveBalance Validation failed';
-            responseData.status = 400;
+            responseData.status = BAD_REQUEST;
             count = 0;
             break;
           }
         } catch (e) {
           console.log(`[*] There was an exception while trying to create leave balance : ${e.message}`);
           responseData.message += e.message;
-          responseData.status = 400;
+          responseData.status = BAD_REQUEST;
           console.log(e);
           count = 0;
           break;
@@ -95,25 +103,25 @@ const createUser = async (req, res) => {
         console.log('[*] Leave balances created for each leavetypes! User creation process completed.');
         responseData.data = userCreated;
         responseData.message = 'User has been created.';
-        responseData.status = 201;
+        responseData.status = CREATED;
       } else {
         console.log('[*] User could not be created due to difference in leave types and leave balance created');
-        responseData.status = 400;
+        responseData.status = BAD_REQUEST;
         responseData.message = 'User could not be created ';
         responseData.data = null;
       }
     } else {
       console.log('[*] User could not be created due to difference in leave types and leave balance created');
-      responseData.status = 500;
+      responseData.status = SERVER_ERROR;
       responseData.message += 'User could not be created';
       responseData.data = null;
     }
   } catch (err) {
     console.log(`[*] User could not be created due to an exception : ${err.message}`);
-    responseData.status = 500;
+    responseData.status = SERVER_ERROR;
     responseData.message = err.message;
   }
-  if (responseData.status !== 201 && userCreated !== null) {
+  if (responseData.status !== CREATED && userCreated !== null) {
     // rollback
     console.log(`[*] Rolling back all the changes`);
     await User.findOneAndDelete({ _id: userCreated._id });
@@ -121,7 +129,7 @@ const createUser = async (req, res) => {
       await LeaveBalance.findOneAndDelete({ _id: record._id });
     });
     // respndata
-    responseData.status = 400;
+    responseData.status = BAD_REQUEST;
     responseData.message += 'User could not be created. Due  to some problem we had to roll back';
     responseData.data = null;
   }
@@ -189,7 +197,7 @@ const authenticate = async (req, res) => {
   if (user.length !== 0) {
     if (verifyHash(user[0]?.hash, user[0]?.salt, password)) {
       responseData.data.message = 'User found';
-      responseData.status = 200;
+      responseData.status = SUCCESS;
       const token = jsonwebtoken.sign({ userInfo: user[0] }, JWT_SECRET_KEY, {
         expiresIn: process.env.JWT_SESSION_TIMEOUT
       });
@@ -197,11 +205,11 @@ const authenticate = async (req, res) => {
       responseData.data.authToken = token;
     } else {
       responseData.data.message = 'Invalid password';
-      responseData.status = 401;
+      responseData.status = UNAUHTORIZED_ACCESS;
     }
   } else {
     responseData.data.message = 'User not found';
-    responseData.status = 404;
+    responseData.status = NOT_FOUND;
   }
   res.status(responseData.status).send(responseData.data);
 };
@@ -219,7 +227,7 @@ const updateUserInfo = async (req, res) => {
     // logic for regenrating the hash
     delete userInfo.password;
   } else {
-    const uniqueSalt = crypto.randomBytes(16).toString('hex');
+    const uniqueSalt = crypto.randomBytes(RANDOM_BYTES_CHARACTERS).toString('hex');
     const hash = generateHash(userInfo.password, uniqueSalt);
     userInfo = { ...userInfo, hash };
     userInfo = { ...userInfo, salt: uniqueSalt };
@@ -229,7 +237,7 @@ const updateUserInfo = async (req, res) => {
   const updatedUser = await User.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(userInfo.id) }, userInfo, {
     new: true
   });
-  responseData.status = 200;
+  responseData.status = SUCCESS;
   responseData.message = 'User details updated successfully.';
   responseData.data = updatedUser;
   res.send(responseData);
@@ -250,13 +258,13 @@ const assignRole = async (req, res) => {
       { new: true }
     );
     if (updatedUser === null) {
-      responseData.status = 404;
+      responseData.status = NOT_FOUND;
       responseData.message = 'User not found';
     } else {
       responseData.data = {
         roleUpdatedTo: updatedUser?.role
       };
-      responseData.status = 200;
+      responseData.status = SUCCESS;
       responseData.message = 'Role updated';
     }
   } catch (e) {
@@ -281,17 +289,17 @@ const assignManager = async (req, res) => {
       { new: true }
     );
     if (updatedUser === null) {
-      responseData.status = 404;
+      responseData.status = NOT_FOUND;
       responseData.message = 'User not found';
     } else {
       responseData.data = {
         managerIdAssigned: updatedUser?.reportingManager
       };
-      responseData.status = 200;
+      responseData.status = SUCCESS;
       responseData.message = 'Manager assigned';
     }
   } catch (e) {
-    responseData.status = 500;
+    responseData.status = SERVER_ERROR;
     responseData.message = `Manager assignment failed! ${e.message}`;
   }
   res.send(responseData);
@@ -416,11 +424,11 @@ const getUsers = async (req, res) => {
 
     responseData.data = users;
     responseData.message = 'Users found!';
-    responseData.status = 200;
+    responseData.status = SUCCESS;
     res.status(responseData.status).send(responseData);
   } catch (e) {
     responseData = {
-      status: 500,
+      status: SERVER_ERROR,
       message: e,
       data: null
     };
@@ -447,24 +455,24 @@ const createPersonalDetails = async (req, res) => {
         },
         { new: true }
       );
-      res.status(201).json({
+      res.status(CREATED).json({
         message: 'Personal details created successfully!',
         data: { _id: userId, personalDetailsId: newPersonalDetails._id }
       });
     } else {
-      res.status(400).json({
+      res.status(BAD_REQUEST).json({
         message: 'Failed to create the personal details.'
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(SERVER_ERROR).json({
       message: `Failed to create the personal details. Error message: ${error.message}`
     });
   }
 };
 
 const updatePersonalDetail = async (req, res) => {
-  let status = 200;
+  let status = SUCCESS;
   const responseData = {
     message: ''
   };
@@ -498,11 +506,11 @@ const updatePersonalDetail = async (req, res) => {
       if (updatedPersonalDetail !== null) {
         responseData.message = 'Personal details updated successfully.';
       } else {
-        status = 400;
+        status = BAD_REQUEST;
         responseData.message = 'Personal details could not be found or there must been some other issue.';
       }
     } else {
-      status = 400;
+      status = BAD_REQUEST;
       responseData.message =
         'Personal details could not be updated as dependent objects (education or bank details) could not be updated.';
     }
@@ -517,7 +525,7 @@ const createEmploymentDetails = async (req, res) => {
   const { joiningDate, department, designation, project, employeeType, userId } = req.body;
 
   if (!joiningDate || !department || !designation) {
-    return res.status(400).json({ message: 'Missing required fields' });
+    return res.status(BAD_REQUEST).json({ message: 'Missing required fields' });
   }
 
   try {
@@ -537,20 +545,20 @@ const createEmploymentDetails = async (req, res) => {
         },
         { new: true }
       );
-      return res.status(201).json({
+      return res.status(CREATED).json({
         data: { _id: userId, employmentDetailsId: newEmploymentDetails._id },
         message: 'Employment details created successfully!'
       });
     }
-    return res.status(400).json({ message: 'Failed to create employment details' });
+    return res.status(BAD_REQUEST).json({ message: 'Failed to create employment details' });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(SERVER_ERROR).json({ message: error.message });
   }
 };
 
 const updateEmploymentDetail = async (req, res) => {
   const employmentDetail = req.body;
-  let status = 200;
+  let status = SUCCESS;
   const responseData = {
     message: ''
   };
@@ -568,7 +576,7 @@ const updateEmploymentDetail = async (req, res) => {
     if (updatedPersonalDetail !== null) {
       responseData.message = 'Employment details updated successfully. ';
     } else {
-      status = 400;
+      status = BAD_REQUEST;
       responseData.message = 'Employment details could not be found or there must been some other issue.';
     }
   } catch (e) {
@@ -618,16 +626,16 @@ const getUsersBasedOnCondition = async (req, res) => {
         break;
       }
       default: {
-        responseData.status = 404;
+        responseData.status = NOT_FOUND;
         responseData.message += 'No such attrbute is taken into consideration for searching users.';
         break;
       }
     }
     if (users?.length === 0) {
-      responseData.status = 404;
+      responseData.status = NOT_FOUND;
       responseData.message += 'No records found';
     } else {
-      responseData.status = 200;
+      responseData.status = SUCCESS;
     }
     responseData.data.users = users;
   } catch (e) {
