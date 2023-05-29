@@ -26,7 +26,7 @@ function DashboardPaths() {
             <Route path="/user" element={<Users />} />
             <Route path="/user-details" element={<UserForm />} />
             <Route path="/personal-info" element={<PersonalDetailsForm />} />
-            <Route path="/employee-details" element={<EmploymentDetailsForm />} />
+            <Route path="/employment-details" element={<EmploymentDetailsForm />} />
           </>
         ) : null}
         {sessionData?.user[0]?.role[0]?.roleName === 'MANAGER' ||

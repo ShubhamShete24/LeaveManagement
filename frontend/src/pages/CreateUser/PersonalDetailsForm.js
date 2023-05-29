@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { CardContent, TextField, Grid, InputAdornment, Button, MenuItem, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { CardContent, TextField, Grid, InputAdornment, Button, MenuItem, Typography } from '@mui/material';
+import dayjs from 'dayjs';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { createPersonalDetails } from '../../services/UserCreation';
+import { createPersonalDetails, updatePersonalDetails } from '../../services/UserCreation';
 import { API_RESPONSE_CODES } from '../../utils/constants';
 
 const theme = createTheme({
@@ -23,12 +24,13 @@ function PersonalDetailsForm() {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state;
+  const editUserData = data?.userInfo?.personalDetails;
 
-  const [otherNationality, setOtherNationality] = useState('');
+  // const [otherNationality, setOtherNationality] = useState('');
   const [payload, setPayload] = useState({
     personalDetails: {
       address: '',
-      nationality: '',
+      nationality: 'Indian',
       internationalEmployee: false,
       fatherName: '',
       dob: '',
@@ -56,17 +58,62 @@ function PersonalDetailsForm() {
   });
 
   const handleSave = async () => {
-    if (payload.personalDetails.nationality === 'other') {
-      payload.personalDetails.nationality = otherNationality;
-      payload.personalDetails.internationalEmployee = true;
-    }
-    payload.userId = data?.userInfo?.userId;
+    // if (payload.personalDetails.nationality === 'other') {
+    //   payload.personalDetails.nationality = otherNationality;
+    //   payload.personalDetails.internationalEmployee = true;
+    // }
+    if (!data?.isEdit) {
+      payload.userId = data?.userInfo?.userId;
 
-    const createPersonalDetailResult = await createPersonalDetails(payload);
-    if (createPersonalDetailResult.status === API_RESPONSE_CODES.SUCCESS_CREATE) {
-      navigate('/dashboard/employee-details', { state: { userInfo: data?.userInfo } });
+      const createPersonalDetailResult = await createPersonalDetails(payload);
+      if (createPersonalDetailResult.status === API_RESPONSE_CODES.SUCCESS_CREATE) {
+        navigate('/dashboard/employment-details', { state: { userInfo: data?.userInfo } });
+      }
+    } else {
+      payload.personalDetails._id = editUserData._id;
+      payload.bankDetails._id = editUserData.bankDetails._id;
+      payload.educationalDetails._id = editUserData.educationalDetails._id;
+      const updatePersonalDetailResult = await updatePersonalDetails(payload);
+      if (updatePersonalDetailResult.status === API_RESPONSE_CODES.SUCCESS) {
+        navigate('/dashboard/user');
+      }
     }
   };
+
+  useEffect(() => {
+    if (data?.isEdit) {
+      setPayload({
+        personalDetails: {
+          address: editUserData.address,
+          nationality: editUserData.nationality,
+          internationalEmployee: editUserData.internationalEmployee,
+          fatherName: editUserData.fatherName,
+          dob: dayjs(editUserData.dob).format('YYYY-MM-DD'),
+          maritalStatus: editUserData.maritalStatus,
+          marriageDate: dayjs(editUserData.marriageDate).format('YYYY-MM-DD'),
+          emergencyContactName: editUserData.emergencyContactName,
+          emergencyContactNo: editUserData.emergencyContactNo,
+          bloodGroup: editUserData.bloodGroup,
+          physicallyChallenged: editUserData.physicallyChallenged,
+          PAN: editUserData.PAN,
+          aadhaarNumber: editUserData.aadhaarNumber
+        },
+        bankDetails: {
+          bankName: editUserData.bankDetails.bankName,
+          accountNo: editUserData.bankDetails.accountNo,
+          branch: editUserData.bankDetails.branch,
+          IFSC: editUserData.bankDetails.IFSC,
+          accountType: editUserData.bankDetails.accountType
+        },
+        educationalDetails: {
+          degree: editUserData.educationalDetails.degree,
+          duration: editUserData.educationalDetails.duration,
+          institute: editUserData.educationalDetails.institute
+        }
+      });
+    }
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <div>
@@ -113,7 +160,7 @@ function PersonalDetailsForm() {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Grid item xs={12} sm={payload.personalDetails.nationality !== 'other' ? 12 : 6}>
-                <TextField
+                {/* <TextField
                   name="nationality"
                   label="Nationality"
                   variant="outlined"
@@ -130,9 +177,17 @@ function PersonalDetailsForm() {
                 >
                   <MenuItem value="indian">Indian</MenuItem>
                   <MenuItem value="other">Other</MenuItem>
-                </TextField>
+                </TextField> */}
+                <TextField
+                  name="nationality"
+                  label="Nationality"
+                  fullWidth
+                  variant="outlined"
+                  value={payload.personalDetails.nationality}
+                  disabled
+                />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              {/* <Grid item xs={12} sm={6}>
                 {payload.personalDetails.nationality === 'other' ? (
                   <TextField
                     name="nationality"
@@ -144,7 +199,7 @@ function PersonalDetailsForm() {
                     required
                   />
                 ) : null}
-              </Grid>
+              </Grid> */}
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField

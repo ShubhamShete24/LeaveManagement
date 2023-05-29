@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   TextField,
   Grid,
@@ -12,7 +12,7 @@ import {
   InputAdornment
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { GetUsersBasedOnCondition } from '../../redux/actions/userDetailActions';
+import { GetUsersBasedOnCondition, getRolesData } from '../../redux/actions/userDetailActions';
 import { createUser } from '../../services/UserCreation';
 import { API_RESPONSE_CODES } from '../../utils/constants';
 
@@ -31,43 +31,40 @@ const theme = createTheme({
 });
 
 function UserForm() {
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const data = location.state;
+  const userEditData = data?.userInfo;
 
   const managers = useSelector((state) => state.UserDetailReducers.usersBasedOnCondition);
   const allRoles = useSelector((state) => state.UserDetailReducers?.allRoles);
 
-  const [name, setName] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [gender, setGender] = useState('');
-  const [employeeId, setEmployeeId] = useState('');
-  const [status, setStatus] = useState('');
-  const [selectedMangerId, setSelectedMangerId] = useState('');
-  const [selectedRoleId, setSelectedRoleId] = useState('');
+  const [payload, setPayload] = useState({
+    name: '',
+    mobileNumber: '',
+    email: '',
+    password: '',
+    gender: '',
+    employeeId: '',
+    status: '',
+    reportingManager: '',
+    role: ''
+  });
 
   const handelSave = async () => {
-    const payload = {
-      name,
-      email,
-      password,
-      mobileNumber,
-      gender,
-      employeeId,
-      reportingManager: selectedMangerId,
-      role: selectedRoleId,
-      status
-    };
-
-    const createUserResult = await createUser(payload);
-    if (createUserResult.status === API_RESPONSE_CODES.SUCCESS_CREATE) {
-      const userInfo = {
-        userId: createUserResult.data.data._id,
-        name: createUserResult.data.data.name,
-        employeeId: createUserResult.data.data.employeeId
-      };
-      navigate('/dashboard/personal-info', { state: { userInfo } });
+    if (!data?.isEdit) {
+      const createUserResult = await createUser(payload);
+      if (createUserResult.status === API_RESPONSE_CODES.SUCCESS_CREATE) {
+        const userInfo = {
+          userId: createUserResult.data.data._id,
+          name: createUserResult.data.data.name,
+          employeeId: createUserResult.data.data.employeeId
+        };
+        navigate('/dashboard/personal-info', { state: { userInfo } });
+      }
+    } else {
+      navigate('/dashboard/user');
     }
   };
 
@@ -82,6 +79,25 @@ function UserForm() {
     }
   }, [dispatch, managers]);
 
+  useEffect(() => {
+    if (data?.isEdit) {
+      setPayload({
+        name: userEditData.name,
+        mobileNumber: userEditData.mobileNumber,
+        email: userEditData.email,
+        gender: userEditData.gender,
+        employeeId: userEditData.employeeId,
+        reportingManager: userEditData.reportingManager._id,
+        status: userEditData.status,
+        role: userEditData.role._id
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(getRolesData());
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <div>
@@ -95,8 +111,13 @@ function UserForm() {
                 name="userName"
                 label="User Name"
                 variant="outlined"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={payload.name}
+                onChange={(e) =>
+                  setPayload({
+                    ...payload,
+                    name: e.target.value
+                  })
+                }
                 fullWidth
                 required
               />
@@ -106,8 +127,13 @@ function UserForm() {
                 name="mobileNumber"
                 label="Mobile Number"
                 variant="outlined"
-                value={mobileNumber}
-                onChange={(e) => setMobileNumber(e.target.value)}
+                value={payload.mobileNumber}
+                onChange={(e) =>
+                  setPayload({
+                    ...payload,
+                    mobileNumber: e.target.value
+                  })
+                }
                 InputProps={{
                   inputMode: 'numeric',
                   pattern: '[0-9]{10}',
@@ -123,31 +149,48 @@ function UserForm() {
                 label="Email"
                 variant="outlined"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={payload.email}
+                onChange={(e) =>
+                  setPayload({
+                    ...payload,
+                    email: e.target.value
+                  })
+                }
                 fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                name="password"
-                label="Password"
-                variant="outlined"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                fullWidth
-                required
-              />
-            </Grid>
+            {!data?.isEdit ? (
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="password"
+                  label="Password"
+                  variant="outlined"
+                  type="password"
+                  value={payload.password}
+                  onChange={(e) =>
+                    setPayload({
+                      ...payload,
+                      password: e.target.value
+                    })
+                  }
+                  fullWidth
+                  required
+                />
+              </Grid>
+            ) : null}
             <Grid item xs={12} sm={6}>
               <TextField
                 name="gender"
                 label="Gender"
                 variant="outlined"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
+                value={payload.gender}
+                onChange={(e) =>
+                  setPayload({
+                    ...payload,
+                    gender: e.target.value
+                  })
+                }
                 fullWidth
                 select
                 required
@@ -161,20 +204,31 @@ function UserForm() {
                 name="employeeID"
                 label="Employee ID"
                 variant="outlined"
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
+                value={payload.employeeId}
+                onChange={(e) =>
+                  setPayload({
+                    ...payload,
+                    employeeId: e.target.value
+                  })
+                }
                 fullWidth
                 required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <Autocomplete
-                onChange={(event, value) => setSelectedMangerId(value?._id)}
                 multiple={false}
                 id="tags-outlined"
                 options={managers}
                 getOptionLabel={(option) => option?.name}
                 filterSelectedOptions
+                value={managers.find((manager) => manager._id === payload.reportingManager) || null}
+                onChange={(e, value) =>
+                  setPayload({
+                    ...payload,
+                    reportingManager: value?._id
+                  })
+                }
                 renderInput={(params) => (
                   <TextField {...params} label="Reporting Manager" placeholder="Reporting Manager" />
                 )}
@@ -185,8 +239,13 @@ function UserForm() {
                 name="status"
                 label="Status"
                 variant="outlined"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
+                value={payload.status}
+                onChange={(e) =>
+                  setPayload({
+                    ...payload,
+                    status: e.target.value
+                  })
+                }
                 select
                 fullWidth
                 required
@@ -200,8 +259,13 @@ function UserForm() {
                 name="role"
                 label="Role"
                 variant="outlined"
-                value={selectedRoleId}
-                onChange={(e) => setSelectedRoleId(e.target.value)}
+                value={allRoles.some((role) => role._id === payload.role) ? payload.role : ''}
+                onChange={(e) =>
+                  setPayload({
+                    ...payload,
+                    role: e.target.value
+                  })
+                }
                 fullWidth
                 select
                 required
@@ -218,21 +282,21 @@ function UserForm() {
           <Grid item xs={12} sm={12} marginTop={3} className="d-flex justify-content-end">
             <Button
               disabled={
-                !name ||
-                !mobileNumber ||
-                !email ||
-                !password ||
-                !gender ||
-                !employeeId ||
-                !selectedMangerId ||
-                !status ||
-                !selectedRoleId
+                !payload.name ||
+                !payload.mobileNumber ||
+                !payload.email ||
+                (!data?.isEdit && !payload.password) ||
+                !payload.gender ||
+                !payload.employeeId ||
+                !payload.reportingManager ||
+                !payload.status ||
+                !payload.role
               }
               variant="contained"
               color="primary"
               onClick={handelSave}
             >
-              Create User
+              {!data?.isEdit ? 'Create User' : 'Save'}
             </Button>
           </Grid>
         </CardContent>

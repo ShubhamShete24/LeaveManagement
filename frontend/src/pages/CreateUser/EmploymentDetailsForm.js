@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CardContent, Grid, TextField, Typography, Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { createEmploymentDetails } from '../../services/UserCreation';
+import dayjs from 'dayjs';
+import { createEmploymentDetails, updateEmploymentDetails } from '../../services/UserCreation';
 import { API_RESPONSE_CODES } from '../../utils/constants';
 
 const theme = createTheme({
@@ -22,6 +23,7 @@ function EmploymentDetailsForm() {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state;
+  const editUserData = data?.userInfo?.employmentDetails;
 
   const [payload, setPayload] = useState({
     joiningDate: '',
@@ -32,12 +34,33 @@ function EmploymentDetailsForm() {
   });
 
   const handleSave = async () => {
-    payload.userId = data?.userInfo?.userId;
-    const createPersonalDetailResult = await createEmploymentDetails(payload);
-    if (createPersonalDetailResult.status === API_RESPONSE_CODES.SUCCESS_CREATE) {
-      navigate('/dashboard/');
+    if (!data?.isEdit) {
+      payload.userId = data?.userInfo?.userId;
+      const createEmploymentDetailResult = await createEmploymentDetails(payload);
+      if (createEmploymentDetailResult.status === API_RESPONSE_CODES.SUCCESS_CREATE) {
+        navigate('/dashboard/user');
+      }
+    } else {
+      payload._id = editUserData._id;
+      const updateEmploymentDetailResult = await updateEmploymentDetails(payload);
+      if (updateEmploymentDetailResult.status === API_RESPONSE_CODES.SUCCESS) {
+        navigate('/dashboard/user');
+      }
     }
   };
+
+  useEffect(() => {
+    if (data?.isEdit) {
+      setPayload({
+        joiningDate: dayjs(editUserData.joiningDate).format('YYYY-MM-DD'),
+        department: editUserData.department,
+        designation: editUserData.designation,
+        project: editUserData.project,
+        employeeType: editUserData.employeeType
+      });
+    }
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <div>

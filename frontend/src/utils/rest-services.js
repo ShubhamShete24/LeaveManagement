@@ -94,8 +94,9 @@ export const deleteMethod = (url, body) => {
   headersObj.Authorization = returnTokenWithBearer(localStorage.getItem(LOCAL_STORAGE_KEYS.TOKEN_KEY));
 
   return axios
-    .delete(url, body, {
-      headers: headersObj
+    .delete(url, {
+      headers: headersObj,
+      data: body
     })
     .then((res) => handleSuccessResponse(res))
     .catch((err) => handleErrorResponse(err), { type: 'DELETE', url, body });
