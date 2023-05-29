@@ -12,7 +12,7 @@ import {
   InputAdornment
 } from '@mui/material';
 import { GetUsersBasedOnCondition, getRolesData } from '../../redux/actions/userDetailActions';
-import { createUser } from '../../services/UserCreation';
+import { createUser, updateUserDetails } from '../../services/UserCreation';
 import { API_RESPONSE_CODES } from '../../utils/constants';
 
 function UserForm() {
@@ -31,7 +31,7 @@ function UserForm() {
     email: '',
     password: '',
     gender: '',
-    employeeId: '',
+    // employeeId: '',
     status: '',
     reportingManager: '',
     role: ''
@@ -49,7 +49,10 @@ function UserForm() {
         navigate('/dashboard/personal-info', { state: { userInfo } });
       }
     } else {
-      navigate('/dashboard/user');
+      const updateUserDetailsRsult = await updateUserDetails(payload);
+      if (updateUserDetailsRsult.status === API_RESPONSE_CODES.SUCCESS) {
+        navigate('/dashboard/user');
+      }
     }
   };
 
@@ -183,7 +186,7 @@ function UserForm() {
               <MenuItem value="female">Female</MenuItem>
             </TextField>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               name="employeeID"
               label="Employee ID"
@@ -198,7 +201,7 @@ function UserForm() {
               fullWidth
               required
             />
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} sm={6}>
             <Autocomplete
               multiple={false}
@@ -271,7 +274,7 @@ function UserForm() {
               !payload.email ||
               (!data?.isEdit && !payload.password) ||
               !payload.gender ||
-              !payload.employeeId ||
+              // !payload.employeeId ||
               !payload.reportingManager ||
               !payload.status ||
               !payload.role

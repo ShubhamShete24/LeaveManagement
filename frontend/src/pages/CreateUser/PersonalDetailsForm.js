@@ -58,6 +58,9 @@ function PersonalDetailsForm() {
       payload.personalDetails._id = editUserData._id;
       payload.bankDetails._id = editUserData.bankDetails._id;
       payload.educationalDetails._id = editUserData.educationalDetails._id;
+      if (payload.personalDetails.maritalStatus === 'single') {
+        delete payload.personalDetails.marriageDate;
+      }
       const updatePersonalDetailResult = await updatePersonalDetails(payload);
       if (updatePersonalDetailResult.status === API_RESPONSE_CODES.SUCCESS) {
         navigate('/dashboard/user');
