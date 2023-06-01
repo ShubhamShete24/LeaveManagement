@@ -1,5 +1,5 @@
 import { BASE_URL, ROLE_API_URL, USER_API_URL } from '../utils/constants';
-import { postData, getData } from '../utils/rest-services';
+import { postData, getData, putData, deleteMethod } from '../utils/rest-services';
 
 export const getAllUsers = async () => getData(`${BASE_URL}${USER_API_URL}get-users`);
 
@@ -12,3 +12,13 @@ export const createPersonalDetails = async (payload) =>
 
 export const createEmploymentDetails = async (payload) =>
   postData(`${BASE_URL}${USER_API_URL}create-employmentDetails`, payload);
+
+export const updateUserDetails = async (payload) => putData(`${BASE_URL}${USER_API_URL}update-user-info`, payload);
+
+export const updatePersonalDetails = async (payload) =>
+  putData(`${BASE_URL}${USER_API_URL}update-personalDetails`, payload);
+
+export const updateEmploymentDetails = async (payload) =>
+  putData(`${BASE_URL}${USER_API_URL}update-employmentDetails`, payload);
+
+export const deleteUser = async (payload) => deleteMethod(`${BASE_URL}${USER_API_URL}delete-user`, payload);

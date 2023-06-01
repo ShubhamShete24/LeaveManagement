@@ -27,7 +27,7 @@ function DashboardPaths() {
             <Route path="/user" element={<Users />} />
             <Route path="/user-details" element={<UserForm />} />
             <Route path="/personal-info" element={<PersonalDetailsForm />} />
-            <Route path="/employee-details" element={<EmploymentDetailsForm />} />
+            <Route path="/employment-details" element={<EmploymentDetailsForm />} />
             <Route path="/holiday-form" element={<HolidayForm />} />
           </>
         ) : null}
