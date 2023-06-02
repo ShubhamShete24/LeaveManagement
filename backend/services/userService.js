@@ -12,7 +12,7 @@ import LeaveBalance from '../models/leaveBalance.js';
 import LeaveType from '../models/leaveType.js';
 import leaveTypesMap from '../constants/leaveTypes.js';
 import Counter from '../models/counter.js';
-import { EMPIDCHAR, PADDER } from '../constants/constants.js';
+import { EMPIDCHAR, PADDER, RANDOM_BYTES_CHARACTERS } from '../constants/constants.js';
 import { BAD_REQUEST, CREATED, NOT_FOUND, SERVER_ERROR, SUCCESS, UNAUHTORIZED_ACCESS } from '../constants/response.js';
 import { sendEmail } from './notificationlService.js';
 
