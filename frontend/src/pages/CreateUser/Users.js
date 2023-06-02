@@ -1,25 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-// import { useNavigate } from 'react-router-dom';
-import { Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import { Box, Button, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import { getAllUsersData } from '../../redux/actions/userDetailActions';
 import DataGridComponent from '../../components/dataGrid/dataGrid';
+import Popup from '../../components/Popup';
+import ActionButton from '../../components/controls/ActionButtoon';
+import { deleteUser } from '../../services/UserCreation';
 
 function Users() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const allUserData = useSelector((state) => state.UserDetailReducers?.allUsers);
+  const userData = allUserData.filter((e) => e.isDeleted === false);
 
-  const userData = useSelector((state) => state.UserDetailReducers?.allUsers);
-  useEffect(() => {
+  const [editPopup, setEditPopup] = useState(false);
+  const [editInfo, setEditInfo] = useState('');
+
+  const handleEdit = (rowData) => {
+    setEditPopup(true);
+    setEditInfo(rowData);
+  };
+
+  const handleDelete = async (rowData) => {
+    await deleteUser({ userId: rowData._id });
     dispatch(getAllUsersData());
-  }, []);
+  };
+
+  const calculateAge = (rowData) => {
+    const dob = dayjs(rowData?.personalDetails?.dob, 'YYYY-MM-DD');
+    const currentDate = dayjs();
+    const age = currentDate.diff(dob, 'year');
+    return age;
+  };
 
   const userDataHeader = [
     {
-      field: '_id',
-      headerName: 'ID',
+      field: 'employeeId',
+      headerName: 'Employee Id',
       flex: 0.25,
       sortable: false,
       headerAlign: 'center',
@@ -40,7 +62,8 @@ function Users() {
       headerName: 'Age',
       flex: 0.25,
       headerAlign: 'center',
-      align: 'center'
+      align: 'center',
+      valueGetter: (params) => calculateAge(params.row)
     },
     {
       field: 'edit',
@@ -51,7 +74,9 @@ function Users() {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <EditIcon style={{ color: 'blue', cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
+        <ActionButton onClick={() => handleEdit(params.row)}>
+          <EditIcon style={{ color: 'blue' }} />
+        </ActionButton>
       )
     },
     {
@@ -63,21 +88,66 @@ function Users() {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <DeleteIcon style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleEdit(params.row)} />
+        <ActionButton onClick={() => handleDelete(params.row)}>
+          <DeleteIcon style={{ color: 'red' }} />
+        </ActionButton>
       )
     }
   ];
 
-  const handleEdit = (rowData) => {
-    console.log(rowData);
-  };
+  useEffect(() => {
+    dispatch(getAllUsersData());
+  }, []);
 
   return (
     <div>
-      <Typography sx={{ fontSize: 27 }} margin="0 16px 16px 0" color="text.secondary">
-        Users
-      </Typography>
-      <DataGridComponent tableData={userData} headers={userDataHeader} getRowId={(row) => row._id} />
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <Typography sx={{ fontSize: 27 }} color="text.secondary">
+          Users
+        </Typography>
+        <Button variant="contained" color="primary" onClick={() => navigate('/dashboard/user-details')}>
+          <AddIcon style={{ marginRight: '5px' }} /> Create User
+        </Button>
+      </Box>
+      <DataGridComponent tableData={userData} headers={userDataHeader} getRowId={(row) => row.employeeId} />
+      <Popup title="Edit User Detals" openPopup={editPopup} setOpenPopup={setEditPopup}>
+        <div style={{ display: 'flex' }}>
+          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+            User Details
+          </Typography>
+          <ActionButton
+            onClick={() => {
+              navigate('/dashboard/user-details', { state: { userInfo: editInfo, isEdit: true } });
+            }}
+          >
+            <EditIcon style={{ color: 'blue' }} />
+          </ActionButton>
+        </div>
+        <div style={{ display: 'flex' }}>
+          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+            Personal Details
+          </Typography>
+          <ActionButton
+            onClick={() => {
+              navigate('/dashboard/personal-info', { state: { userInfo: editInfo, isEdit: true } });
+            }}
+          >
+            <EditIcon style={{ color: 'blue' }} />
+          </ActionButton>
+        </div>
+        <div style={{ display: 'flex' }}>
+          <Typography component="div" style={{ flexGrow: 1, fontSize: 18 }}>
+            Employment Details
+          </Typography>
+          <ActionButton
+            onClick={() => {
+              navigate('/dashboard/employment-details', { state: { userInfo: editInfo, isEdit: true } });
+            }}
+          >
+            <EditIcon style={{ color: 'blue' }} />
+          </ActionButton>
+        </div>
+      </Popup>
     </div>
   );
 }

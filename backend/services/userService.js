@@ -12,7 +12,7 @@ import LeaveBalance from '../models/leaveBalance.js';
 import LeaveType from '../models/leaveType.js';
 import leaveTypesMap from '../constants/leaveTypes.js';
 import Counter from '../models/counter.js';
-import { EMPIDCHAR, PADDER, RANDOM_BYTES_CHARACTERS } from '../constants/constants.js';
+import { EMPIDCHAR, PADDER } from '../constants/constants.js';
 import { BAD_REQUEST, CREATED, NOT_FOUND, SERVER_ERROR, SUCCESS, UNAUHTORIZED_ACCESS } from '../constants/response.js';
 import { sendEmail } from './notificationlService.js';
 
@@ -144,10 +144,7 @@ const createUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const responseData = {
     status: 0,
-    data: {
-      message: '',
-      deletedUser: null
-    }
+    message: ''
   };
 
   const { userId } = req.body;
@@ -159,17 +156,16 @@ const deleteUser = async (req, res) => {
     );
     if (deletedUser != null) {
       console.log(`[*] User deleted successfully.`);
-      responseData.status = SUCCESS;
-      responseData.data = deletedUser;
+      responseData.status = 204;
     } else {
-      console.log(`[*] No user found`);
-      responseData.status = SUCCESS;
-      responseData.data = null;
+      console.log(`[*] User not found`);
+      responseData.status = 404;
+      responseData.message = 'User not found';
     }
   } catch (e) {
     console.log(`[*] User could not be deleted because of an exception : ${e.message} `);
-    responseData.status = SERVER_ERROR;
-    responseData.data.message = e.message;
+    responseData.status = 500;
+    responseData.message = e.message;
   }
   res.status(responseData.status).send(responseData);
 };
@@ -220,32 +216,26 @@ const authenticate = async (req, res) => {
 };
 
 const updateUserInfo = async (req, res) => {
-  let { userInfo } = req.body;
-  delete userInfo.role;
+  const userInfo = req.body;
   const responseData = {
     status: 0,
-    message: '',
-    data: null
+    message: ''
   };
-  const { updatePassword } = req.body;
-  if (!updatePassword) {
-    // logic for regenrating the hash
-    delete userInfo.password;
-  } else {
-    const uniqueSalt = crypto.randomBytes(RANDOM_BYTES_CHARACTERS).toString('hex');
-    const hash = generateHash(userInfo.password, uniqueSalt);
-    userInfo = { ...userInfo, hash };
-    userInfo = { ...userInfo, salt: uniqueSalt };
-    delete userInfo.password;
+  try {
+    const updatedUser = await User.findOneAndUpdate({ email: userInfo.email }, userInfo, {
+      new: true
+    });
+    if (updatedUser !== null) {
+      responseData.status = SUCCESS;
+      responseData.message = 'User details updated successfully.';
+    } else {
+      responseData.status = BAD_REQUEST;
+      responseData.message = 'User details could not be found or there must been some other issue.';
+    }
+  } catch (e) {
+    responseData.message += `There was an exception. ${e.message}`;
   }
-
-  const updatedUser = await User.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(userInfo.id) }, userInfo, {
-    new: true
-  });
-  responseData.status = SUCCESS;
-  responseData.message = 'User details updated successfully.';
-  responseData.data = updatedUser;
-  res.send(responseData);
+  res.status(responseData.status).send(responseData);
 };
 
 // follow single responsibility
@@ -456,7 +446,7 @@ const createPersonalDetails = async (req, res) => {
       await User.findOneAndUpdate(
         { _id: new mongoose.Types.ObjectId(userId) },
         {
-          personalDetailsId: newPersonalDetails._id
+          personalDetails: newPersonalDetails._id
         },
         { new: true }
       );
@@ -477,23 +467,15 @@ const createPersonalDetails = async (req, res) => {
 };
 
 const updatePersonalDetail = async (req, res) => {
-  const personalDetail = req.body;
   let status = SUCCESS;
   const responseData = {
-    data: null,
     message: ''
   };
-  const personalDetailId = personalDetail._id;
-  const { educationalDetails, bankDetails } = personalDetail;
-  delete personalDetail._id;
-  delete personalDetail.educationalDetails;
-  delete personalDetail.bankDetails;
 
+  const { educationalDetails, bankDetails, personalDetails } = req.body;
+  const personalDetailId = personalDetails._id;
   const educationDetailId = educationalDetails._id;
-  delete educationalDetails._id;
-
   const backDetailId = bankDetails._id;
-  delete bankDetails._id;
 
   try {
     const updatedEducationDetails = await EducationDetails.findByIdAndUpdate(
@@ -511,18 +493,13 @@ const updatePersonalDetail = async (req, res) => {
     if (updatedBankDetails !== null && updatedEducationDetails !== null) {
       const updatedPersonalDetail = await PersonalDetails.findByIdAndUpdate(
         { _id: new mongoose.Types.ObjectId(personalDetailId) },
-        personalDetail,
+        personalDetails,
         {
           new: true
         }
       );
       if (updatedPersonalDetail !== null) {
-        responseData.data = {
-          updatedPersonalDetail,
-          updatedBankDetails,
-          updatedEducationDetails
-        };
-        responseData.message = 'updated personal details successfully.';
+        responseData.message = 'Personal details updated successfully.';
       } else {
         status = BAD_REQUEST;
         responseData.message = 'Personal details could not be found or there must been some other issue.';
@@ -578,11 +555,11 @@ const updateEmploymentDetail = async (req, res) => {
   const employmentDetail = req.body;
   let status = SUCCESS;
   const responseData = {
-    data: null,
     message: ''
   };
+
   const employmentDetailId = employmentDetail._id;
-  delete employmentDetail._id;
+
   try {
     const updatedPersonalDetail = await EmploymentDetails.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(employmentDetailId) },
@@ -592,7 +569,6 @@ const updateEmploymentDetail = async (req, res) => {
       }
     );
     if (updatedPersonalDetail !== null) {
-      responseData.data = updatedPersonalDetail;
       responseData.message = 'Employment details updated successfully. ';
     } else {
       status = BAD_REQUEST;
