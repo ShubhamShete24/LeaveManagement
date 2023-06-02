@@ -1,6 +1,6 @@
 import express from 'express';
-import sendEmail from '../services/notificationlService.js';
+import { notifyByEmail } from '../services/notificationlService.js';
 
 const notificationRouter = express.Router();
-notificationRouter.post('/send-email', sendEmail);
+notificationRouter.post('/send-email', notifyByEmail);
 export default notificationRouter;

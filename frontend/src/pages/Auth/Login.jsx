@@ -16,14 +16,14 @@ import './Login.scss';
 import { LoginUserDetails } from '../../redux/actions/loginUserDetailsActions';
 import { USER_INFO_KEY } from '../../utils/constants';
 
-export default function Login({ setIsSignUp, isSignUp }) {
+export default function Login({ setIsForgotPassword, isForgotPassword }) {
   const navigate = useNavigate();
   const response = useSelector((state) => state.LoginUserDetailsReducer.response);
   useEffect(() => {
     if (response.user != null || localStorage.getItem(USER_INFO_KEY)) {
       navigate('/dashboard');
     }
-  }, [navigate, response, setIsSignUp, isSignUp]);
+  }, [navigate, response, setIsForgotPassword, isForgotPassword]);
 
   const [authForm, setAuthForm] = useState({
     email: '',
@@ -41,9 +41,9 @@ export default function Login({ setIsSignUp, isSignUp }) {
       password: ''
     });
   };
-  // const handleClick = () => {
-  //   setIsSignUp(!isSignUp);
-  // };
+  const handleClick = () => {
+    setIsForgotPassword(!isForgotPassword);
+  };
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -93,7 +93,7 @@ export default function Login({ setIsSignUp, isSignUp }) {
             <Button variant="outline-primary" type="button" onClick={handleSignIn}>
               Sign In
             </Button>
-            <a className="text-muted" href="">
+            <a className="text-muted" href="#" onClick={handleClick}>
               Forgot password?
             </a>
           </div>
@@ -109,6 +109,6 @@ export default function Login({ setIsSignUp, isSignUp }) {
   );
 }
 Login.propTypes = {
-  setIsSignUp: PropTypes.bool,
-  isSignUp: PropTypes.bool
+  setIsForgotPassword: PropTypes.func,
+  isForgotPassword: PropTypes.bool
 };

@@ -12,7 +12,10 @@ import {
   getUsersBasedOnCondition,
   deleteUser,
   updatePersonalDetail,
-  updateEmploymentDetail
+  updateEmploymentDetail,
+  sendPasswordResetLinkToEmail,
+  resetPassword,
+  getPasswordUpdateStatus
 } from '../services/userService.js';
 
 const userRouter = express.Router();
@@ -29,5 +32,8 @@ userRouter.post('/create-employmentDetails', verifyAdmin, createEmploymentDetail
 userRouter.put('/update-personalDetails', verifyAdmin, updatePersonalDetail);
 userRouter.put('/update-employmentDetails', verifyAdmin, updateEmploymentDetail);
 userRouter.delete('/delete-user', verifyAdmin, deleteUser);
+userRouter.post('/forgot-password', sendPasswordResetLinkToEmail);
+userRouter.post('/reset-password', resetPassword);
+userRouter.post('/get-password-update-status', getPasswordUpdateStatus);
 
 export default userRouter;
