@@ -60,6 +60,11 @@ const userSchema = new mongoose.Schema(
     isDeleted: {
       type: Boolean,
       default: false
+    },
+    passwordUpdateStatus: {
+      type: Number,
+      default: 0,
+      required: false
     }
   },
   {

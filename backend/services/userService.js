@@ -12,8 +12,9 @@ import LeaveBalance from '../models/leaveBalance.js';
 import LeaveType from '../models/leaveType.js';
 import leaveTypesMap from '../constants/leaveTypes.js';
 import Counter from '../models/counter.js';
-import { EMPIDCHAR, PADDER } from '../constants/constants.js';
+import { EMPIDCHAR, PADDER, RANDOM_BYTES_CHARACTERS } from '../constants/constants.js';
 import { BAD_REQUEST, CREATED, NOT_FOUND, SERVER_ERROR, SUCCESS, UNAUHTORIZED_ACCESS } from '../constants/response.js';
+import { sendEmail } from './notificationlService.js';
 
 dotenv.config();
 
@@ -638,6 +639,114 @@ const getUsersBasedOnCondition = async (req, res) => {
   res.status(responseData.status).send(responseData.data);
 };
 
+const sendPasswordResetLinkToEmail = async (req, res) => {
+  const { email, hostName } = req.body;
+  const responseData = {
+    data: {
+      passwordResetProcessResponse: null
+    },
+    message: '',
+    status: BAD_REQUEST
+  };
+  try {
+    const userInfo = await User.find({ email });
+    if (userInfo.length === 0) {
+      responseData.message = 'no user esists by such email id provided';
+      responseData.passwordResetProcessResponse = null;
+      responseData.status = NOT_FOUND;
+    } else {
+      const token = jsonwebtoken.sign(
+        {
+          id: userInfo[0]._id,
+          email: userInfo[0].email
+        },
+        JWT_SECRET_KEY,
+        {
+          expiresIn: '1hr'
+        }
+      );
+      const link = `${hostName}/reset-password?token=${token}`;
+      const body = `<h4>Hello, ${userInfo[0].name},</h4><p>here is the <a href='${link}'>link</a> for resetting password for your account. Please visit and reset your password</p>`;
+      const response = await sendEmail(userInfo[0].email, 'LMS: Reset Password', body);
+      await User.findOneAndUpdate({ email }, { passwordUpdateStatus: 1 }, { new: true });
+      responseData.data.passwordResetProcessResponse = response.data;
+      responseData.message = response.message;
+      responseData.status = SUCCESS;
+    }
+  } catch (e) {
+    responseData.data.passwordResetProcessResponse = null;
+    responseData.status = SERVER_ERROR;
+    responseData.message = `${e.message} There was an issue while sending email for password reset link to email`;
+  }
+  res.status(responseData.status).send(responseData);
+};
+
+const resetPassword = async (req, res) => {
+  const responseData = {
+    data: {
+      passwordResetProcessResponse: null
+    },
+    message: '',
+    status: BAD_REQUEST
+  };
+  try {
+    const { password, emailId } = req.body;
+    const uniqueSalt = crypto.randomBytes(RANDOM_BYTES_CHARACTERS).toString('hex');
+    const hash = generateHash(password, uniqueSalt);
+    const userWithPasswordUpdated = await User.findOneAndUpdate(
+      { email: emailId },
+      {
+        hash,
+        salt: uniqueSalt,
+        passwordUpdateStatus: 0
+      },
+      {
+        new: true
+      }
+    );
+    if (userWithPasswordUpdated !== null) {
+      responseData.data.passwordResetProcessResponse = userWithPasswordUpdated;
+      responseData.message = 'Password has been reset!';
+      responseData.status = SUCCESS;
+    } else {
+      responseData.data = null;
+      responseData.message = 'There was an issue while resetting your password. Contact admin please.';
+      responseData.status = BAD_REQUEST;
+    }
+  } catch (e) {
+    responseData.data = null;
+    responseData.message = `There was an issue while resetting your password. ${e.message}`;
+    responseData.status = SERVER_ERROR;
+  }
+  res.status(responseData.status).send(responseData);
+};
+
+const getPasswordUpdateStatus = async (req, res) => {
+  const responseData = {
+    data: null,
+    message: '',
+    status: BAD_REQUEST
+  };
+  const { email } = req.body;
+  try {
+    const passwordUpdateStatus = await User.find({ email }, { passwordUpdateStatus: 1 });
+    if (passwordUpdateStatus !== null) {
+      [responseData.data] = passwordUpdateStatus;
+      responseData.message = 'Password update status found ';
+      responseData.status = SUCCESS;
+    } else {
+      responseData.data = null;
+      responseData.message = 'no data found';
+      responseData.status = BAD_REQUEST;
+    }
+  } catch (e) {
+    responseData.data = null;
+    responseData.message = `There was an issue. ${e.message}`;
+    responseData.status = SERVER_ERROR;
+  }
+  res.status(responseData.status).send(responseData);
+};
+
 export {
   createUser,
   authenticate,
@@ -650,5 +759,8 @@ export {
   getUsersBasedOnCondition,
   deleteUser,
   updatePersonalDetail,
-  updateEmploymentDetail
+  updateEmploymentDetail,
+  sendPasswordResetLinkToEmail,
+  resetPassword,
+  getPasswordUpdateStatus
 };

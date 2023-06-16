@@ -2,6 +2,8 @@ import * as types from '../constants';
 
 const initialState = {
   usersBasedOnCondition: [],
+  passwordResetProcessResponse: null,
+  passwordUpdateStatus: 0,
   message: '',
   allUsers: [],
   allRoles: []
@@ -58,6 +60,60 @@ export default function UserDetailReducers(state = initialState, action) {
       return {
         ...state,
         usersBasedOnCondition: null,
+        message: action.payload.message
+      };
+    case types.SEND_RESET_PASSWORD_LINK_REQUEST:
+      return {
+        ...state
+      };
+    case types.SEND_RESET_PASSWORD_LINK_SUCCESS:
+      return {
+        ...state,
+        passwordResetProcessResponse: action.payload.data.passwordResetProcessResponse,
+        message: action.payload.message
+      };
+    case types.SEND_RESET_PASSWORD_LINK_FAILURE:
+      return {
+        ...state,
+        passwordResetProcessResponse: null,
+        message: action.payload.message
+      };
+    case types.RESET_PASSWORD_REQUEST:
+      return {
+        ...state
+      };
+    case types.RESET_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        passwordResetProcessResponse: action.payload.data.passwordResetProcessResponse,
+        message: action.payload.message
+      };
+    case types.RESET_PASSWORD_FAILURE:
+      return {
+        ...state,
+        passwordResetProcessResponse: null,
+        message: action.payload.message
+      };
+    case types.RESET_MESSGE_USER_DETAILS:
+      return {
+        ...state,
+        passwordResetProcessResponse: null,
+        message: ''
+      };
+    case types.GET_PASSWORD_UPDATE_STATUS_REQUEST:
+      return {
+        ...state
+      };
+    case types.GET_PASSWORD_UPDATE_STATUS_SUCCESS:
+      return {
+        ...state,
+        passwordUpdateStatus: action.payload.data.passwordUpdateStatus,
+        message: action.payload.message
+      };
+    case types.GET_PASSWORD_UPDATE_STATUS_FAILURE:
+      return {
+        ...state,
+        passwordUpdateStatus: null,
         message: action.payload.message
       };
     default: {

@@ -38,7 +38,18 @@
   justify-content: center;
   padding: 0 30px 0 30px;
 }
-
+.form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-size: 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.textField{
+  margin: 1rem;
+}
 .loginButton {
   display: flex;
   padding: 7px 18px 9px 0;

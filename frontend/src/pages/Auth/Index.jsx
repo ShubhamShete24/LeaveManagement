@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import Login from './Login';
+import ForgotPassword from './ForgotPassword';
 
 export default function Index() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  return <Login isSignUp={isSignUp} setIsSignUp={setIsSignUp} />;
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  return isForgotPassword ? (
+    <ForgotPassword isForgotPassword={isForgotPassword} setIsForgotPassword={setIsForgotPassword} />
+  ) : (
+    <Login isForgotPassword={isForgotPassword} setIsForgotPassword={setIsForgotPassword} />
+  );
 }
