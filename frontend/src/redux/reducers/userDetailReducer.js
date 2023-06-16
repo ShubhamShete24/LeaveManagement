@@ -105,7 +105,6 @@ export default function UserDetailReducers(state = initialState, action) {
         ...state
       };
     case types.GET_PASSWORD_UPDATE_STATUS_SUCCESS:
-      console.log(action.payload);
       return {
         ...state,
         passwordUpdateStatus: action.payload.data.passwordUpdateStatus,

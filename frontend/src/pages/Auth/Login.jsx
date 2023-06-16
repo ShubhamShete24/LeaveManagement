@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import mainLogo from '../../assets/images/SteelSoft_Logo.jpg';
@@ -93,9 +93,9 @@ export default function Login({ setIsForgotPassword, isForgotPassword }) {
             <Button variant="outline-primary" type="button" onClick={handleSignIn}>
               Sign In
             </Button>
-            <a className="text-muted" href="#" onClick={handleClick}>
+            <Link className="text-muted" onClick={handleClick}>
               Forgot password?
-            </a>
+            </Link>
           </div>
           {/* <div className="signupButton">
             <p className="mb-0 me-2">Don't have an account?</p>
